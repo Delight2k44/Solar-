@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    --color-bg-primary: #0E1311;
+    --color-bg-secondary: #141A17;
+    --color-bg-surface: #1A221E;
+    
+    --color-text-primary: #FFFFFF;
+    --color-text-secondary: #9EADA5;
+    --color-text-muted: #6B7B73;
+    
+    --color-brand-green: #1B4D3E;
+    --color-brand-green-bright: #286D58;
+    --color-accent-amber: #D97706;
+    --color-border-dark: #24302A;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #0E1311;
+    color: #E6ECE8;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  body.theme-light {
+    background-color: #F6F8F7;
+    color: #111A16;
+  }
+}
+
+/* Crisp technical utility classes */
+.mono-spec {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.02em;
+}
+
+.hairline-border {
+  border: 1px solid #24302A;
+}
+
+.subtle-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(36, 48, 42, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(36, 48, 42, 0.35) 1px, transparent 1px);
+}
+
+html.light .subtle-grid {
+  background-image: 
+    linear-gradient(to right, rgba(200, 215, 208, 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(200, 215, 208, 0.45) 1px, transparent 1px);
+}
+
+/* ==========================================================================
+   LIGHT MODE ARCHITECTURAL PALETTE OVERRIDES
+   ========================================================================== */
+
+html.light {
+  color-scheme: light;
+}
+
+/* Surfaces & Backgrounds */
+html.light .bg-\[\#0E1311\] {
+  background-color: #F6F8F7 !important;
+}
+
+html.light .bg-\[\#141A17\] {
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+html.light .bg-\[\#141A17\]\/90,
+html.light .bg-\[\#141A17\]\/95,
+html.light .bg-\[\#141A17\]\/70,
+html.light .bg-\[\#141A17\]\/60,
+html.light .bg-\[\#141A17\]\/50,
+html.light .bg-\[\#141A17\]\/40 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+html.light .bg-\[\#1A221E\] {
+  background-color: #EBF1EE !important;
+}
+
+html.light .bg-\[\#0A0E0C\] {
+  background-color: #EEF3F0 !important;
+}
+
+/* Borders */
+html.light .border-\[\#24302A\],
+html.light .border-\[\#2D3D35\] {
+  border-color: #D9E4DE !important;
+}
+
+html.light .border-\[\#1B2420\] {
+  border-color: #E5EDE8 !important;
+}
+
+html.light .hover\:border-\[\#31423A\]:hover {
+  border-color: #1B4D3E !important;
+}
+
+/* Typography & Colors */
+html.light .text-white {
+  color: #101915 !important;
+}
+
+html.light .text-\[\#E6ECE8\] {
+  color: #121A16 !important;
+}
+
+html.light .text-\[\#9EADA5\],
+html.light .text-\[\#C4D1CA\] {
+  color: #495B53 !important;
+}
+
+html.light .text-\[\#6B7B73\] {
+  color: #687A72 !important;
+}
+
+/* Form Controls & Inputs */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #FFFFFF !important;
+  color: #101915 !important;
+  border-color: #CBD7D1 !important;
+}
+
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #1B4D3E !important;
+}
+
+/* Buttons & Badges that must retain White text */
+html.light .bg-\[\#1B4D3E\],
+html.light .bg-\[\#286D58\],
+html.light button.bg-\[\#1B4D3E\],
+html.light button.bg-\[\#286D58\],
+html.light .bg-\[\#1B4D3E\] *,
+html.light .bg-\[\#286D58\] *,
+html.light .bg-\[\#10B981\] * {
+  color: #FFFFFF !important;
+}
+
+html.light .bg-\[\#1B4D3E\]\/90,
+html.light .bg-\[\#1B4D3E\]\/40 {
+  background-color: rgba(27, 77, 62, 0.12) !important;
+}
+
+html.light .bg-\[\#1B4D3E\]\/90 * {
+  color: #1B4D3E !important;
+}
+
+/* Hero Section Gradient in Light Mode */
+html.light .bg-gradient-to-r.from-\[\#0E1311\] {
+  background-image: linear-gradient(to right, #F6F8F7 0%, rgba(246, 248, 247, 0.95) 45%, rgba(246, 248, 247, 0.4) 100%) !important;
+}
+
+html.light .bg-gradient-to-t.from-\[\#0E1311\] {
+  background-image: linear-gradient(to top, #F6F8F7 0%, rgba(246, 248, 247, 0.9) 70%, rgba(246, 248, 247, 0.6) 100%) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0E1311;
+}
+
+html.light ::-webkit-scrollbar-track {
+  background: #F6F8F7;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #24302A;
+  border-radius: 4px;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #C4D2CB;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #31423A;
+}
+
+/* Focus styles for keyboard accessibility */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #1B4D3E;
+  outline-offset: 2px;
+}
