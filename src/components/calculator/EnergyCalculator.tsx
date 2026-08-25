@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
 import { PROVINCES_DATA } from '../../data/mockData';
 import { EstimateDisclaimer, IncentiveDisclaimer } from '../common/EstimateDisclaimer';
-import { Calculator, Sun, Battery, DollarSign, TrendingUp, Zap, HelpCircle, ShieldCheck, ArrowRight } from 'lucide-react';
+import { 
+  Calculator, 
+  Sun, 
+  Battery, 
+  DollarSign, 
+  TrendingUp, 
+  Zap, 
+  HelpCircle, 
+  ShieldCheck, 
+  ArrowRight,
+  Sparkles,
+  Layers,
+  MapPin,
+  Compass,
+  Clock,
+  CheckCircle2,
+  FileCheck
+} from 'lucide-react';
 
 interface EnergyCalculatorProps {
   onQuoteTrigger?: () => void;
@@ -13,7 +30,6 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
   const [roofOrientation, setRoofOrientation] = useState<'north' | 'northeast_northwest' | 'east_west' | 'flat'>('north');
   const [backupHours, setBackupHours] = useState<number>(4);
   const [financingTermMonths, setFinancingTermMonths] = useState<number>(60);
-  const [annualTariffIncreasePercent, setAnnualTariffIncreasePercent] = useState<number>(12); // Average NERSA increase
 
   const provinceInfo = PROVINCES_DATA[selectedProvince] || PROVINCES_DATA['Gauteng (Johannesburg / Pretoria)'];
 
@@ -43,10 +59,8 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
   if (requiredSolarKwp > 14.0) inverterKva = 20;
 
   // Battery sizing based on desired backup hours
-  // Average base load per hour during outage
   const baseLoadKw = Math.max(0.6, (estimatedDailyKwh / 24) * 1.1);
   const rawBatteryKwh = baseLoadKw * backupHours;
-  // Account for 85% DoD
   const recommendedBatteryKwh = Number((rawBatteryKwh / 0.85).toFixed(1));
 
   // Turnkey Cost Model (ZAR)
@@ -57,9 +71,9 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
   else estimatedSystemCostZAR = 280000 + (panelCount * 2200);
 
   if (recommendedBatteryKwh > 5.5 && recommendedBatteryKwh <= 11) {
-    estimatedSystemCostZAR += 24000; // Extra 5kWh module
+    estimatedSystemCostZAR += 24000;
   } else if (recommendedBatteryKwh > 11) {
-    estimatedSystemCostZAR += 48000; // Dual extra modules
+    estimatedSystemCostZAR += 48000;
   }
 
   // Monthly Savings & Payback
@@ -69,8 +83,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
   const annualGenerationKwh = Math.round(requiredSolarKwp * effectivePeakSunHours * 365 * systemEfficiency);
   const co2TonnesPerYear = Number(((annualGenerationKwh * 0.95) / 1000).toFixed(1));
 
-  // Asset Financing Estimation:
-  // Typical interest rate ~ Prime (11.75%)
+  // Asset Financing Estimation (~11.75% prime)
   const annualInterestRate = 0.1175;
   const monthlyRate = annualInterestRate / 12;
   const monthlyFinancingZAR = Math.round(
@@ -78,232 +91,279 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
     (Math.pow(1 + monthlyRate, financingTermMonths) - 1)
   );
 
-  const netMonthlyCost = monthlyFinancingZAR - estimatedMonthlySavingsZAR;
-
   return (
-    <div className="bg-[#0E1311] border border-[#24302A] rounded-lg p-6 sm:p-8 max-w-5xl mx-auto text-[#E6ECE8] shadow-2xl">
-      {/* Title & Introduction */}
-      <div className="border-b border-[#24302A] pb-6 mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2.5 bg-[#1B4D3E] text-white rounded border border-[#286D58]">
-            <Calculator className="w-5 h-5" />
-          </div>
-          <div>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold">
-              South African Solar Engineering & Financial Model
-            </span>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white uppercase">
-              Energy & Payback Calculator
-            </h2>
-          </div>
+    <div className="space-y-10 max-w-6xl mx-auto">
+      {/* Visual Header with Real Engineering Background */}
+      <div className="relative rounded-2xl overflow-hidden border border-[#24302A] bg-[#141A17] p-8 sm:p-12 shadow-2xl">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <img
+            src="/cad-solar-audit.jpg"
+            alt="Solar CAD Engineering Design"
+            className="w-full h-full object-cover object-right"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#141A17] via-[#141A17]/90 to-transparent" />
         </div>
-        <p className="text-xs text-[#9EADA5] leading-relaxed max-w-3xl">
-          Model your property's solar PV generation, battery storage capacity, electricity bill savings, and estimated asset financing terms using South African regional irradiation data.
-        </p>
+
+        <div className="relative z-10 max-w-2xl space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0E1311]/90 border border-[#286D58] rounded text-[11px] font-mono tracking-widest text-[#286D58] font-bold uppercase">
+            <Calculator className="w-3.5 h-3.5" />
+            <span>South African Solar ROI & Financial Sizing Engine</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white uppercase">
+            Energy Sizing & Payback Calculator
+          </h1>
+
+          <p className="text-xs sm:text-sm text-[#9EADA5] leading-relaxed">
+            Model your property's solar PV generation, lithium storage capacity, monthly Eskom bill savings, and asset financing terms based on verified regional irradiation data across South Africa.
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Interactive Inputs */}
-        <div className="lg:col-span-6 space-y-6">
-          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#1B2420] pb-2">
-            01. Property & Consumption Inputs
-          </h3>
-
-          {/* Province Selector */}
-          <div>
-            <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1.5">
-              Select Province / Metro Region
-            </label>
-            <select
-              value={selectedProvince}
-              onChange={e => setSelectedProvince(e.target.value)}
-              className="w-full bg-[#141A17] border border-[#24302A] rounded px-3 py-2.5 text-xs text-white focus:border-[#286D58]"
-            >
-              {Object.keys(PROVINCES_DATA).map(prov => (
-                <option key={prov} value={prov}>
-                  {prov} ({PROVINCES_DATA[prov].peakSunHoursPerDay} hrs peak sun / day)
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Monthly Bill Input */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-mono uppercase text-[#9EADA5]">
-                Current Monthly Eskom / Municipal Bill
-              </label>
-              <span className="font-mono text-sm font-bold text-white bg-[#141A17] px-2.5 py-1 rounded border border-[#24302A]">
-                R {monthlyBillZAR.toLocaleString()}
-              </span>
-            </div>
-            <input
-              type="range"
-              min={1500}
-              max={30000}
-              step={250}
-              value={monthlyBillZAR}
-              onChange={e => setMonthlyBillZAR(Number(e.target.value))}
-              className="w-full h-2 bg-[#1A221E] rounded-lg appearance-none cursor-pointer accent-[#1B4D3E]"
+      {/* Visual 3-Card Interactive Sizing Showcase */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all shadow-md">
+          <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
+            <img
+              src="/solar-installer-roof.jpg"
+              alt="Solar panel roof array installation"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="flex justify-between text-[10px] font-mono text-[#6B7B73] mt-1.5">
-              <span>R 1,500</span>
-              <span>~{Math.round(estimatedMonthlyKwh)} kWh/month</span>
-              <span>R 30,000+</span>
-            </div>
+            <span className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
+              01 • Solar PV Array
+            </span>
           </div>
-
-          {/* Roof Orientation */}
-          <div>
-            <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-2">
-              Primary Roof Pitch Orientation
-            </label>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {[
-                { id: 'north', label: 'North Facing (100% Optimal)' },
-                { id: 'northeast_northwest', label: 'North-East / North-West (95%)' },
-                { id: 'east_west', label: 'East-West Split (88%)' },
-                { id: 'flat', label: 'Flat Roof / Tilt Brackets (92%)' },
-              ].map(item => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setRoofOrientation(item.id as any)}
-                  className={`p-2.5 rounded text-left border transition-colors ${
-                    roofOrientation === item.id 
-                      ? 'bg-[#1B4D3E] text-white border-[#286D58]' 
-                      : 'bg-[#141A17] text-[#9EADA5] border-[#24302A] hover:border-[#31423A]'
-                  }`}
-                >
-                  <span className="block font-medium text-[11px]">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Backup Duration Hours */}
-          <div>
-            <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-2">
-              Target Outage / Loadshedding Backup Duration
-            </label>
-            <div className="grid grid-cols-4 gap-2">
-              {[2, 4, 8, 12].map(hrs => (
-                <button
-                  key={hrs}
-                  type="button"
-                  onClick={() => setBackupHours(hrs)}
-                  className={`py-2 rounded font-mono text-xs font-semibold border ${
-                    backupHours === hrs 
-                      ? 'bg-[#1B4D3E] text-white border-[#286D58]' 
-                      : 'bg-[#141A17] text-[#9EADA5] border-[#24302A]'
-                  }`}
-                >
-                  {hrs} Hours
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Financing Term */}
-          <div>
-            <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-2">
-              Asset Finance Term Horizon
-            </label>
-            <div className="grid grid-cols-3 gap-2 font-mono text-xs">
-              {[36, 48, 60].map(term => (
-                <button
-                  key={term}
-                  type="button"
-                  onClick={() => setFinancingTermMonths(term)}
-                  className={`py-2 rounded border text-center font-semibold ${
-                    financingTermMonths === term 
-                      ? 'bg-[#1B4D3E] text-white border-[#286D58]' 
-                      : 'bg-[#141A17] text-[#9EADA5] border-[#24302A]'
-                  }`}
-                >
-                  {term} Months
-                </button>
-              ))}
-            </div>
+          <div className="p-4 space-y-1">
+            <h4 className="text-sm font-bold text-white uppercase">Calculated PV Capacity</h4>
+            <p className="text-xs text-[#286D58] font-mono font-bold">{requiredSolarKwp} kWp ({panelCount}x 550W Panels)</p>
+            <p className="text-[11px] text-[#9EADA5]">Daily Solar Yield: ~{Math.round(requiredSolarKwp * effectivePeakSunHours * systemEfficiency)} kWh/day</p>
           </div>
         </div>
 
-        {/* Right Column: Sizing & Financial Model Outputs */}
-        <div className="lg:col-span-6 space-y-6">
-          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#1B2420] pb-2">
-            02. Sizing & Financial Yield Projections
-          </h3>
+        <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all shadow-md">
+          <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
+            <img
+              src="/battery-inverter-room.jpg"
+              alt="Lithium battery power room"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <span className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
+              02 • Hybrid Power Room
+            </span>
+          </div>
+          <div className="p-4 space-y-1">
+            <h4 className="text-sm font-bold text-white uppercase">Inverter & Storage</h4>
+            <p className="text-xs text-[#D97706] font-mono font-bold">{inverterKva}kW Hybrid Inverter + {recommendedBatteryKwh}kWh Storage</p>
+            <p className="text-[11px] text-[#9EADA5]">Provides {backupHours} Hours Outage Autonomy</p>
+          </div>
+        </div>
 
-          {/* Technical Sizing Cards */}
-          <div className="grid grid-cols-2 gap-3 font-mono">
-            <div className="p-3.5 bg-[#141A17] border border-[#24302A] rounded">
-              <span className="text-[10px] uppercase text-[#6B7B73] block">Recommended Solar PV</span>
-              <span className="text-base font-bold text-white">{requiredSolarKwp} kWp</span>
-              <span className="text-[10px] text-[#9EADA5] block mt-0.5">({panelCount}x 550W Tier-1 Panels)</span>
+        <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all shadow-md">
+          <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
+            <img
+              src="/homeowner-app-dashboard.jpg"
+              alt="Homeowner energy savings tracking"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <span className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
+              03 • Financial Return
+            </span>
+          </div>
+          <div className="p-4 space-y-1">
+            <h4 className="text-sm font-bold text-white uppercase">Payback & Monthly Savings</h4>
+            <p className="text-xs text-[#10B981] font-mono font-bold">R {estimatedMonthlySavingsZAR.toLocaleString()} / mo Savings</p>
+            <p className="text-[11px] text-[#9EADA5]">Estimated Break-Even: {paybackYears} Years</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Interactive Calculator Engine */}
+      <div className="bg-[#0E1311] border border-[#24302A] rounded-2xl p-6 sm:p-10 shadow-2xl space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Column: Interactive Sliders & Inputs */}
+          <div className="lg:col-span-6 space-y-6">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#1B2420] pb-2 flex items-center gap-2">
+              <Compass className="w-4 h-4 text-[#286D58]" />
+              <span>01. Property & Consumption Inputs</span>
+            </h3>
+
+            {/* Province Selector */}
+            <div>
+              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1.5 flex items-center justify-between">
+                <span>Province / Metro Region</span>
+                <span className="text-[#286D58] font-bold">{provinceInfo.peakSunHoursPerDay} Peak Sun Hrs/Day</span>
+              </label>
+              <select
+                value={selectedProvince}
+                onChange={e => setSelectedProvince(e.target.value)}
+                className="w-full bg-[#141A17] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+              >
+                {Object.keys(PROVINCES_DATA).map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
             </div>
 
-            <div className="p-3.5 bg-[#141A17] border border-[#24302A] rounded">
-              <span className="text-[10px] uppercase text-[#6B7B73] block">Recommended Storage</span>
-              <span className="text-base font-bold text-white">{recommendedBatteryKwh} kWh</span>
-              <span className="text-[10px] text-[#9EADA5] block mt-0.5">(LiFePO4 @ 85% DoD)</span>
+            {/* Monthly Spend Slider */}
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs font-mono uppercase text-[#9EADA5]">
+                  Average Monthly Electricity Bill (ZAR)
+                </label>
+                <span className="text-base font-mono font-extrabold text-[#D97706]">
+                  R {monthlyBillZAR.toLocaleString()}
+                </span>
+              </div>
+              <input
+                type="range"
+                min="1500"
+                max="30000"
+                step="500"
+                value={monthlyBillZAR}
+                onChange={e => setMonthlyBillZAR(Number(e.target.value))}
+                className="w-full h-2 bg-[#141A17] rounded-lg appearance-none cursor-pointer accent-[#286D58]"
+              />
+              <div className="flex justify-between text-[10px] font-mono text-[#6B7B73] mt-1">
+                <span>R 1,500</span>
+                <span>Est: {Math.round(estimatedMonthlyKwh)} kWh/month</span>
+                <span>R 30,000+</span>
+              </div>
             </div>
 
-            <div className="p-3.5 bg-[#141A17] border border-[#24302A] rounded">
-              <span className="text-[10px] uppercase text-[#6B7B73] block">Hybrid Inverter Size</span>
-              <span className="text-base font-bold text-white">{inverterKva} kVA</span>
-              <span className="text-[10px] text-[#9EADA5] block mt-0.5">Pure Sine Wave IP65</span>
+            {/* Roof Orientation */}
+            <div>
+              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-2">
+                Roof Orientation & Solar Pitch
+              </label>
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                {[
+                  { id: 'north', label: 'True North (100% Yield)' },
+                  { id: 'northeast_northwest', label: 'NE / NW (95% Yield)' },
+                  { id: 'east_west', label: 'East / West (88% Yield)' },
+                  { id: 'flat', label: 'Flat Roof / Tilt Brackets (92%)' },
+                ].map(item => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setRoofOrientation(item.id as any)}
+                    className={`p-2.5 rounded-lg border text-left transition-all ${
+                      roofOrientation === item.id
+                        ? 'bg-[#1B4D3E] border-[#286D58] text-white font-bold'
+                        : 'bg-[#141A17] border-[#24302A] text-[#9EADA5] hover:border-[#31423A]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="p-3.5 bg-[#141A17] border border-[#24302A] rounded">
-              <span className="text-[10px] uppercase text-[#6B7B73] block">Annual Clean Generation</span>
-              <span className="text-base font-bold text-[#10B981]">{annualGenerationKwh.toLocaleString()} kWh</span>
-              <span className="text-[10px] text-[#9EADA5] block mt-0.5">({co2TonnesPerYear}t CO2 offset/yr)</span>
+            {/* Outage Backup Hours Slider */}
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs font-mono uppercase text-[#9EADA5]">
+                  Desired Night & Loadshedding Backup Duration
+                </label>
+                <span className="text-sm font-mono font-bold text-white">
+                  {backupHours} Hours
+                </span>
+              </div>
+              <input
+                type="range"
+                min="2"
+                max="12"
+                step="1"
+                value={backupHours}
+                onChange={e => setBackupHours(Number(e.target.value))}
+                className="w-full h-2 bg-[#141A17] rounded-lg appearance-none cursor-pointer accent-[#286D58]"
+              />
+              <div className="flex justify-between text-[10px] font-mono text-[#6B7B73] mt-1">
+                <span>2 hrs (Essential Loads)</span>
+                <span>6 hrs (Overnight)</span>
+                <span>12 hrs (Off-Grid)</span>
+              </div>
             </div>
           </div>
 
-          {/* Financial Summary Box */}
-          <div className="p-5 bg-[#141A17] border border-[#286D58]/70 rounded-lg space-y-4">
-            <div className="flex items-center justify-between border-b border-[#24302A] pb-3">
-              <span className="text-xs font-mono uppercase text-[#9EADA5]">Estimated Turnkey Cost:</span>
-              <span className="text-xl font-mono font-extrabold text-[#D97706]">
-                R {estimatedSystemCostZAR.toLocaleString()}
-              </span>
+          {/* Right Column: Calculated Sizing & Payback Matrix */}
+          <div className="lg:col-span-6 space-y-6">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#1B2420] pb-2 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#D97706]" />
+              <span>02. Recommended Hardware Sizing & ROI</span>
+            </h3>
+
+            {/* Hardware Specification Grid */}
+            <div className="grid grid-cols-2 gap-3 font-mono text-xs">
+              <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl space-y-1">
+                <span className="text-[10px] text-[#6B7B73] uppercase block">Inverter Sizing</span>
+                <span className="text-lg font-bold text-white">{inverterKva}.0 kW</span>
+                <span className="text-[10px] text-[#286D58] block">Hybrid Low-Voltage</span>
+              </div>
+
+              <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl space-y-1">
+                <span className="text-[10px] text-[#6B7B73] uppercase block">LiFePO4 Storage</span>
+                <span className="text-lg font-bold text-white">{recommendedBatteryKwh} kWh</span>
+                <span className="text-[10px] text-[#286D58] block">85% Depth of Discharge</span>
+              </div>
+
+              <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl space-y-1">
+                <span className="text-[10px] text-[#6B7B73] uppercase block">Solar Array Size</span>
+                <span className="text-lg font-bold text-white">{requiredSolarKwp} kWp</span>
+                <span className="text-[10px] text-[#286D58] block">{panelCount}x 550W Mono PERC</span>
+              </div>
+
+              <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl space-y-1">
+                <span className="text-[10px] text-[#6B7B73] uppercase block">Annual Generation</span>
+                <span className="text-lg font-bold text-white">{annualGenerationKwh.toLocaleString()}</span>
+                <span className="text-[10px] text-[#10B981] block">kWh / Year Yield</span>
+              </div>
             </div>
 
-            <div className="space-y-2 text-xs font-mono">
-              <div className="flex justify-between text-[#9EADA5]">
-                <span>Est. Monthly Electricity Offset:</span>
-                <span className="text-[#10B981] font-bold">~R {estimatedMonthlySavingsZAR.toLocaleString()} / mo</span>
+            {/* Financial Summary Box */}
+            <div className="p-5 bg-[#141A17] border border-[#24302A] rounded-xl space-y-4 font-mono text-xs">
+              <div className="flex justify-between items-center border-b border-[#24302A] pb-3">
+                <span className="text-[#9EADA5]">Estimated Turnkey Installation:</span>
+                <span className="text-base font-extrabold text-white">R {estimatedSystemCostZAR.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between text-[#9EADA5]">
-                <span>Est. Asset Financing Repayment ({financingTermMonths} mo):</span>
+
+              <div className="flex justify-between items-center text-[#10B981]">
+                <span>Estimated Monthly Electricity Savings:</span>
+                <span className="font-bold">R {estimatedMonthlySavingsZAR.toLocaleString()} / mo</span>
+              </div>
+
+              <div className="flex justify-between items-center text-white">
+                <span>Estimated Payback Horizon:</span>
+                <span className="font-bold text-[#D97706]">{paybackYears} Years</span>
+              </div>
+
+              <div className="flex justify-between items-center text-[#9EADA5] pt-2 border-t border-[#24302A]">
+                <span>5-Year Asset Finance Repayment:</span>
                 <span className="text-white font-bold">~R {monthlyFinancingZAR.toLocaleString()} / mo</span>
               </div>
-              <div className="flex justify-between text-[#9EADA5] pt-2 border-t border-[#1B2420]">
-                <span>Estimated Payback Horizon:</span>
-                <span className="text-white font-bold">{paybackYears} Years</span>
-              </div>
             </div>
 
+            {/* Action Button */}
             <div className="pt-2">
               <button
+                type="button"
                 onClick={onQuoteTrigger}
-                className="w-full py-3 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded flex items-center justify-center gap-2 transition-colors"
+                className="w-full py-4 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
               >
-                <span>Request Quotation for this Configuration</span>
+                <span>Request Formal Proposal for this Sizing</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
-
-          {/* Disclaimers */}
-          <EstimateDisclaimer variant="inline" />
         </div>
-      </div>
 
-      {/* Tax Incentives & Regulatory Information */}
-      <div className="mt-8 pt-6 border-t border-[#24302A]">
-        <IncentiveDisclaimer />
+        {/* Mandatory Engineering Disclaimers */}
+        <div className="pt-6 border-t border-[#1B2420]">
+          <EstimateDisclaimer />
+          <div className="mt-4">
+            <IncentiveDisclaimer />
+          </div>
+        </div>
       </div>
     </div>
   );

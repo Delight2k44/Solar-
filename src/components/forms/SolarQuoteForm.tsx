@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useData } from '../../context/DataContext';
 import { 
   Sun, 
   Battery, 
@@ -23,6 +24,7 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
   onSuccess,
   defaultPropertyType = 'Residential Home'
 }) => {
+  const { addLeadQuote } = useData();
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [quoteId, setQuoteId] = useState('');
@@ -48,7 +50,7 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
   const estimatedDailyKwh = Math.round(estimatedMonthlyKwh / 30);
   
   const peakSunHours = province === 'Western Cape' ? 5.1 : (province === 'Northern Cape' ? 6.2 : 5.4);
-  const recommendedSolarKwp = ((estimatedDailyKwh * 0.8) / (peakSunHours * 0.82)).toFixed(1);
+  const recommendedSolarKwp = Number(((estimatedDailyKwh * 0.8) / (peakSunHours * 0.82)).toFixed(1));
   
   const recommendedInverterKw = monthlyBill > 8000 ? 12 : (monthlyBill > 3500 ? 8 : 5);
   const recommendedBatteryKwh = monthlyBill > 8000 ? 15.36 : (monthlyBill > 4000 ? 10.24 : 5.12);
@@ -56,7 +58,19 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newQuoteId = `KX-Q-${Math.floor(100000 + Math.random() * 900000)}`;
+    const newQuoteId = addLeadQuote({
+      fullName,
+      email,
+      phone,
+      suburb,
+      province,
+      propertyType,
+      monthlyBillZAR: monthlyBill,
+      recommendedInverterKw,
+      recommendedBatteryKwh,
+      recommendedSolarKwp,
+    });
+
     setQuoteId(newQuoteId);
     setSubmitted(true);
     if (onSuccess) onSuccess();

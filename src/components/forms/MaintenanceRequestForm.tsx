@@ -1,43 +1,60 @@
 import React, { useState } from 'react';
+import { useData } from '../../context/DataContext';
 import { 
   Wrench, 
   ShieldCheck, 
-  CheckCircle2, 
+  Calendar, 
   Clock, 
-  Activity, 
-  AlertTriangle, 
-  Calendar,
-  Layers,
-  Zap
+  CheckCircle2, 
+  ArrowRight, 
+  AlertTriangle,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Sparkles
 } from 'lucide-react';
 
 interface MaintenanceRequestFormProps {
   onSuccess?: () => void;
-  selectedTier?: string;
+  defaultTier?: string;
 }
 
 export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({ 
   onSuccess,
-  selectedTier = 'Performance SLA'
+  defaultTier = 'Performance SLA (Quarterly)'
 }) => {
+  const { createMaintenanceTicket } = useData();
   const [submitted, setSubmitted] = useState(false);
   const [ticketRef, setTicketRef] = useState('');
 
   // Form State
+  const [packageTier, setPackageTier] = useState(defaultTier);
+  const [inverterBrand, setInverterBrand] = useState('Deye / Sunsynk Hybrid');
+  const [systemAge, setSystemAge] = useState('1 - 2 Years');
+  const [primaryReason, setPrimaryReason] = useState('Annual SANS 10142 Health Audit & Thermal Scan');
   const [clientName, setClientName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
+  const [siteAddress, setSiteAddress] = useState('');
   const [city, setCity] = useState('Johannesburg');
-  const [packageTier, setPackageTier] = useState(selectedTier);
-  const [inverterBrand, setInverterBrand] = useState('Deye Hybrid Inverter');
-  const [systemAge, setSystemAge] = useState('1 – 3 Years');
-  const [primaryReason, setPrimaryReason] = useState('Annual SANS 10142 Health Audit');
   const [issueDetails, setIssueDetails] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const ref = `KX-SRV-${Math.floor(1000 + Math.random() * 9000)}`;
+    const ref = createMaintenanceTicket({
+      clientName,
+      clientEmail,
+      clientPhone,
+      siteAddress,
+      city,
+      tier: packageTier,
+      inverterBrand,
+      systemAge,
+      primaryReason,
+      issueDetails
+    });
+
     setTicketRef(ref);
     setSubmitted(true);
     if (onSuccess) onSuccess();
