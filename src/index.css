@@ -102,7 +102,7 @@ html.light .border-\[\#1B2420\] {
 }
 
 html.light .hover\:border-\[\#31423A\]:hover {
-  border-color: #1B4D3E !important;
+  border-color: #111827 !important;
 }
 
 /* Typography & Colors */
@@ -135,27 +135,37 @@ html.light textarea {
 html.light input:focus,
 html.light select:focus,
 html.light textarea:focus {
-  border-color: #1B4D3E !important;
+  border-color: #111827 !important;
 }
 
-/* Buttons & Badges that must retain White text */
-html.light .bg-\[\#1B4D3E\],
-html.light .bg-\[\#286D58\],
+/* Light Theme Button Styling: Crisp obsidian charcoal that contrasts boldly with white */
 html.light button.bg-\[\#1B4D3E\],
-html.light button.bg-\[\#286D58\],
-html.light .bg-\[\#1B4D3E\] *,
-html.light .bg-\[\#286D58\] *,
-html.light .bg-\[\#10B981\] * {
+html.light .bg-\[\#1B4D3E\] {
+  background-color: #111827 !important;
+  color: #FFFFFF !important;
+  border-color: #1F2937 !important;
+}
+
+html.light button.bg-\[\#1B4D3E\]:hover,
+html.light .bg-\[\#1B4D3E\]:hover,
+html.light button.bg-\[\#286D58\]:hover,
+html.light .bg-\[\#286D58\]:hover {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+html.light button.bg-\[\#1B4D3E\] *,
+html.light .bg-\[\#1B4D3E\] * {
   color: #FFFFFF !important;
 }
 
 html.light .bg-\[\#1B4D3E\]\/90,
 html.light .bg-\[\#1B4D3E\]\/40 {
-  background-color: rgba(27, 77, 62, 0.12) !important;
+  background-color: rgba(17, 24, 39, 0.08) !important;
 }
 
 html.light .bg-\[\#1B4D3E\]\/90 * {
-  color: #1B4D3E !important;
+  color: #111827 !important;
 }
 
 /* Hero Section Gradient in Light Mode */

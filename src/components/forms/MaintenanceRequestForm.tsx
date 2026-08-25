@@ -17,19 +17,22 @@ import {
 
 interface MaintenanceRequestFormProps {
   onSuccess?: () => void;
+  selectedTier?: string;
   defaultTier?: string;
 }
 
 export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({ 
   onSuccess,
+  selectedTier,
   defaultTier = 'Performance SLA (Quarterly)'
 }) => {
+  const initialTier = selectedTier || defaultTier;
   const { createMaintenanceTicket } = useData();
   const [submitted, setSubmitted] = useState(false);
   const [ticketRef, setTicketRef] = useState('');
 
   // Form State
-  const [packageTier, setPackageTier] = useState(defaultTier);
+  const [packageTier, setPackageTier] = useState(initialTier);
   const [inverterBrand, setInverterBrand] = useState('Deye / Sunsynk Hybrid');
   const [systemAge, setSystemAge] = useState('1 - 2 Years');
   const [primaryReason, setPrimaryReason] = useState('Annual SANS 10142 Health Audit & Thermal Scan');
@@ -75,7 +78,7 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
             Service Reference: <span className="font-mono text-[#D97706]">{ticketRef}</span>
           </h3>
           <p className="text-xs sm:text-sm text-[#9EADA5] max-w-md mx-auto leading-relaxed">
-            Thank you, <strong className="text-white">{clientName}</strong>. Your preventative service request has been logged under our <strong className="text-white">{packageTier}</strong> protocol. An SLA technical technician will contact you to confirm on-site arrival window.
+            Thank you, <strong className="text-white">{clientName}</strong>. Your preventative service request has been logged under our <strong className="text-white">{packageTier}</strong> protocol. An SLA technician will contact you to confirm on-site arrival window.
           </p>
         </div>
 
@@ -96,10 +99,11 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
 
         <div className="pt-2">
           <button
+            type="button"
             onClick={() => setSubmitted(false)}
-            className="px-6 py-2.5 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] text-white font-mono text-xs uppercase tracking-wider rounded transition-colors"
+            className="px-6 py-2.5 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] text-white text-xs font-mono uppercase rounded-lg transition-colors"
           >
-            Submit Another Maintenance Ticket
+            Submit Another Request
           </button>
         </div>
       </div>
@@ -107,33 +111,32 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
   }
 
   return (
-    <div className="bg-[#141A17] border border-[#24302A] rounded-2xl overflow-hidden shadow-2xl max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="p-6 sm:p-8 bg-[#0E1311] border-b border-[#24302A] space-y-2">
-        <div className="flex items-center gap-2">
-          <Wrench className="w-5 h-5 text-[#286D58]" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#286D58] font-bold">
-            Asset Lifecycle & Diagnostics
+    <form onSubmit={handleSubmit} className="bg-[#141A17] border border-[#24302A] rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl max-w-3xl mx-auto">
+      <div className="border-b border-[#24302A] pb-4 flex items-center justify-between">
+        <div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#286D58] font-bold block mb-1">
+            Certified Electrician Dispatch
           </span>
+          <h3 className="text-lg sm:text-xl font-extrabold text-white uppercase">
+            Book Preventative Care or System Audit
+          </h3>
         </div>
-        <h3 className="text-xl sm:text-2xl font-extrabold text-white uppercase tracking-tight">
-          Book Solar Maintenance & Diagnostic Service
-        </h3>
-        <p className="text-xs text-[#9EADA5]">
-          Book certified electrical inspections, string testing, thermal infrared scans, and de-ionized solar panel cleaning across South African metros.
-        </p>
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-[#0E1311] border border-[#24302A] rounded text-[10px] font-mono text-[#10B981]">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>SANS 10142 Certified</span>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
-        {/* Contact Coordinates */}
+      <div className="space-y-4">
+        {/* Customer & Location */}
         <div className="space-y-4">
-          <h4 className="text-xs font-mono font-bold uppercase text-white tracking-wider border-b border-[#24302A] pb-2">
-            01. Client & Location Coordinates
+          <h4 className="text-xs font-mono font-bold uppercase text-white tracking-wider border-b border-[#1B2420] pb-2">
+            01. Contact & Site Details
           </h4>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Full Name *</label>
+              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Contact Name *</label>
               <input
                 type="text"
                 required
@@ -149,8 +152,8 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
               <input
                 type="email"
                 required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
+                value={clientEmail}
+                onChange={e => setClientEmail(e.target.value)}
                 placeholder="ansie@domain.co.za"
                 className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
               />
@@ -163,8 +166,8 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
               <input
                 type="tel"
                 required
-                value={phone}
-                onChange={e => setPhone(e.target.value)}
+                value={clientPhone}
+                onChange={e => setClientPhone(e.target.value)}
                 placeholder="+27 82 000 0000"
                 className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
               />
@@ -202,8 +205,8 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
             <input
               type="text"
               required
-              value={address}
-              onChange={e => setAddress(e.target.value)}
+              value={siteAddress}
+              onChange={e => setSiteAddress(e.target.value)}
               placeholder="e.g. 88 Waterfall Drive, Midrand"
               className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
             />
@@ -218,74 +221,72 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Installed Inverter Brand</label>
+              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Inverter Brand</label>
               <select
                 value={inverterBrand}
                 onChange={e => setInverterBrand(e.target.value)}
                 className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
               >
                 <option>Deye Hybrid Inverter</option>
-                <option>Sunsynk Inverter</option>
-                <option>Victron Energy MultiPlus / Quattro</option>
-                <option>Growatt Hybrid</option>
-                <option>Huawei SUN2000</option>
-                <option>GoodWe / Solis</option>
-                <option>Other / Unsure</option>
+                <option>Sunsynk Parity Inverter</option>
+                <option>Victron Energy MultiPlus</option>
+                <option>GoodWe / Solis / Growatt</option>
+                <option>Other / Unknown</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Estimated System Age</label>
+              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Approx System Age</label>
               <select
                 value={systemAge}
                 onChange={e => setSystemAge(e.target.value)}
                 className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
               >
-                <option>Under 1 Year</option>
+                <option>Under 1 Year (Warranty Audit)</option>
                 <option>1 – 3 Years</option>
                 <option>3 – 5 Years</option>
-                <option>5+ Years (Legacy System)</option>
+                <option>Over 5 Years (Legacy System)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Primary Objective</label>
+              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Primary Inspection Goal</label>
               <select
                 value={primaryReason}
                 onChange={e => setPrimaryReason(e.target.value)}
                 className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
               >
                 <option>Annual SANS 10142 Health Audit</option>
-                <option>Panel De-soiling & Hydro-Wash</option>
-                <option>Inverter Error Code / Fault Tripping</option>
-                <option>Battery Capacity Loss / Not Charging</option>
-                <option>Insurance Inspection & CoC Re-Issue</option>
+                <option>Inverter Fault / Error Code Tripping</option>
+                <option>Panel De-soiling & Hydro Wash</option>
+                <option>Thermal Infrared Hot-Spot Audit</option>
+                <option>Battery Health & BMS Recalibration</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Issue Description / Error Codes (If Any)</label>
+            <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Additional Symptoms or Error Codes</label>
             <textarea
               rows={3}
               value={issueDetails}
               onChange={e => setIssueDetails(e.target.value)}
-              placeholder="Describe any warning beeps, error numbers (e.g. F20 / E03), reduced solar production, or past weather damage..."
-              className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2 text-xs text-white focus:border-[#286D58]"
+              placeholder="e.g. Earth fault indicator lighting up after rain, battery discharging faster than normal, breaker tripping on changeover..."
+              className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
             />
           </div>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-3">
           <button
             type="submit"
-            className="w-full py-4 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full py-4 bg-[#111827] dark:bg-[#1B4D3E] hover:bg-black dark:hover:bg-[#286D58] border border-[#374151] dark:border-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-xl flex items-center justify-center gap-2"
           >
-            <ShieldCheck className="w-4 h-4 text-[#10B981]" />
-            <span>Book Certified Maintenance Diagnostic</span>
+            <span>Dispatch Maintenance Booking Request</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 };

@@ -19,6 +19,7 @@ import { FAQPage } from './pages/FAQPage';
 import { ContactPage } from './pages/ContactPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminPage } from './pages/AdminPage';
+import { SolarChatWidget } from './components/chat/SolarChatWidget';
 
 import { Product } from './types';
 import { X } from 'lucide-react';
@@ -135,8 +136,11 @@ export function App() {
       {/* Global Footer */}
       <Footer setCurrentRoute={setCurrentRoute} />
 
-      {/* Slide-out Cart Drawer */}
+      {/* Slide-out Cart Drawer with Instant EFT / Card / Financing */}
       <CartDrawer />
+
+      {/* Interactive AI & Engineering Chatbot Widget */}
+      <SolarChatWidget onOpenConfigurator={openConfigurator} />
 
       {/* Single Product Modal */}
       <ProductDetailModal
