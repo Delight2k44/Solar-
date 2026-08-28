@@ -141,10 +141,6 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentRoute }) => {
               <span>Biogas Cogeneration</span>
               <span className="text-[9px] font-mono bg-[#24302A] text-[#9EADA5] px-1 rounded">Coming Soon</span>
             </li>
-            <li className="flex items-center gap-1.5 text-[#6B7B73]">
-              <span>Smart Microgrid Software</span>
-              <span className="text-[9px] font-mono bg-[#24302A] text-[#9EADA5] px-1 rounded">Coming Soon</span>
-            </li>
           </ul>
         </div>
       </div>

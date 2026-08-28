@@ -47,9 +47,12 @@ export const HomePage: React.FC<HomePageProps> = ({
         {/* Full-Bleed High-Definition Architectural Background Image (Unobstructed) */}
         <div className="absolute inset-0 z-0">
           <img
-            src={hero.imageUrl}
+            src={hero.imageUrl || '/hero-solar-home.jpg'}
             alt="Modern luxury eco-home with integrated all-black solar roof panels, battery storage units, and coastal sunset"
             className="w-full h-full object-cover object-center lg:object-right"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/hero-solar-home.jpg';
+            }}
           />
           {/* Directional Legibility Gradient (Clean left fade, unobstructed right vista) */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#0E1311] via-[#0E1311]/85 to-transparent hidden lg:block" />

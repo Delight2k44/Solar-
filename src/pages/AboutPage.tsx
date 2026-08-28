@@ -50,6 +50,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setCurrentRoute, openConfi
             src="/kinetix-team-crew.jpg"
             alt="Kinetix Energy Certified Installation Crew and Solar Service Fleet"
             className="w-full h-auto max-h-[580px] object-cover object-center group-hover:scale-[1.01] transition-transform duration-700"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/electrician-wiring-db.jpg';
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0E1311] via-transparent to-transparent opacity-80 pointer-events-none"></div>
           

@@ -49,9 +49,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
             <div>
               <div className="aspect-4/3 rounded bg-[#0E1311] border border-[#24302A] overflow-hidden mb-4 relative">
                 <img
-                  src={product.image}
+                  src={product.image || '/hero-solar-home.jpg'}
                   alt={product.name}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/hero-solar-home.jpg';
+                  }}
                 />
                 <div className="absolute top-3 left-3 bg-[#0E1311]/90 border border-[#24302A] px-2.5 py-1 rounded text-xs font-mono text-white font-semibold">
                   {product.brand}

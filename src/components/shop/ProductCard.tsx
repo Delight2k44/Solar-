@@ -16,10 +16,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
       {/* Product Image Container */}
       <div className="relative aspect-4/3 bg-[#0E1311] overflow-hidden border-b border-[#24302A]">
         <img
-          src={product.image}
+          src={product.image || '/hero-solar-home.jpg'}
           alt={product.name}
           className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-300 opacity-90 group-hover:opacity-100"
           loading="lazy"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/hero-solar-home.jpg';
+          }}
         />
 
         {/* Brand & Stock Badges */}

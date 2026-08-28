@@ -239,7 +239,7 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#10B981] rounded-full border-2 border-[#1B4D3E]" />
           </div>
           <span className="text-xs font-mono font-bold uppercase tracking-wider hidden sm:inline">
-            Live Solar Chat (Gemini AI)
+            Live Solar Chat
           </span>
         </button>
       )}
@@ -257,7 +257,7 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
                 <div className="flex items-center gap-1.5">
                   <h3 className="text-xs font-bold text-white uppercase">Kinetix Solar Assistant</h3>
                   <span className="px-1.5 py-0.2 bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981] text-[8px] font-bold rounded">
-                    ✨ Gemini AI
+                    Online
                   </span>
                 </div>
                 <span className="text-[10px] font-mono text-[#9EADA5]">Live Engineering & Sizing Dispatch</span>
