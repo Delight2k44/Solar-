@@ -140,7 +140,7 @@ export interface OrderRecord {
   installationSubtotalZAR: number;
   vatZAR: number;
   totalCartZAR: number;
-  paymentMethod: 'card' | 'applepay' | 'payflex' | 'instant_eft' | 'finance' | 'deposit';
+  paymentMethod: 'card' | 'applepay' | 'payflex' | 'instant_eft' | 'ozow' | 'finance' | 'deposit';
   selectedBank?: string;
   paymentStatus: 'completed' | 'pending' | 'failed';
   orderStatus: 'processing' | 'hardware_reserved' | 'bench_testing' | 'scheduled' | 'installed' | 'commissioned' | 'completed';

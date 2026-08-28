@@ -1,110 +1,139 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Wrench, 
-  Calendar, 
-  CheckCircle2, 
   ShieldCheck, 
-  FileText, 
+  CheckCircle2, 
   Clock, 
+  FileText, 
+  Activity, 
   ArrowRight, 
-  UserCheck, 
-  Layers 
+  Cpu, 
+  Calendar,
+  X,
+  Check
 } from 'lucide-react';
 import { InstallationBookingForm } from '../components/forms/InstallationBookingForm';
 
 export const InstallationPage: React.FC = () => {
+  const [showBookingForm, setShowBookingForm] = useState(false);
+
   const steps = [
-    { num: '01', title: 'Consultation', desc: 'Initial energy profile assessment, bill analysis, and requirement definition.' },
-    { num: '02', title: 'Site Assessment', desc: 'Physical inspection of roof orientation, shading factors, cable routes, and main distribution board (DB).' },
-    { num: '03', title: 'System Design', desc: 'Single-line electrical diagram (SLD), CAD string layout, and SANS 10142 compliance check.' },
-    { num: '04', title: 'Quote Approval', desc: 'Transparent itemized quotation approval, equipment reservation, and logistics allocation.' },
-    { num: '05', title: 'Installation Scheduling', desc: 'Confirmation of on-site installation window with assigned Department of Labour installation electricians.' },
-    { num: '06', title: 'Installation', desc: 'Mechanical roof rail mounting, DC surge isolation containment, inverter installation, and DB changeover switch wiring.' },
-    { num: '07', title: 'Testing & Commissioning', desc: 'Polarity checks, earth loop impedance tests, inverter firmware calibration, and Wi-Fi cloud data logging setup.' },
-    { num: '08', title: 'Handover & CoC', desc: 'Issuance of official supplementary electrical Certificate of Compliance (CoC), client walk-through, and warranty activation.' },
+    {
+      num: '01',
+      title: 'Digital Audit & Sizing',
+      subtitle: 'Single Line Diagram (SLD) CAD design and load calculation.',
+      desc: 'Our engineers audit your property’s single-phase or three-phase distribution board, roof orientation, and peak kilowatt draw.'
+    },
+    {
+      num: '02',
+      title: 'QA Bench-Testing (1000V DC)',
+      subtitle: 'Sandton Central hub isolation and firmware flash.',
+      desc: 'Hardware is verified under high thermal load. Inverter firmware is matched to battery BMS protocol for zero telemetry error.'
+    },
+    {
+      num: '03',
+      title: 'DoL Certified On-Site Setup',
+      subtitle: 'Master electrician DB re-wiring and DC protection fuses.',
+      desc: 'Clean, trunked installation with high-grade DC surge arrestors, manual bypass switch, and dedicated battery breaker.'
+    },
+    {
+      num: '04',
+      title: 'SANS 10142-1-2 CoC Sign-Off',
+      subtitle: 'Official Certificate of Compliance and municipal SSEG registration.',
+      desc: 'Issuance of legal compliance certificate protecting your home insurance and unlocking Eskom grid-tie feedback tariffs.'
+    }
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-16">
-      {/* Header & Visual Showcase */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <div className="lg:col-span-6 space-y-4">
-          <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block">
-            Certified Engineering Workflow
+    <div className="space-y-24 text-white font-sans selection:bg-[#00D2FF] selection:text-black pb-24">
+      
+      {/* 1. Starlink-Style Cinematic Header */}
+      <section className="relative min-h-[500px] flex items-center justify-start overflow-hidden border-b border-[#1E2530] pt-20">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/electrician-wiring-db.jpg"
+            alt="Master electrician wiring solar distribution board"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-transparent" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 py-20 relative z-10 w-full space-y-6">
+          <div className="max-w-2xl space-y-4">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+              Department of Labour Accredited
+            </span>
+            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.08]">
+              Certified installation standards.
+            </h1>
+            <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed">
+              Every Kinetix solar and battery system is installed exclusively by registered Master Electricians under SANS 10142-1-2 protocols with full municipal SSEG sign-off.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3 font-mono text-xs">
+            <button
+              onClick={() => setShowBookingForm(true)}
+              className="px-6 py-3.5 bg-white text-black font-bold uppercase rounded-xl hover:bg-neutral-200 transition-all shadow-xl flex items-center gap-2"
+            >
+              <span>Schedule On-Site Assessment</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. 4-Phase Installation Pipeline */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-12 space-y-12">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+            Quality Assurance Protocol
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white uppercase">
-            Installation should be straightforward.
-          </h1>
-          <p className="text-sm text-[#9EADA5] leading-relaxed">
-            From first site survey to the final Certificate of Compliance (CoC), our turnkey installation process follows strict South African electrical standards (SANS 10142-1-2) with zero guesswork.
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            The 4-Stage Commissioning Standard
+          </h2>
+          <p className="text-xs sm:text-sm text-[#94A3B8]">
+            We do not use sub-contracted uncertified installers. Full accountability from CAD single line diagram to final municipal CoC.
           </p>
-          <div className="flex flex-wrap gap-4 text-xs font-mono text-[#9EADA5] pt-2">
-            <span className="flex items-center gap-1.5 text-white">
-              <CheckCircle2 className="w-4 h-4 text-[#10B981]" /> Dept. of Labour Registered Electricians
-            </span>
-            <span className="flex items-center gap-1.5 text-white">
-              <ShieldCheck className="w-4 h-4 text-[#286D58]" /> SABS CoC Compliance Certificate
-            </span>
-          </div>
         </div>
 
-        <div className="lg:col-span-6 grid grid-cols-2 gap-4">
-          <div className="aspect-4/3 rounded-xl overflow-hidden bg-[#0E1311] border border-[#24302A] relative group">
-            <img
-              src="/solar-installer-roof.jpg"
-              alt="Certified technician mounting solar roof array"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <span className="absolute bottom-2 left-2 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[9px] font-mono text-white">
-              Roof PV Array Assembly
-            </span>
-          </div>
-          <div className="aspect-4/3 rounded-xl overflow-hidden bg-[#0E1311] border border-[#24302A] relative group">
-            <img
-              src="/solar-protection-panel.jpg"
-              alt="Neat SABS AC DC protection DB enclosure"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <span className="absolute bottom-2 left-2 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[9px] font-mono text-white">
-              SABS Protection DB Box
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* 8-Step Process Grid */}
-      <div className="space-y-6">
-        <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#24302A] pb-2">
-          The 08-Stage Certified Installation Process
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {steps.map(step => (
-            <div 
-              key={step.num}
-              className="p-5 bg-[#141A17] border border-[#24302A] rounded-lg space-y-3 relative group hover:border-[#31423A] transition-all"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
+          {steps.map((step, idx) => (
+            <div
+              key={idx}
+              className="p-6 bg-[#0D1117] border border-[#1E2530] hover:border-[#00D2FF]/40 rounded-2xl space-y-4 transition-all group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xl font-mono font-extrabold text-[#286D58]">
-                  {step.num}
-                </span>
-                <span className="w-2 h-2 rounded-full bg-[#24302A] group-hover:bg-[#10B981] transition-colors" />
+                <span className="text-2xl font-extrabold text-[#00D2FF]">{step.num}</span>
+                <ShieldCheck className="w-4 h-4 text-[#64748B] group-hover:text-[#00D2FF] transition-colors" />
               </div>
-              <h3 className="text-xs font-bold text-white uppercase tracking-tight">
-                {step.title}
-              </h3>
-              <p className="text-[11px] text-[#9EADA5] leading-relaxed">
+              <div className="space-y-1">
+                <strong className="text-sm font-bold text-white block">{step.title}</strong>
+                <span className="text-[10px] text-[#00D2FF] block leading-tight">{step.subtitle}</span>
+              </div>
+              <p className="text-xs text-[#94A3B8] leading-relaxed">
                 {step.desc}
               </p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Interactive Installation Booking Schedule Form */}
-      <div>
-        <InstallationBookingForm />
-      </div>
+      {/* Booking Form Modal */}
+      {showBookingForm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 flex items-center justify-center p-4 sm:p-6">
+          <div className="relative w-full max-w-3xl my-8">
+            <button
+              onClick={() => setShowBookingForm(false)}
+              className="absolute top-4 right-4 z-10 p-2 text-[#94A3B8] hover:text-white bg-[#131822] border border-[#1E2530] rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <InstallationBookingForm onSuccess={() => setTimeout(() => setShowBookingForm(false), 4000)} />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

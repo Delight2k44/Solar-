@@ -5,55 +5,191 @@
     --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     
-    --color-bg-primary: #0E1311;
-    --color-bg-secondary: #141A17;
-    --color-bg-surface: #1A221E;
+    /* Grok AI Dark Theme Palette */
+    --color-bg-primary: #05070A;
+    --color-bg-secondary: #0D1117;
+    --color-bg-surface: #131822;
     
     --color-text-primary: #FFFFFF;
-    --color-text-secondary: #9EADA5;
-    --color-text-muted: #6B7B73;
+    --color-text-secondary: #94A3B8;
+    --color-text-muted: #64748B;
     
-    --color-brand-green: #1B4D3E;
-    --color-brand-green-bright: #286D58;
-    --color-accent-amber: #D97706;
-    --color-border-dark: #24302A;
+    --color-brand-grok-blue: #0284C7;
+    --color-brand-grok-cyan: #00D2FF;
+    --color-accent-amber: #F59E0B;
+    --color-border-dark: #1E2530;
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: #0E1311;
-    color: #E6ECE8;
+    background-color: #05070A;
+    color: #F1F5F9;
     -webkit-font-smoothing: antialiased;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   body.theme-light {
-    background-color: #F6F8F7;
-    color: #111A16;
+    background-color: #F8FAFC;
+    color: #0F172A;
   }
 }
 
-/* Crisp technical utility classes */
+/* Crisp Grok-style technical utility classes */
 .mono-spec {
   font-family: 'JetBrains Mono', monospace;
   letter-spacing: -0.02em;
 }
 
 .hairline-border {
-  border: 1px solid #24302A;
+  border: 1px solid #1E2530;
 }
 
+/* Grok AI Cyber Grid */
 .subtle-grid {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(36, 48, 42, 0.35) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(36, 48, 42, 0.35) 1px, transparent 1px);
+    linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
 }
 
 html.light .subtle-grid {
   background-image: 
-    linear-gradient(to right, rgba(200, 215, 208, 0.45) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(200, 215, 208, 0.45) 1px, transparent 1px);
+    linear-gradient(to right, rgba(203, 213, 225, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(203, 213, 225, 0.5) 1px, transparent 1px);
+}
+
+/* ==========================================================================
+   GROK AI DARK THEME OVERRIDES (Transforms Whole Site to Grok AI Aesthetic)
+   ========================================================================== */
+
+/* Dark Mode Surface Overhauls */
+html:not(.light) .bg-\[\#0E1311\],
+html:not(.light) .bg-\[\#080B09\],
+html:not(.light) .bg-\[\#0A0E0C\] {
+  background-color: #05070A !important;
+}
+
+html:not(.light) .bg-\[\#141A17\],
+html:not(.light) .bg-\[\#141A17\]\/90,
+html:not(.light) .bg-\[\#141A17\]\/95,
+html:not(.light) .bg-\[\#141A17\]\/80 {
+  background-color: rgba(13, 17, 23, 0.92) !important;
+  backdrop-filter: blur(16px);
+}
+
+html:not(.light) .bg-\[\#1A221E\],
+html:not(.light) .bg-\[\#1B2420\] {
+  background-color: #131822 !important;
+}
+
+/* Grok Electric Cyan & Blue Accent Buttons */
+html:not(.light) .bg-\[\#1B4D3E\],
+html:not(.light) button.bg-\[\#1B4D3E\],
+html:not(.light) .bg-\[\#1B4D3E\]\/90 {
+  background-color: #0284C7 !important;
+  color: #FFFFFF !important;
+  border-color: #38BDF8 !important;
+  box-shadow: 0 0 15px rgba(2, 132, 199, 0.25);
+}
+
+html:not(.light) .bg-\[\#1B4D3E\]:hover,
+html:not(.light) button.bg-\[\#1B4D3E\]:hover,
+html:not(.light) .bg-\[\#286D58\]:hover {
+  background-color: #0369A1 !important;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+}
+
+html:not(.light) .bg-\[\#1B4D3E\]\/40,
+html:not(.light) .bg-\[\#1B4D3E\]\/50,
+html:not(.light) .bg-\[\#1B4D3E\]\/25,
+html:not(.light) .bg-\[\#1B4D3E\]\/30,
+html:not(.light) .bg-\[\#1B4D3E\]\/20 {
+  background-color: rgba(2, 132, 199, 0.18) !important;
+}
+
+html:not(.light) .bg-\[\#286D58\] {
+  background-color: #0284C7 !important;
+}
+
+/* Grok Electric Cyan for Status Text & Icons */
+html:not(.light) .text-\[\#10B981\],
+html:not(.light) .text-\[\#286D58\] {
+  color: #00D2FF !important;
+}
+
+html:not(.light) .bg-\[\#10B981\] {
+  background-color: #00D2FF !important;
+}
+
+html:not(.light) .bg-\[\#10B981\]\/10,
+html:not(.light) .bg-\[\#10B981\]\/15,
+html:not(.light) .bg-\[\#10B981\]\/20 {
+  background-color: rgba(0, 210, 255, 0.12) !important;
+}
+
+/* Grok Razor Borders */
+html:not(.light) .border-\[\#24302A\],
+html:not(.light) .border-\[\#1B2420\] {
+  border-color: #1E2530 !important;
+}
+
+html:not(.light) .border-\[\#286D58\],
+html:not(.light) .border-\[\#286D58\]\/60,
+html:not(.light) .border-\[\#286D58\]\/80 {
+  border-color: rgba(56, 189, 248, 0.45) !important;
+}
+
+html:not(.light) .border-\[\#10B981\],
+html:not(.light) .border-\[\#10B981\]\/30,
+html:not(.light) .border-\[\#10B981\]\/40,
+html:not(.light) .border-\[\#10B981\]\/50,
+html:not(.light) .border-\[\#10B981\]\/60 {
+  border-color: rgba(0, 210, 255, 0.5) !important;
+}
+
+html:not(.light) .hover\:border-\[\#31423A\]:hover,
+html:not(.light) .hover\:border-\[\#2D3D35\]:hover,
+html:not(.light) .hover\:border-\[\#286D58\]:hover {
+  border-color: #38BDF8 !important;
+}
+
+/* Grok Silver & Slate Typography */
+html:not(.light) .text-\[\#E6ECE8\] {
+  color: #F1F5F9 !important;
+}
+
+html:not(.light) .text-\[\#9EADA5\],
+html:not(.light) .text-\[\#C4D1CA\] {
+  color: #94A3B8 !important;
+}
+
+html:not(.light) .text-\[\#6B7B73\] {
+  color: #64748B !important;
+}
+
+/* Grok Hero Gradient */
+html:not(.light) .bg-gradient-to-r.from-\[\#0E1311\] {
+  background-image: linear-gradient(to right, #05070A 0%, rgba(5, 7, 10, 0.95) 30%, rgba(5, 7, 10, 0.7) 48%, transparent 65%) !important;
+}
+
+html:not(.light) .bg-gradient-to-t.from-\[\#0E1311\] {
+  background-image: linear-gradient(to top, #05070A 0%, rgba(5, 7, 10, 0.85) 35%, transparent 60%) !important;
+}
+
+/* Form Controls in Grok Dark Mode */
+html:not(.light) input,
+html:not(.light) select,
+html:not(.light) textarea {
+  background-color: #0D1117 !important;
+  color: #FFFFFF !important;
+  border-color: #1E2530 !important;
+}
+
+html:not(.light) input:focus,
+html:not(.light) select:focus,
+html:not(.light) textarea:focus {
+  border-color: #00D2FF !important;
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.2) !important;
 }
 
 /* ==========================================================================
@@ -64,9 +200,10 @@ html.light {
   color-scheme: light;
 }
 
-/* Surfaces & Backgrounds */
-html.light .bg-\[\#0E1311\] {
-  background-color: #F6F8F7 !important;
+html.light .bg-\[\#0E1311\],
+html.light .bg-\[\#080B09\],
+html.light .bg-\[\#0A0E0C\] {
+  background-color: #F8FAFC !important;
 }
 
 html.light .bg-\[\#141A17\] {
@@ -76,6 +213,7 @@ html.light .bg-\[\#141A17\] {
 
 html.light .bg-\[\#141A17\]\/90,
 html.light .bg-\[\#141A17\]\/95,
+html.light .bg-\[\#141A17\]\/80,
 html.light .bg-\[\#141A17\]\/70,
 html.light .bg-\[\#141A17\]\/60,
 html.light .bg-\[\#141A17\]\/50,
@@ -84,73 +222,62 @@ html.light .bg-\[\#141A17\]\/40 {
 }
 
 html.light .bg-\[\#1A221E\] {
-  background-color: #EBF1EE !important;
+  background-color: #F1F5F9 !important;
 }
 
-html.light .bg-\[\#0A0E0C\] {
-  background-color: #EEF3F0 !important;
-}
-
-/* Borders */
 html.light .border-\[\#24302A\],
-html.light .border-\[\#2D3D35\] {
-  border-color: #D9E4DE !important;
-}
-
+html.light .border-\[\#2D3D35\],
 html.light .border-\[\#1B2420\] {
-  border-color: #E5EDE8 !important;
+  border-color: #E2E8F0 !important;
 }
 
 html.light .hover\:border-\[\#31423A\]:hover {
-  border-color: #111827 !important;
+  border-color: #0284C7 !important;
 }
 
-/* Typography & Colors */
 html.light .text-white {
-  color: #101915 !important;
+  color: #0F172A !important;
 }
 
 html.light .text-\[\#E6ECE8\] {
-  color: #121A16 !important;
+  color: #1E293B !important;
 }
 
 html.light .text-\[\#9EADA5\],
 html.light .text-\[\#C4D1CA\] {
-  color: #495B53 !important;
+  color: #475569 !important;
 }
 
 html.light .text-\[\#6B7B73\] {
-  color: #687A72 !important;
+  color: #64748B !important;
 }
 
-/* Form Controls & Inputs */
 html.light input,
 html.light select,
 html.light textarea {
   background-color: #FFFFFF !important;
-  color: #101915 !important;
-  border-color: #CBD7D1 !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
 }
 
 html.light input:focus,
 html.light select:focus,
 html.light textarea:focus {
-  border-color: #111827 !important;
+  border-color: #0284C7 !important;
 }
 
-/* Light Theme Button Styling: Crisp obsidian charcoal that contrasts boldly with white */
 html.light button.bg-\[\#1B4D3E\],
 html.light .bg-\[\#1B4D3E\] {
-  background-color: #111827 !important;
+  background-color: #0284C7 !important;
   color: #FFFFFF !important;
-  border-color: #1F2937 !important;
+  border-color: #0369A1 !important;
 }
 
 html.light button.bg-\[\#1B4D3E\]:hover,
 html.light .bg-\[\#1B4D3E\]:hover,
 html.light button.bg-\[\#286D58\]:hover,
 html.light .bg-\[\#286D58\]:hover {
-  background-color: #000000 !important;
+  background-color: #0369A1 !important;
   color: #FFFFFF !important;
 }
 
@@ -161,24 +288,23 @@ html.light .bg-\[\#1B4D3E\] * {
 
 html.light .bg-\[\#1B4D3E\]\/90,
 html.light .bg-\[\#1B4D3E\]\/40 {
-  background-color: rgba(17, 24, 39, 0.08) !important;
+  background-color: rgba(2, 132, 199, 0.08) !important;
 }
 
 html.light .bg-\[\#1B4D3E\]\/90 * {
-  color: #111827 !important;
+  color: #0284C7 !important;
 }
 
-/* Hero Section Gradient in Light Mode: left fade for text legibility, crystal clear view on the right */
 html.light .bg-gradient-to-r.from-\[\#0E1311\] {
-  background-image: linear-gradient(to right, #F6F8F7 0%, rgba(246, 248, 247, 0.96) 28%, rgba(246, 248, 247, 0.6) 42%, transparent 60%) !important;
+  background-image: linear-gradient(to right, #F8FAFC 0%, rgba(248, 250, 252, 0.96) 28%, rgba(248, 250, 252, 0.6) 42%, transparent 60%) !important;
 }
 
 html.light .bg-gradient-to-t.from-\[\#0E1311\] {
-  background-image: linear-gradient(to top, #F6F8F7 0%, rgba(246, 248, 247, 0.85) 35%, transparent 60%) !important;
+  background-image: linear-gradient(to top, #F8FAFC 0%, rgba(248, 250, 252, 0.85) 35%, transparent 60%) !important;
 }
 
 html.light .subtle-grid {
-  opacity: 0.05 !important;
+  opacity: 0.06 !important;
 }
 
 /* Scrollbar */
@@ -188,28 +314,28 @@ html.light .subtle-grid {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0E1311;
+  background: #05070A;
 }
 
 html.light ::-webkit-scrollbar-track {
-  background: #F6F8F7;
+  background: #F8FAFC;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #24302A;
+  background: #1E2530;
   border-radius: 4px;
 }
 
 html.light ::-webkit-scrollbar-thumb {
-  background: #C4D2CB;
+  background: #CBD5E1;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #31423A;
+  background: #0284C7;
 }
 
 /* Focus styles for keyboard accessibility */
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid #1B4D3E;
+  outline: 2px solid #00D2FF;
   outline-offset: 2px;
 }

@@ -49,7 +49,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
   const { currentUser, isAuthenticated } = useAuth();
 
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'shipping' | 'payment' | 'processing' | 'success'>('cart');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'applepay' | 'payflex' | 'instant_eft' | 'deposit'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'applepay' | 'payflex' | 'instant_eft' | 'ozow' | 'deposit'>('card');
   const [selectedBank, setSelectedBank] = useState<string>('Capitec Pay');
   const [paymentRef, setPaymentRef] = useState<string>('');
 
@@ -403,18 +403,24 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
                   </div>
 
                   {/* High Quality Logo Showcase */}
-                  <div className="grid grid-cols-4 gap-2.5 pt-1">
-                    <div className="bg-white/95 rounded-xl p-2.5 flex items-center justify-center h-12 shadow-sm border border-white/20">
-                      <img src="/payment-visa.png" alt="Visa" className="h-6 object-contain" />
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
+                    <div className="bg-white/95 rounded-xl p-2 flex items-center justify-center h-11 shadow-sm border border-white/20">
+                      <img src="/payment-visa.png" alt="Visa" className="h-5 object-contain" />
                     </div>
-                    <div className="bg-white/95 rounded-xl p-2.5 flex items-center justify-center h-12 shadow-sm border border-white/20">
-                      <img src="/payment-mastercard.png" alt="MasterCard" className="h-7 object-contain" />
+                    <div className="bg-white/95 rounded-xl p-2 flex items-center justify-center h-11 shadow-sm border border-white/20">
+                      <img src="/payment-mastercard.png" alt="MasterCard" className="h-6 object-contain" />
                     </div>
-                    <div className="bg-white/95 rounded-xl p-2.5 flex items-center justify-center h-12 shadow-sm border border-white/20">
-                      <img src="/payment-applepay.png" alt="Apple Pay" className="h-7 object-contain" />
+                    <div className="bg-white/95 rounded-xl p-2 flex items-center justify-center h-11 shadow-sm border border-white/20">
+                      <img src="/payment-applepay.png" alt="Apple Pay" className="h-6 object-contain" />
                     </div>
-                    <div className="bg-[#BFA4F8] rounded-xl p-2.5 flex items-center justify-center h-12 shadow-sm border border-purple-300">
-                      <img src="/payment-payflex.png" alt="Payflex" className="h-6 object-contain" />
+                    <div className="bg-[#BFA4F8] rounded-xl p-2 flex items-center justify-center h-11 shadow-sm border border-purple-300">
+                      <img src="/payment-payflex.png" alt="Payflex" className="h-5 object-contain" />
+                    </div>
+                    <div className="bg-[#002B49] rounded-xl p-2 flex items-center justify-center h-11 shadow-sm border border-[#00B2FE]/40 col-span-2 sm:col-span-1">
+                      <div className="flex items-center gap-1">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#00B2FE] inline-block animate-pulse"></span>
+                        <span className="font-sans font-black text-white text-xs tracking-wider">OZOW</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -675,6 +681,75 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
                           <option>Absa Online Banking</option>
                           <option>Investec Private Bank</option>
                         </select>
+                      </div>
+                    )}
+                  </div>
+
+                                    {/* OPTION: Ozow Instant EFT */}
+                  <div
+                    onClick={() => setPaymentMethod('ozow')}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-3 ${
+                      paymentMethod === 'ozow'
+                        ? 'bg-[#1B4D3E]/25 border-[#10B981] ring-1 ring-[#10B981]'
+                        : 'bg-[#141A17] border-[#24302A] hover:border-[#31423A]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="payment_opt"
+                          checked={paymentMethod === 'ozow'}
+                          onChange={() => setPaymentMethod('ozow')}
+                          className="text-[#10B981] focus:ring-0"
+                        />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <strong className="text-white text-xs block">Ozow Instant EFT</strong>
+                            <span className="px-1.5 py-0.2 bg-[#00B2FE]/20 text-[#00B2FE] border border-[#00B2FE]/40 text-[9px] font-bold rounded">
+                              DIRECT CLEARANCE
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-[#9EADA5]">Capitec Pay, FNB, Standard Bank, Nedbank, Absa, Tyme, Discovery</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-[#002B49] rounded px-2 py-0.5 border border-[#00B2FE]/40">
+                        <span className="font-sans font-black text-white text-[11px] tracking-wider">OZOW</span>
+                      </div>
+                    </div>
+
+                    {paymentMethod === 'ozow' && (
+                      <div className="pt-3 border-t border-[#24302A] space-y-3 animate-in fade-in">
+                        <div className="p-3 bg-[#0E1311] border border-[#286D58] rounded-xl space-y-2 text-xs">
+                          <div className="flex items-center justify-between text-[11px]">
+                            <span className="text-[#9EADA5]">Ozow Instant Gateway:</span>
+                            <span className="text-[#10B981] font-bold">100% Automated Confirmation</span>
+                          </div>
+                          <p className="text-[10px] text-[#6B7B73] leading-relaxed">
+                            Upon clicking proceed, you will be redirected to the encrypted Ozow portal to authenticate with your bank app or QR scan. Zero manual reference numbers required.
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] text-[#9EADA5] uppercase mb-1">Select Your Bank for Ozow Fast-Track</label>
+                          <select
+                            value={selectedBank}
+                            onChange={e => setSelectedBank(e.target.value)}
+                            className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3 py-2 text-white text-xs font-mono"
+                          >
+                            <option>Capitec Bank (Capitec Pay Instant QR)</option>
+                            <option>First National Bank (FNB / RMB)</option>
+                            <option>Standard Bank South Africa</option>
+                            <option>Nedbank Direct EFT</option>
+                            <option>Absa Bank</option>
+                            <option>TymeBank</option>
+                            <option>Discovery Bank</option>
+                            <option>Investec Private Banking</option>
+                            <option>African Bank</option>
+                            <option>Bank Zero</option>
+                          </select>
+                        </div>
                       </div>
                     )}
                   </div>

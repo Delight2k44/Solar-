@@ -6,17 +6,17 @@ import {
   ShoppingBag, 
   ArrowRight, 
   ShieldCheck, 
-  TrendingUp, 
-  Clock, 
-  CheckCircle2, 
-  FileText, 
   Activity,
   Zap,
-  Layers,
-  Sparkles
+  CheckCircle2,
+  Clock,
+  Sparkles,
+  ChevronRight,
+  Smartphone,
+  Cpu,
+  TrendingUp,
+  Download
 } from 'lucide-react';
-import { PartnerPlaceholderGrid, PlaceholderBadge } from '../components/common/PlaceholderBadge';
-import { EstimateDisclaimer, IncentiveDisclaimer } from '../components/common/EstimateDisclaimer';
 import { ProductCard } from '../components/shop/ProductCard';
 import { useData } from '../context/DataContext';
 import { Product } from '../types';
@@ -34,620 +34,349 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const { products, siteContent } = useData();
   const featuredProducts = products.slice(0, 3);
-  const hero = siteContent.hero || {
-    title: 'Reliable solar power, designed around your energy needs.',
-    subtitle: 'From equipment and installation to maintenance and system upgrades, we make reliable renewable energy easier to understand, buy and manage.',
-    imageUrl: '/hero-solar-home.jpg'
-  };
 
   return (
-    <div className="space-y-14 sm:space-y-18 pb-16">
-      {/* 1. HERO SECTION */}
-      <section className="relative min-h-[600px] lg:min-h-[720px] flex items-center border-b border-[#24302A] overflow-hidden">
-        {/* Full-Bleed High-Definition Architectural Background Image (Unobstructed) */}
+    <div className="space-y-0 text-white font-sans selection:bg-[#00D2FF] selection:text-black">
+      
+      {/* ========================================================================= */}
+      {/* 1. STARLINK-STYLE FULL-BLEED CINEMATIC HERO */}
+      {/* ========================================================================= */}
+      <section className="relative min-h-screen flex items-center justify-start overflow-hidden border-b border-[#1E2530]">
+        {/* Full-Bleed Edge-to-Edge Architectural Photo */}
         <div className="absolute inset-0 z-0">
           <img
-            src={hero.imageUrl || '/hero-solar-home.jpg'}
-            alt="Modern luxury eco-home with integrated all-black solar roof panels, battery storage units, and coastal sunset"
+            src="/hero-solar-home.jpg"
+            alt="Modern luxury eco-home with integrated solar rooftop and battery storage under dramatic sky"
             className="w-full h-full object-cover object-center lg:object-right"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/hero-solar-home.jpg';
             }}
           />
-          {/* Directional Legibility Gradient (Clean left fade, unobstructed right vista) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0E1311] via-[#0E1311]/85 to-transparent hidden lg:block" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0E1311] via-[#0E1311]/80 to-[#0E1311]/40 lg:hidden" />
-          <div className="absolute inset-0 subtle-grid opacity-15 pointer-events-none" />
+          {/* Subtle Starlink-Style Cinematic Dark Vignette */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent hidden lg:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/30 lg:hidden" />
+          <div className="absolute inset-0 subtle-grid opacity-10 pointer-events-none" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 sm:py-28 relative z-10 w-full">
-          <div className="max-w-2xl space-y-6">
-            {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#141A17]/90 backdrop-blur-none border border-[#24302A] rounded text-[11px] font-mono tracking-widest text-[#286D58] font-bold uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
-              SMARTER ENERGY. BUILT FOR REAL LIFE.
-            </div>
+        {/* Hero Content Container */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 py-32 sm:py-40 relative z-10 w-full">
+          <div className="max-w-2xl space-y-7">
+            
 
-            {/* Main Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white uppercase leading-tight sm:leading-[1.1]">
-              {hero.title}
+
+            {/* Massive Bold Headline */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.05]">
+              Reliable, uninterrupted power.
             </h1>
 
-            {/* Supporting Text */}
-            <p className="text-sm sm:text-base text-[#C4D1CA] leading-relaxed font-normal drop-shadow-sm">
-              {hero.subtitle}
+            {/* Clean Subtitle */}
+            <p className="text-base sm:text-lg text-[#94A3B8] leading-relaxed max-w-xl font-normal">
+              Turnkey residential and commercial hybrid solar, high-capacity LiFePO4 battery storage, and certified South African installation.
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+            {/* Starlink Starting Price Callout */}
+            <div className="pt-2">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#64748B] block font-bold">
+                Turnkey Systems Starting At
+              </span>
+              <div className="flex items-baseline gap-2 mt-0.5">
+                <span className="text-3xl sm:text-4xl font-extrabold text-white font-mono">
+                  R 62,500
+                </span>
+                <span className="text-sm font-mono text-[#94A3B8]">
+                  or <strong className="text-[#00D2FF]">R 2,450</strong> /mo financed
+                </span>
+              </div>
+            </div>
+
+            {/* Starlink Dual Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-3">
               <button
                 onClick={openConfigurator}
-                className="px-6 py-3.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded flex items-center justify-center gap-2 transition-all shadow-lg"
+                className="px-8 py-4 bg-white hover:bg-neutral-200 text-black font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-2xl flex items-center justify-center gap-2"
               >
-                <span>Get a Solar Quote</span>
+                <span>Get Started</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 onClick={() => setCurrentRoute('solar')}
-                className="px-6 py-3.5 bg-[#141A17]/95 hover:bg-[#1A221E] border border-[#24302A] text-white font-mono font-semibold text-xs uppercase tracking-wider rounded flex items-center justify-center gap-2 transition-all"
+                className="px-8 py-4 bg-black/40 hover:bg-black/70 backdrop-blur-md border border-white/20 hover:border-white/50 text-white font-mono font-semibold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2"
               >
-                <span>Explore Solar Solutions</span>
+                <span>View Pricing & Kits</span>
               </button>
             </div>
 
-            {/* Trust Subtext */}
-            <div className="pt-4 border-t border-[#24302A]/80 text-xs font-mono text-[#9EADA5] flex flex-wrap items-center gap-3">
-              <span className="text-[#E6ECE8] font-medium flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" /> Solar solutions
+            {/* Quick SANS Pill */}
+            <div className="pt-4 border-t border-white/10 text-xs font-mono text-[#94A3B8] flex flex-wrap items-center gap-4">
+              <span className="flex items-center gap-1.5 text-white">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#00D2FF]" />
+                SANS 10142-1-2 Certified
               </span>
               <span>•</span>
-              <span className="text-[#E6ECE8] font-medium flex items-center gap-1.5">
-                <Wrench className="w-3.5 h-3.5 text-[#286D58]" /> Professional installation
+              <span className="flex items-center gap-1.5 text-white">
+                <Zap className="w-3.5 h-3.5 text-[#00D2FF]" />
+                &lt; 20ms Instant Grid Switchover
               </span>
-              <span>•</span>
-              <span className="text-[#E6ECE8] font-medium flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-[#D97706]" /> Ongoing support
-              </span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 2. FULL-BLEED SLIDE: ZERO LOAD-SHEDDING RESILIENCE (Starlink Weather / Reliability style) */}
+      {/* ========================================================================= */}
+      <section className="relative min-h-[680px] lg:min-h-[780px] flex items-center justify-end overflow-hidden border-b border-[#1E2530]">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/battery-inverter-room.jpg"
+            alt="Dedicated home battery power room with clean inverter installation"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-l from-black/95 via-black/70 to-transparent hidden lg:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/30 lg:hidden" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 py-24 relative z-10 w-full flex justify-end">
+          <div className="max-w-xl space-y-6">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+              Grid Failure Immunity
+            </span>
+
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+              Engineered for extreme reliability.
+            </h2>
+
+            <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed">
+              When the municipal grid drops, Kinetix hybrid systems transition in under <strong>20 milliseconds</strong> — faster than a computer or home appliance can register. No flickering lights, no data loss, and zero disruption to refrigeration or home security.
+            </p>
+
+            {/* Spec Metric Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 font-mono">
+              <div className="p-3.5 bg-black/70 backdrop-blur-md border border-white/10 rounded-xl space-y-1">
+                <span className="text-[10px] text-[#64748B] uppercase block">Switchover</span>
+                <span className="text-xl font-bold text-white">&lt; 20ms</span>
+                <span className="text-[9px] text-[#00D2FF] block">Seamless UPS</span>
+              </div>
+
+              <div className="p-3.5 bg-black/70 backdrop-blur-md border border-white/10 rounded-xl space-y-1">
+                <span className="text-[10px] text-[#64748B] uppercase block">Battery Lifespan</span>
+                <span className="text-xl font-bold text-white">6,000+</span>
+                <span className="text-[9px] text-[#00D2FF] block">Cycles (~15 Yrs)</span>
+              </div>
+
+              <div className="p-3.5 bg-black/70 backdrop-blur-md border border-white/10 rounded-xl space-y-1 col-span-2 sm:col-span-1">
+                <span className="text-[10px] text-[#64748B] uppercase block">Compliance</span>
+                <span className="text-xl font-bold text-white">SANS</span>
+                <span className="text-[9px] text-[#00D2FF] block">10142-1-2 CoC</span>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <button
+                onClick={() => setCurrentRoute('solar')}
+                className="px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-mono text-xs font-bold uppercase rounded-xl transition-all flex items-center gap-2"
+              >
+                <span>Explore Backup Architecture</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#00D2FF]" />
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. TRUST & VERIFIED CREDENTIALS SECTION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="space-y-6">
-          <div className="max-w-2xl">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block mb-1">
-              Engineering Governance
+      {/* ========================================================================= */}
+      {/* 3. STARLINK-STYLE HARDWARE LINEUP (Clean & Direct) */}
+      {/* ========================================================================= */}
+      <section className="py-24 sm:py-32 px-6 sm:px-12 max-w-7xl mx-auto space-y-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+              Tier-1 Hardware Registry
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white uppercase">
-              Energy decisions should come with confidence.
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              Pre-matched, certified components.
             </h2>
-            <p className="text-xs sm:text-sm text-[#9EADA5] mt-2 leading-relaxed">
-              Choosing an energy system is a long-term investment. We help customers understand what they need, what it will cost and how the system can perform over time.
+            <p className="text-xs sm:text-sm text-[#94A3B8] max-w-xl">
+              Every inverter, lithium battery, and solar panel is rigorously bench-tested in our Gauteng QA lab to ensure flawless interoperability under high thermal load.
             </p>
           </div>
 
-          {/* Verified Partner Placeholders Grid */}
-          <PartnerPlaceholderGrid />
+          <button
+            onClick={() => setCurrentRoute('shop')}
+            className="px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-mono text-xs font-bold uppercase rounded-xl transition-colors flex items-center gap-2 shrink-0"
+          >
+            <span>View Full Store ({products.length})</span>
+            <ArrowRight className="w-3.5 h-3.5 text-[#00D2FF]" />
+          </button>
+        </div>
+
+        {/* Featured Hardware Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {featuredProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onSelectProduct={onSelectProduct}
+            />
+          ))}
         </div>
       </section>
 
-      {/* 3. VISUAL SOLUTIONS SECTION (With High-Res Visual Headers) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="space-y-8">
-          <div>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block mb-1">
-              Turnkey Energy Ecosystem
+      {/* ========================================================================= */}
+      {/* 4. FULL-BLEED SLIDE: REAL-TIME MOBILE & CLOUD TELEMETRY (Starlink App style) */}
+      {/* ========================================================================= */}
+      <section className="relative min-h-[640px] lg:min-h-[720px] flex items-center justify-start overflow-hidden border-y border-[#1E2530]">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/homeowner-app-dashboard.jpg"
+            alt="Real-time smartphone telemetry and solar power dashboard"
+            className="w-full h-full object-cover object-center lg:object-left"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/75 to-transparent hidden lg:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/30 lg:hidden" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 py-24 relative z-10 w-full">
+          <div className="max-w-xl space-y-6">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+              Asset Intelligence
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white uppercase">
-              One energy partner. Multiple ways to take control.
+
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+              Manage your energy from anywhere.
             </h2>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Card 1: Solar Systems */}
-            <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden flex flex-col justify-between group hover:border-[#31423A] transition-all shadow-md">
-              <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
-                <img
-                  src="/solar-farm-agricultural.jpg"
-                  alt="Turnkey solar systems and microgrids"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold flex items-center gap-1">
-                  <Sun className="w-3 h-3 text-[#286D58]" /> Complete Systems
-                </div>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="text-base font-bold text-white uppercase tracking-tight">Solar Systems</h3>
-                  <p className="text-xs text-[#9EADA5] mt-1.5 leading-relaxed">
-                    Complete solar solutions designed around your property's energy requirements.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setCurrentRoute('solar')}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#E6ECE8] group-hover:text-white uppercase tracking-wider transition-colors pt-3 border-t border-[#1B2420]"
-                >
-                  <span>Explore Solar</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#286D58]" />
-                </button>
-              </div>
-            </div>
+            <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed">
+              Track live kilowatt production, battery state of charge (SoC), and Eskom grid tariff optimization in real-time. Access official SARS tax invoices, single line diagrams, and SANS CoC certificates directly from your personal asset portal.
+            </p>
 
-            {/* Card 2: Solar Equipment */}
-            <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden flex flex-col justify-between group hover:border-[#31423A] transition-all shadow-md">
-              <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
-                <img
-                  src="/solar-panel-mono.jpg"
-                  alt="Solar equipment and inverters"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold flex items-center gap-1">
-                  <ShoppingBag className="w-3 h-3 text-[#286D58]" /> Direct Hardware
-                </div>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="text-base font-bold text-white uppercase tracking-tight">Solar Equipment</h3>
-                  <p className="text-xs text-[#9EADA5] mt-1.5 leading-relaxed">
-                    Shop panels, inverters, batteries and supporting equipment from the online store.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setCurrentRoute('shop')}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#E6ECE8] group-hover:text-white uppercase tracking-wider transition-colors pt-3 border-t border-[#1B2420]"
-                >
-                  <span>Shop Equipment</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#286D58]" />
-                </button>
-              </div>
-            </div>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 font-mono">
+              <button
+                onClick={() => setCurrentRoute('portal')}
+                className="px-6 py-3.5 bg-white text-black hover:bg-neutral-200 font-bold text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg"
+              >
+                <span>Open Asset Portal</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
 
-            {/* Card 3: Installation */}
-            <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden flex flex-col justify-between group hover:border-[#31423A] transition-all shadow-md">
-              <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
-                <img
-                  src="/electrician-wiring-db.jpg"
-                  alt="Certified Solar Installation"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold flex items-center gap-1">
-                  <Wrench className="w-3 h-3 text-[#286D58]" /> SANS 10142 CoC
-                </div>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="text-base font-bold text-white uppercase tracking-tight">Installation</h3>
-                  <p className="text-xs text-[#9EADA5] mt-1.5 leading-relaxed">
-                    Professional installation with scheduling and project updates throughout the process.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setCurrentRoute('installation')}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#E6ECE8] group-hover:text-white uppercase tracking-wider transition-colors pt-3 border-t border-[#1B2420]"
-                >
-                  <span>Plan an Installation</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#286D58]" />
-                </button>
-              </div>
-            </div>
-
-            {/* Card 4: Maintenance */}
-            <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden flex flex-col justify-between group hover:border-[#31423A] transition-all shadow-md">
-              <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
-                <img
-                  src="/solar-maintenance-cleaning.jpg"
-                  alt="Solar maintenance and inspections"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold flex items-center gap-1">
-                  <Activity className="w-3 h-3 text-[#286D58]" /> Lifetime Care
-                </div>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="text-base font-bold text-white uppercase tracking-tight">Maintenance</h3>
-                  <p className="text-xs text-[#9EADA5] mt-1.5 leading-relaxed">
-                    Keep your system performing with ongoing maintenance, inspections and support.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setCurrentRoute('maintenance')}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#E6ECE8] group-hover:text-white uppercase tracking-wider transition-colors pt-3 border-t border-[#1B2420]"
-                >
-                  <span>View Maintenance</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#286D58]" />
-                </button>
-              </div>
+              <button
+                onClick={() => setCurrentRoute('tracking')}
+                className="px-6 py-3.5 bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white font-semibold text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                <span>Track Installation Stage</span>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3B. VISUAL INSTALLATIONS SHOWCASE (See What You Are Buying) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block mb-1">
-                Completed Project Portfolio
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white uppercase">
-                Real Installations Across South Africa.
-              </h2>
-              <p className="text-xs sm:text-sm text-[#9EADA5] mt-1 max-w-2xl">
-                See real turnkey installations—from residential hybrid battery power rooms to commercial logistics rooftops.
-              </p>
-            </div>
+      {/* ========================================================================= */}
+      {/* 5. 3-STEP TURNKEY INSTALLATION PROCESS */}
+      {/* ========================================================================= */}
+      <section className="py-24 px-6 sm:px-12 max-w-7xl mx-auto space-y-12">
+        <div className="text-center max-w-2xl mx-auto space-y-3">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+            Streamlined Deployment
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            From design to commissioning in 3 steps.
+          </h2>
+          <p className="text-xs sm:text-sm text-[#94A3B8]">
+            No ambiguous quotes or uncertified contractors. Fully transparent pricing, master electrician installation, and lifetime support.
+          </p>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono">
+          {/* Step 1 */}
+          <div className="p-8 bg-[#0D1117] border border-[#1E2530] rounded-2xl space-y-4 relative group hover:border-[#00D2FF]/50 transition-all">
+            <span className="text-3xl font-extrabold text-[#00D2FF] block">01</span>
+            <h3 className="text-base font-bold text-white uppercase tracking-tight">Digital System Sizing</h3>
+            <p className="text-xs text-[#94A3B8] leading-relaxed">
+              Use our interactive configurator to calculate your exact kilowatt capacity, battery storage size, and monthly Eskom tariff savings in 60 seconds.
+            </p>
             <button
               onClick={openConfigurator}
-              className="px-4 py-2.5 bg-[#1B4D3E] hover:bg-[#286D58] text-xs font-mono font-bold text-white uppercase tracking-wider rounded flex items-center gap-1.5 shrink-0"
+              className="text-xs text-[#00D2FF] font-bold flex items-center gap-1 hover:underline pt-2"
             >
-              <span>Size Your Property</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Launch Configurator</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Gallery Item 1 */}
-            <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all">
-              <div className="aspect-16/10 overflow-hidden relative bg-[#0E1311]">
-                <img
-                  src="/hero-solar-home.jpg"
-                  alt="Camps Bay Luxury Residential Solar"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute bottom-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2.5 py-1 rounded text-[10px] font-mono text-white">
-                  Residential Eco-Home • Cape Town
-                </span>
-              </div>
-              <div className="p-4 space-y-1.5">
-                <h4 className="text-sm font-bold text-white uppercase">All-Black Matte Roof Array + Dual Storage</h4>
-                <p className="text-xs text-[#9EADA5]">8kW Single Phase Hybrid • 10.24kWh Storage • 100% Loadshedding Backup</p>
-              </div>
-            </div>
-
-            {/* Gallery Item 2 */}
-            <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all">
-              <div className="aspect-16/10 overflow-hidden relative bg-[#0E1311]">
-                <img
-                  src="/battery-inverter-room.jpg"
-                  alt="Bryanston Dedicated Power Room"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute bottom-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2.5 py-1 rounded text-[10px] font-mono text-white">
-                  Executive Power Room • Bryanston, JHB
-                </span>
-              </div>
-              <div className="p-4 space-y-1.5">
-                <h4 className="text-sm font-bold text-white uppercase">Clean Battery Rack & Inverter Power Room</h4>
-                <p className="text-xs text-[#9EADA5]">12kW 3-Phase Inverter • 15kWh LiFePO4 Rack • Pre-Wired SABS DB</p>
-              </div>
-            </div>
-
-            {/* Gallery Item 3 */}
-            <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all">
-              <div className="aspect-16/10 overflow-hidden relative bg-[#0E1311]">
-                <img
-                  src="/commercial-solar-sa.jpg"
-                  alt="Midrand Commercial Warehouse Array"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute bottom-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2.5 py-1 rounded text-[10px] font-mono text-white">
-                  Commercial Facility • Midrand, Gauteng
-                </span>
-              </div>
-              <div className="p-4 space-y-1.5">
-                <h4 className="text-sm font-bold text-white uppercase">Commercial Rooftop Solar & Peak Shaving</h4>
-                <p className="text-xs text-[#9EADA5]">50kW 3-Phase Commercial System • SARS Section 12B Tax Allowance</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. SOLAR CONFIGURATOR TEASER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="bg-[#141A17] border border-[#24302A] rounded-xl p-8 sm:p-12 relative overflow-hidden">
-          <div className="max-w-2xl space-y-4">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block">
-              Multi-Step Sizing Model
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white uppercase">
-              Not every property needs the same solar system.
-            </h2>
-            <p className="text-xs sm:text-sm text-[#9EADA5] leading-relaxed">
-              Tell us about your property, energy usage and goals. Our solar configurator helps you explore a solution based on your requirements.
+          {/* Step 2 */}
+          <div className="p-8 bg-[#0D1117] border border-[#1E2530] rounded-2xl space-y-4 relative group hover:border-[#00D2FF]/50 transition-all">
+            <span className="text-3xl font-extrabold text-[#00D2FF] block">02</span>
+            <h3 className="text-base font-bold text-white uppercase tracking-tight">DoL Certified Installation</h3>
+            <p className="text-xs text-[#94A3B8] leading-relaxed">
+              Our accredited Master Electricians install the single line diagram, DC protection fuses, and hybrid inverter according to SANS 10142-1-2 standards.
             </p>
-            <div className="pt-2">
-              <button
-                onClick={openConfigurator}
-                className="px-6 py-3.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded flex items-center gap-2 transition-colors"
-              >
-                <span>Build My Solar System</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+            <button
+              onClick={() => setCurrentRoute('installation')}
+              className="text-xs text-[#00D2FF] font-bold flex items-center gap-1 hover:underline pt-2"
+            >
+              <span>Installation Standards</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
-        </div>
-      </section>
 
-      {/* 5. HOW IT WORKS (4 STEPS WITH VISUAL PROGRESSION) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="space-y-10">
-          <div>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block mb-1">
-              Clear Engineering Roadmap
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white uppercase">
-              From first question to working system.
-            </h2>
-            <p className="text-xs sm:text-sm text-[#9EADA5] mt-1">
-              A transparent, 4-step engineering journey from your initial load profile to active solar generation.
+          {/* Step 3 */}
+          <div className="p-8 bg-[#0D1117] border border-[#1E2530] rounded-2xl space-y-4 relative group hover:border-[#00D2FF]/50 transition-all">
+            <span className="text-3xl font-extrabold text-[#00D2FF] block">03</span>
+            <h3 className="text-base font-bold text-white uppercase tracking-tight">SANS CoC & SLA Care</h3>
+            <p className="text-xs text-[#94A3B8] leading-relaxed">
+              Receive your official municipal Certificate of Compliance, grid connection sign-off, and 24/7 telemetry monitoring with priority maintenance dispatch.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                num: '01',
-                title: 'Tell us what you need',
-                desc: 'Share information about your property, energy usage and goals.',
-                img: '/cad-solar-audit.jpg',
-                badge: 'Load Profiling'
-              },
-              {
-                num: '02',
-                title: 'Certified Roof Installation',
-                desc: 'Mechanical roof rail mounting and DC string cable containment.',
-                img: '/solar-installer-roof.jpg',
-                badge: 'Roof PV Mount'
-              },
-              {
-                num: '03',
-                title: 'SABS Protection & DB Changeover',
-                desc: 'Pre-wired surge protection box, inverter calibration, and CoC certification.',
-                img: '/solar-protection-panel.jpg',
-                badge: 'SANS 10142'
-              },
-              {
-                num: '04',
-                title: 'Live Mobile Telemetry',
-                desc: 'Real-time solar generation and battery state-of-charge tracking from your phone.',
-                img: '/homeowner-app-dashboard.jpg',
-                badge: 'Live Telemetry'
-              }
-            ].map(step => (
-              <div 
-                key={step.num}
-                className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden flex flex-col justify-between group hover:border-[#31423A] transition-all shadow-md"
-              >
-                <div className="aspect-16/10 overflow-hidden relative bg-[#0E1311]">
-                  <img
-                    src={step.img}
-                    alt={step.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
-                    Stage {step.num}
-                  </div>
-                  <div className="absolute bottom-2.5 right-2.5 bg-[#1B4D3E]/90 border border-[#286D58] px-2 py-0.5 rounded text-[9px] font-mono text-white uppercase font-semibold">
-                    {step.badge}
-                  </div>
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-                  <div>
-                    <h3 className="text-sm font-bold text-white uppercase tracking-tight">
-                      {step.title}
-                    </h3>
-                    <p className="text-xs text-[#9EADA5] mt-1 leading-relaxed">
-                      {step.desc}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <button
+              onClick={() => setCurrentRoute('maintenance')}
+              className="text-xs text-[#00D2FF] font-bold flex items-center gap-1 hover:underline pt-2"
+            >
+              <span>Explore SLA Tiers</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       </section>
 
-      {/* 6. SHOP PREVIEW */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block mb-1">
-                Direct Hardware Sales
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white uppercase">
-                Solar equipment, without the guesswork.
-              </h2>
-              <p className="text-xs sm:text-sm text-[#9EADA5] mt-1">
-                Browse solar equipment and components for residential and commercial applications.
-              </p>
-            </div>
+      {/* ========================================================================= */}
+      {/* 6. STARLINK-STYLE FINAL BOTTOM HERO CALL TO ACTION */}
+      {/* ========================================================================= */}
+      <section className="relative py-32 px-6 sm:px-12 overflow-hidden border-t border-[#1E2530] text-center">
+        <div className="absolute inset-0 z-0 opacity-40">
+          <img
+            src="/hero-solar-home.jpg"
+            alt="Solar home in South Africa"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/80" />
+        </div>
+
+        <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+            Independent Solar Power
+          </span>
+          <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white">
+            Take control of your energy today.
+          </h2>
+          <p className="text-sm sm:text-base text-[#94A3B8] max-w-xl mx-auto">
+            Discover how much you can save every month while safeguarding your family and business against grid failure.
+          </p>
+
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={openConfigurator}
+              className="px-8 py-4 bg-white hover:bg-neutral-200 text-black font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-2xl flex items-center justify-center gap-2 w-full sm:w-auto"
+            >
+              <span>Size Your Property Now</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
 
             <button
               onClick={() => setCurrentRoute('shop')}
-              className="px-4 py-2.5 bg-[#141A17] hover:bg-[#1A221E] border border-[#24302A] text-xs font-mono font-semibold text-white uppercase tracking-wider rounded flex items-center gap-1.5 shrink-0"
+              className="px-8 py-4 bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white font-mono font-semibold text-xs uppercase tracking-wider rounded-xl transition-all w-full sm:w-auto"
             >
-              <span>View All Products</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Visual Hardware Category Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {
-                title: 'Solar Panels',
-                desc: 'Tier-1 Mono PERC & Bi-Facial',
-                img: '/solar-installer-roof.jpg',
-                count: '545W – 550W'
-              },
-              {
-                title: 'Hybrid Inverters',
-                desc: 'Single & 3-Phase Low Voltage',
-                img: '/electrician-wiring-db.jpg',
-                count: '5kW – 12kW'
-              },
-              {
-                title: 'LiFePO4 Batteries',
-                desc: '1C & 0.5C Lithium Modules',
-                img: '/battery-inverter-room.jpg',
-                count: '5.12kWh – 15kWh'
-              },
-              {
-                title: 'Protection & DBs',
-                desc: 'SABS Pre-Wired Enclosures',
-                img: '/solar-protection-panel.jpg',
-                count: 'IP65 Rated'
-              }
-            ].map(cat => (
-              <div
-                key={cat.title}
-                onClick={() => setCurrentRoute('shop')}
-                className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden cursor-pointer group hover:border-[#31423A] transition-all shadow-sm"
-              >
-                <div className="aspect-16/10 overflow-hidden relative bg-[#0E1311]">
-                  <img
-                    src={cat.img}
-                    alt={cat.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute bottom-2 left-2 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[9px] font-mono text-white">
-                    {cat.count}
-                  </span>
-                </div>
-                <div className="p-3">
-                  <h4 className="text-xs font-bold text-white uppercase group-hover:text-[#286D58] transition-colors">{cat.title}</h4>
-                  <p className="text-[11px] text-[#9EADA5]">{cat.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredProducts.map(product => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onSelectProduct={onSelectProduct}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 7. FINANCING & REBATE CHECKER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Financing Box */}
-          <div className="p-8 bg-[#141A17] border border-[#24302A] rounded-lg flex flex-col justify-between space-y-6">
-            <div className="space-y-3">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#286D58] font-bold">
-                Asset Finance & Structured Capex
-              </span>
-              <h3 className="text-xl font-bold text-white uppercase">
-                Make the move to solar easier to plan.
-              </h3>
-              <p className="text-xs text-[#9EADA5] leading-relaxed">
-                Explore estimated monthly repayments and understand how different system configurations could affect the overall cost.
-              </p>
-            </div>
-
-            <div className="p-4 bg-[#0E1311] border border-[#1B2420] rounded text-xs text-[#9EADA5] space-y-2 font-mono">
-              <div className="flex justify-between">
-                <span>Entry Hybrid Setup (5kW + 5kWh):</span>
-                <span className="text-white font-bold">~R 2,450 / mo*</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Executive Setup (8kW + 10kWh):</span>
-                <span className="text-white font-bold">~R 3,850 / mo*</span>
-              </div>
-              <p className="text-[10px] text-[#6B7B73] pt-1">
-                *Estimated repayment based on 60-month term @ prime interest rate. Final terms subject to credit approval.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setCurrentRoute('calculator')}
-              className="px-5 py-3 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors text-center"
-            >
-              Calculate Financing
-            </button>
-          </div>
-
-          {/* Rebates & Tax Incentives Box */}
-          <div className="p-8 bg-[#141A17] border border-[#24302A] rounded-lg flex flex-col justify-between space-y-6">
-            <div className="space-y-3">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#286D58] font-bold">
-                South African Regulatory Incentives
-              </span>
-              <h3 className="text-xl font-bold text-white uppercase">
-                Find out what incentives may apply to you.
-              </h3>
-              <p className="text-xs text-[#9EADA5] leading-relaxed">
-                Energy incentives and programmes can change. Use our checker to explore potential incentives based on your location and system requirements.
-              </p>
-            </div>
-
-            <IncentiveDisclaimer />
-
-            <button
-              onClick={() => setCurrentRoute('resources')}
-              className="px-5 py-3 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] text-white font-mono font-semibold text-xs uppercase tracking-wider rounded transition-colors text-center"
-            >
-              Check Incentives & SSEG Policies
-            </button>
-          </div>
-        </div>
-      </section>
-
-
-      {/* 9. MAINTENANCE SECTION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="bg-[#141A17] border border-[#24302A] rounded-xl p-8 sm:p-12 space-y-8">
-          <div className="max-w-2xl space-y-3">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block">
-              Asset Lifecycle Protection
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white uppercase">
-              Your solar system is an investment. Keep it performing.
-            </h2>
-            <p className="text-xs sm:text-sm text-[#9EADA5] leading-relaxed">
-              Our maintenance services help customers monitor system performance, identify issues and keep equipment operating as expected.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
-            {[
-              'System inspections',
-              'Performance checks',
-              'Fault identification',
-              'Equipment maintenance',
-              'De-soiling & cleaning',
-              'Component replacement',
-              'System upgrades',
-              'Statutory CoC audits'
-            ].map((srv, idx) => (
-              <div key={idx} className="p-3 bg-[#0E1311] border border-[#24302A] rounded flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#286D58] shrink-0" />
-                <span className="text-[#E6ECE8]">{srv}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-2">
-            <button
-              onClick={() => setCurrentRoute('maintenance')}
-              className="px-6 py-3.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors"
-            >
-              Book Maintenance
+              <span>Explore Hardware Store</span>
             </button>
           </div>
         </div>

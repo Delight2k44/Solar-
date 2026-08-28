@@ -1,138 +1,177 @@
 import React, { useState } from 'react';
-import { MAINTENANCE_PACKAGES } from '../data/mockData';
-import { MaintenancePackage } from '../types';
 import { 
+  Activity, 
   Wrench, 
-  CheckCircle2, 
   ShieldCheck, 
+  CheckCircle2, 
   Clock, 
+  Cpu, 
   ArrowRight, 
-  HelpCircle,
-  Activity,
-  AlertCircle
+  Phone, 
+  Calendar,
+  Check,
+  Zap,
+  Sparkles
 } from 'lucide-react';
-import { MaintenanceRequestForm } from '../components/forms/MaintenanceRequestForm';
 
 export const MaintenancePage: React.FC = () => {
-  const [selectedTierName, setSelectedTierName] = useState<string>('Performance SLA (Quarterly)');
+  const [ticketModalOpen, setTicketModalOpen] = useState(false);
 
-  const handleSelectTier = (tierName: string) => {
-    setSelectedTierName(tierName);
-    const formElement = document.getElementById('maintenance-form-section');
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: 'smooth' });
+  const plans = [
+    {
+      name: 'Essential Care',
+      subtitle: 'Standard Residential Installations',
+      priceZAR: 'R 450',
+      period: '/ month',
+      features: [
+        'Annual Full System Electrical Health Audit',
+        'Bi-Annual Solar Panel Hydro-Wash & Cleaning',
+        'Firmware Updates & Inverter BMS Balancing',
+        'Priority Phone Support & Diagnostics',
+        '10% Discount on Add-on Battery Storage'
+      ],
+      recommended: false
+    },
+    {
+      name: 'Performance SLA',
+      subtitle: 'Executive Homes & High-Availability Sites',
+      priceZAR: 'R 890',
+      period: '/ month',
+      features: [
+        '24/7 Automated Cloud Telemetry & Alerting',
+        '4-Hour Priority On-Site Technician Dispatch',
+        'Bi-Annual In-Depth Thermal Infrared Imaging',
+        'Comprehensive Storm & Surge Inspection',
+        'Supplementary SANS 10142 CoC Re-Certification',
+        'Free Inverter Loaner Unit during Repairs'
+      ],
+      recommended: true
+    },
+    {
+      name: 'Enterprise Microgrid',
+      subtitle: 'Commercial Facilities & 50kW+ Solar Arrays',
+      priceZAR: 'R 2,450',
+      period: '/ month',
+      features: [
+        'Dedicated Master Electrician Account Lead',
+        'SCADA Remote Load Management & Peak Shaving',
+        'Monthly On-Site Performance Optimization',
+        'Guaranteed 2-Hour SLA Rapid Response',
+        'Quarterly Executive Energy Yield Reports',
+        'Direct Liaison with City Power / Eskom'
+      ],
+      recommended: false
     }
-  };
+  ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-16">
-      {/* Header & Visual Showcase */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <div className="lg:col-span-6 space-y-4">
-          <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block">
-            Asset Lifecycle & Diagnostics
-          </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white uppercase">
-            Your solar system is an investment. Keep it performing.
-          </h1>
-          <p className="text-sm text-[#9EADA5] leading-relaxed">
-            Our maintenance services help customers monitor system performance, identify issues and keep equipment operating as expected. SABS-compliant electrical inspections, string testing, and thermal scans.
-          </p>
-          <div className="flex flex-wrap gap-4 text-xs font-mono text-[#9EADA5] pt-2">
-            <span className="flex items-center gap-1.5 text-white">
-              <CheckCircle2 className="w-4 h-4 text-[#10B981]" /> De-Ionized Panel Wash
-            </span>
-            <span className="flex items-center gap-1.5 text-white">
-              <ShieldCheck className="w-4 h-4 text-[#286D58]" /> Infrared Hotspot Thermal Audit
-            </span>
-          </div>
+    <div className="space-y-24 text-white font-sans selection:bg-[#00D2FF] selection:text-black pb-24">
+      
+      {/* 1. Header */}
+      <section className="relative min-h-[500px] flex items-center justify-start overflow-hidden border-b border-[#1E2530] pt-20">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/solar-maintenance-cleaning.jpg"
+            alt="Solar maintenance and cleaning"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-transparent" />
         </div>
 
-        <div className="lg:col-span-6 grid grid-cols-2 gap-4">
-          <div className="aspect-4/3 rounded-xl overflow-hidden bg-[#0E1311] border border-[#24302A] relative group">
-            <img
-              src="/solar-maintenance-cleaning.jpg"
-              alt="Professional solar panel de-soiling and cleaning"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <span className="absolute bottom-2 left-2 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[9px] font-mono text-white">
-              De-Soiling & Hydro-Wash
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 py-20 relative z-10 w-full space-y-6">
+          <div className="max-w-2xl space-y-4">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+              Lifetime Reliability & SLA
             </span>
+            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.08]">
+              Service plans & 24/7 maintenance.
+            </h1>
+            <p className="text-sm sm:text-base text-[#94A3B8] leading-relaxed">
+              Protect your solar yield and battery health. Preventative diagnostics, hydro-cleaning, and guaranteed rapid technician response across Gauteng and the Western Cape.
+            </p>
           </div>
-          <div className="aspect-4/3 rounded-xl overflow-hidden bg-[#0E1311] border border-[#24302A] relative group">
-            <img
-              src="/cad-solar-audit.jpg"
-              alt="Solar energy telemetry and diagnostics"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <span className="absolute bottom-2 left-2 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[9px] font-mono text-white">
-              Telemetry String Diagnostics
-            </span>
-          </div>
-        </div>
-      </div>
 
-      {/* 3 Maintenance Packages */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-[#24302A] pb-2">
-          <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
-            Available Service & Preventative Care Tiers
-          </h2>
-          <span className="text-[10px] font-mono text-[#6B7B73]">
-            Verified SLAs • SANS 10142 Audits
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {MAINTENANCE_PACKAGES.map(pkg => (
-            <div
-              key={pkg.id}
-              className="p-6 sm:p-8 rounded-xl border flex flex-col justify-between space-y-6 transition-all bg-[#141A17] border-[#24302A] hover:border-[#31423A]"
+          <div className="flex flex-wrap gap-3 font-mono text-xs">
+            <a
+              href="tel:+27118004500"
+              className="px-6 py-3.5 bg-white text-black font-bold uppercase rounded-xl hover:bg-neutral-200 transition-all shadow-xl flex items-center gap-2"
             >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#286D58] font-bold bg-[#0E1311] px-2.5 py-1 rounded border border-[#1B2420]">
-                    {pkg.tier} Tier
-                  </span>
-                  <span className="text-[10px] font-mono text-[#9EADA5] flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-[#286D58]" /> {pkg.slaResponse}
-                  </span>
-                </div>
+              <Phone className="w-4 h-4" />
+              <span>Call Dispatch: 011 800 4500</span>
+            </a>
+          </div>
+        </div>
+      </section>
 
+      {/* 2. Service Plans Cards (Starlink Style) */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-12 space-y-12">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
+            Maintenance Tiers
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            Transparent Service Level Agreements
+          </h2>
+          <p className="text-xs sm:text-sm text-[#94A3B8]">
+            Cancel or upgrade your subscription anytime. Backed by certified Master Electricians.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {plans.map((plan, idx) => (
+            <div
+              key={idx}
+              className={`rounded-3xl p-8 flex flex-col justify-between space-y-8 transition-all relative ${
+                plan.recommended
+                  ? 'bg-[#0D1117] border-2 border-[#00D2FF] shadow-[0_0_40px_rgba(0,210,255,0.15)] ring-1 ring-[#00D2FF]/50'
+                  : 'bg-[#0D1117]/80 border border-[#1E2530] hover:border-white/20'
+              }`}
+            >
+              {plan.recommended && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#00D2FF] text-black font-mono font-extrabold text-[10px] uppercase rounded-full tracking-wider shadow-lg">
+                  Recommended SLA
+                </span>
+              )}
+
+              <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-bold text-white uppercase tracking-tight">{pkg.name}</h3>
-                  <p className="text-xs text-[#9EADA5] mt-1 leading-relaxed">{pkg.tagline}</p>
+                  <h3 className="text-xl font-bold text-white tracking-tight">{plan.name}</h3>
+                  <span className="text-xs text-[#94A3B8] font-mono block mt-0.5">{plan.subtitle}</span>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-[#1B2420]">
-                  <span className="text-[10px] font-mono uppercase text-[#6B7B73] block">Package Inclusions:</span>
-                  <ul className="space-y-1.5 text-xs text-[#9EADA5]">
-                    {pkg.features.map((feat, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#286D58] shrink-0 mt-0.5" />
-                        <span className="leading-snug">{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="pt-2 border-t border-[#1E2530]">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-3xl font-extrabold font-mono text-white">{plan.priceZAR}</span>
+                    <span className="text-xs text-[#94A3B8] font-mono">{plan.period}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 pt-2 text-xs font-mono">
+                  {plan.features.map((feat, fIdx) => (
+                    <div key={fIdx} className="flex items-start gap-2.5 text-[#CBD5E1]">
+                      <Check className="w-3.5 h-3.5 text-[#00D2FF] shrink-0 mt-0.5" />
+                      <span>{feat}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               <button
-                type="button"
-                onClick={() => handleSelectTier(`${pkg.name} (${pkg.tier})`)}
-                className="w-full py-3 rounded-lg font-mono font-bold text-xs uppercase tracking-wider bg-[#1B4D3E] hover:bg-[#286D58] text-white transition-colors"
+                onClick={() => alert(`Enrolling in ${plan.name} SLA... A technical account manager will connect with you.`)}
+                className={`w-full py-3.5 rounded-xl font-mono text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 ${
+                  plan.recommended
+                    ? 'bg-[#00D2FF] hover:bg-[#38BDF8] text-black shadow-lg'
+                    : 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
+                }`}
               >
-                Select & Book This Package
+                <span>Select {plan.name}</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Interactive Maintenance Booking Form */}
-      <div id="maintenance-form-section">
-        <MaintenanceRequestForm selectedTier={selectedTierName} />
-      </div>
     </div>
   );
 };

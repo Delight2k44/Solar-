@@ -171,6 +171,9 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentRoute }) => {
             <div className="bg-[#BFA4F8] rounded px-2 py-1 h-7 flex items-center shadow-sm">
               <img src="/payment-payflex.png" alt="Payflex" className="h-4 object-contain" />
             </div>
+            <div className="bg-[#002B49] rounded px-2 py-1 h-7 flex items-center shadow-sm border border-[#00B2FE]/40">
+              <span className="font-sans font-black text-white text-[11px] tracking-wider">OZOW</span>
+            </div>
           </div>
         </div>
       </div>
