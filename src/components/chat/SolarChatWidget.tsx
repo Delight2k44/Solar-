@@ -48,13 +48,13 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
     {
       id: 'msg-1',
       sender: 'bot',
-      text: 'Hello! I am your Kinetix Solar Energy Assistant. How can I help you take control of your energy today?',
+      text: "Howzit! 👋 I'm Kinetix, your solar energy assistant. I can help with system sizing, pricing in ZAR, loadshedding backup, compliance, or just answer any solar questions you have. What's on your mind?",
       timestamp: 'Just now',
       options: [
         { label: '⚡ Recommend a Solar Package', action: () => handleBotRecommend() },
-        { label: '💳 Pay for an Existing Quote', action: () => handleBotPayment() },
-        { label: '📊 How much will I save?', action: () => handleBotSavings() },
-        { label: '🛠️ SANS 10142 CoC Details', action: () => handleBotCompliance() }
+        { label: '💰 How much will I save?', action: () => handleBotSavings() },
+        { label: '💳 Payment Options', action: () => handleBotPayment() },
+        { label: '📋 SANS 10142 Compliance', action: () => handleBotCompliance() }
       ]
     }
   ]);
@@ -142,43 +142,50 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
     const userText = inputMessage.trim();
     setInputMessage('');
 
-    const newMessages: Message[] = [
-      ...messages,
-      {
-        id: `msg-${Date.now()}`,
-        sender: 'user',
-        text: userText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ];
-
-    setMessages(newMessages);
+    // Add user message immediately
+    const userMsg: Message = {
+      id: `msg-${Date.now()}`,
+      sender: 'user',
+      text: userText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    const updatedHistory = [...messages, userMsg];
+    setMessages(updatedHistory);
     setIsTyping(true);
 
     try {
-      const historyContext = newMessages.map(m => ({ sender: m.sender, text: m.text }));
+      const historyContext = updatedHistory.map(m => ({ sender: m.sender, text: m.text }));
       const response = await askGeminiSolarAssistant(userText, historyContext, products);
 
       const lower = userText.toLowerCase();
       let options: { label: string; action: () => void }[] | undefined = undefined;
       let checkoutCard: Message['checkoutCard'] | undefined = undefined;
 
-      if (lower.includes('buy') || lower.includes('package') || lower.includes('kit') || lower.includes('8kw') || lower.includes('quote') || lower.includes('price')) {
+      // Attach contextual action buttons based on topic
+      if (lower.includes('buy') || lower.includes('package') || lower.includes('kit') || lower.includes('8kw') || lower.includes('price') || lower.includes('quote') || lower.includes('checkout')) {
         options = [
-          { label: '🛒 Add 8kW Kit to Cart & Pay', action: () => handleAddKitToCart() },
+          { label: '🛒 Add 8kW Kit to Cart', action: () => handleAddKitToCart() },
           { label: '💳 View Cart & Checkout', action: () => { setIsOpen(false); setIsCartOpen(true); } },
           { label: '📐 Open Sizing Calculator', action: () => { setIsOpen(false); onOpenConfigurator(); } }
         ];
         checkoutCard = {
-          title: 'Kinetix Executive 8kW Hybrid + 10.24kWh Storage Set',
+          title: 'Kinetix Executive 8kW Hybrid + 10.24kWh Storage',
           priceZAR: 138900,
           specs: '8kW Deye Inverter • 2x 5.12kWh Freedom Won eTower • 10x 550W Panels',
           packageId: 'complete-kit-executive-8kw'
         };
-      } else if (lower.includes('battery') || lower.includes('storage') || lower.includes('loadshedding')) {
+      } else if (lower.includes('battery') || lower.includes('storage') || lower.includes('loadshedding') || lower.includes('backup')) {
         options = [
-          { label: '🔋 View 10.24kWh Battery Option', action: () => handleBotRecommend() },
+          { label: '🔋 View Battery Options', action: () => handleBotRecommend() },
           { label: '💳 Open Checkout', action: () => { setIsOpen(false); setIsCartOpen(true); } }
+        ];
+      } else if (lower.includes('install') || lower.includes('assessment') || lower.includes('book') || lower.includes('site visit')) {
+        options = [
+          { label: '📅 Book a Site Assessment', action: () => { setIsOpen(false); } }
+        ];
+      } else if (lower.includes('savings') || lower.includes('roi') || lower.includes('payback') || lower.includes('calculator')) {
+        options = [
+          { label: '🧮 Open Savings Calculator', action: () => { setIsOpen(false); onOpenConfigurator(); } }
         ];
       } else if (lower.includes('coc') || lower.includes('compliance') || lower.includes('sans')) {
         options = [
@@ -186,10 +193,11 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
         ];
       }
 
+      setIsTyping(false);
       setMessages(prev => [
         ...prev,
         {
-          id: `msg-${Date.now()}`,
+          id: `msg-${Date.now() + 1}`,
           sender: 'bot',
           text: response.text,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -199,13 +207,23 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
       ]);
     } catch (err) {
       console.error('Error in chat response:', err);
-      addBotMessage('Thank you for reaching out! You can add solar hardware directly to your cart or speak with our engineering desk 24/7.', [
-        { label: '🛒 View Hardware Catalog', action: () => { setIsOpen(false); } }
-      ]);
-    } finally {
       setIsTyping(false);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `msg-${Date.now() + 1}`,
+          sender: 'bot',
+          text: "Apologies, I hit a snag there. You can still browse our hardware catalog or contact our engineering desk directly — we're always happy to help! 😊",
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          options: [
+            { label: '🛒 View Hardware Catalog', action: () => { setIsOpen(false); } },
+            { label: '📞 Contact Engineering', action: () => { setIsOpen(false); } }
+          ]
+        }
+      ]);
     }
   };
+
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
