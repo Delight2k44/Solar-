@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useData } from '../../context/DataContext';
+import { askGeminiSolarAssistant } from '../../services/geminiService';
 
 interface Message {
   id: string;
@@ -134,39 +135,75 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
     }, 600);
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || isTyping) return;
 
-    const userText = inputMessage;
+    const userText = inputMessage.trim();
     setInputMessage('');
-    
-    setMessages(prev => [
-      ...prev,
+
+    const newMessages: Message[] = [
+      ...messages,
       {
         id: `msg-${Date.now()}`,
         sender: 'user',
         text: userText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
-    ]);
+    ];
 
-    const lower = userText.toLowerCase();
-    if (lower.includes('price') || lower.includes('cost') || lower.includes('quote') || lower.includes('pay') || lower.includes('buy')) {
-      setTimeout(() => handleBotRecommend(), 400);
-    } else if (lower.includes('battery') || lower.includes('storage') || lower.includes('loadshedding')) {
-      setTimeout(() => {
-        addBotMessage('We utilize Tier-1 LiFePO4 battery modules (Freedom Won, Dyness) rated for over 6,000 cycles with a 10-year warranty. Would you like a backup recommendation?', [
-          { label: '🔋 View Battery Storage Solutions', action: () => handleBotRecommend() }
-        ]);
-      }, 500);
-    } else {
-      setTimeout(() => {
-        addBotMessage('Thank you! Our engineering dispatch desk is available 24/7. You can request a quote, make an EFT payment, or chat with a master electrician.', [
-          { label: '⚡ Request an Official Sizing Quote', action: () => handleBotRecommend() },
-          { label: '💳 View Cart & Payment Methods', action: () => { setIsOpen(false); setIsCartOpen(true); } }
-        ]);
-      }, 600);
+    setMessages(newMessages);
+    setIsTyping(true);
+
+    try {
+      const historyContext = newMessages.map(m => ({ sender: m.sender, text: m.text }));
+      const response = await askGeminiSolarAssistant(userText, historyContext, products);
+
+      const lower = userText.toLowerCase();
+      let options: { label: string; action: () => void }[] | undefined = undefined;
+      let checkoutCard: Message['checkoutCard'] | undefined = undefined;
+
+      if (lower.includes('buy') || lower.includes('package') || lower.includes('kit') || lower.includes('8kw') || lower.includes('quote') || lower.includes('price')) {
+        options = [
+          { label: '🛒 Add 8kW Kit to Cart & Pay', action: () => handleAddKitToCart() },
+          { label: '💳 View Cart & Checkout', action: () => { setIsOpen(false); setIsCartOpen(true); } },
+          { label: '📐 Open Sizing Calculator', action: () => { setIsOpen(false); onOpenConfigurator(); } }
+        ];
+        checkoutCard = {
+          title: 'Kinetix Executive 8kW Hybrid + 10.24kWh Storage Set',
+          priceZAR: 138900,
+          specs: '8kW Deye Inverter • 2x 5.12kWh Freedom Won eTower • 10x 550W Panels',
+          packageId: 'complete-kit-executive-8kw'
+        };
+      } else if (lower.includes('battery') || lower.includes('storage') || lower.includes('loadshedding')) {
+        options = [
+          { label: '🔋 View 10.24kWh Battery Option', action: () => handleBotRecommend() },
+          { label: '💳 Open Checkout', action: () => { setIsOpen(false); setIsCartOpen(true); } }
+        ];
+      } else if (lower.includes('coc') || lower.includes('compliance') || lower.includes('sans')) {
+        options = [
+          { label: '📋 View CoC & Installation Process', action: () => handleBotCompliance() }
+        ];
+      }
+
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `msg-${Date.now()}`,
+          sender: 'bot',
+          text: response.text,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          options,
+          checkoutCard
+        }
+      ]);
+    } catch (err) {
+      console.error('Error in chat response:', err);
+      addBotMessage('Thank you for reaching out! You can add solar hardware directly to your cart or speak with our engineering desk 24/7.', [
+        { label: '🛒 View Hardware Catalog', action: () => { setIsOpen(false); } }
+      ]);
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -184,7 +221,7 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#10B981] rounded-full border-2 border-[#1B4D3E]" />
           </div>
           <span className="text-xs font-mono font-bold uppercase tracking-wider hidden sm:inline">
-            Live Solar Chat & Payments
+            Live Solar Chat (Gemini AI)
           </span>
         </button>
       )}
@@ -201,9 +238,11 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
               <div>
                 <div className="flex items-center gap-1.5">
                   <h3 className="text-xs font-bold text-white uppercase">Kinetix Solar Assistant</h3>
-                  <span className="w-2 h-2 rounded-full bg-[#10B981]" />
+                  <span className="px-1.5 py-0.2 bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981] text-[8px] font-bold rounded">
+                    ✨ Gemini AI
+                  </span>
                 </div>
-                <span className="text-[10px] font-mono text-[#9EADA5]">Live Engineering & Checkout Dispatch</span>
+                <span className="text-[10px] font-mono text-[#9EADA5]">Live Engineering & Sizing Dispatch</span>
               </div>
             </div>
 

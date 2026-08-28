@@ -111,3 +111,103 @@ export interface ResourceArticle {
   content: string;
   tags: string[];
 }
+
+export interface OrderItem {
+  productId: string;
+  productName: string;
+  brand: string;
+  sku: string;
+  image: string;
+  quantity: number;
+  unitPriceZAR: number;
+  includeInstallation: boolean;
+  installationPriceZAR: number;
+}
+
+export interface OrderRecord {
+  id: string; // e.g. KX-PAY-981240
+  userId?: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress: string;
+  city: string;
+  propertyType: string;
+  roofType?: string;
+  notes?: string;
+  items: OrderItem[];
+  equipmentSubtotalZAR: number;
+  installationSubtotalZAR: number;
+  vatZAR: number;
+  totalCartZAR: number;
+  paymentMethod: 'card' | 'applepay' | 'payflex' | 'instant_eft' | 'finance' | 'deposit';
+  selectedBank?: string;
+  paymentStatus: 'completed' | 'pending' | 'failed';
+  orderStatus: 'processing' | 'hardware_reserved' | 'bench_testing' | 'scheduled' | 'installed' | 'commissioned' | 'completed';
+  currentStageIndex: number;
+  courierName?: string;
+  trackingNumber?: string;
+  estimatedDeliveryDate?: string;
+  adminApproved?: boolean;
+  adminNotes?: string;
+  createdAt: string;
+}
+
+export interface InstallationBooking {
+  id: string; // e.g. KX-INST-1234
+  clientName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  targetDate: string;
+  roofType: string;
+  phaseConnection: string;
+  dbLocation: string;
+  specialAccess?: string;
+  status: 'pending' | 'site_visit_scheduled' | 'quote_prepared' | 'confirmed';
+  createdAt: string;
+}
+
+export interface CommercialLead {
+  id: string; // e.g. KX-COMM-1234
+  companyName: string;
+  industrySector: string;
+  monthlySpend: string;
+  peakKva: string;
+  dieselMonthly: string;
+  taxSection12b: boolean;
+  contactName: string;
+  designation: string;
+  email: string;
+  phone: string;
+  locationCity: string;
+  status: 'new' | 'profiling' | 'audit_booked' | 'proposal_sent';
+  createdAt: string;
+}
+
+export interface ContactEnquiry {
+  id: string; // e.g. KX-ENQ-9021
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+  status: 'new' | 'reviewed' | 'replied' | 'archived';
+  replyNotes?: string;
+  createdAt: string;
+}
+
+export interface UserNotification {
+  id: string; // e.g. NOTIF-1029
+  targetUserEmail: string; // or 'all'
+  targetUserName?: string;
+  title: string;
+  message: string;
+  type: 'order' | 'maintenance' | 'installation' | 'general';
+  read: boolean;
+  sender: string; // 'Admin Desk', etc.
+  createdAt: string;
+}
+
+

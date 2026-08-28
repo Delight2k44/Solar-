@@ -149,8 +149,34 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentRoute }) => {
         </div>
       </div>
 
+      {/* Payment Gateways Strip */}
+      <div className="border-t border-[#1B2420] py-6 px-4 sm:px-6 bg-[#080B09]">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-[11px] font-mono text-[#9EADA5]">
+            <Lock className="w-3.5 h-3.5 text-[#10B981]" />
+            <span>Secure 256-Bit SSL Encrypted Checkout</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-mono text-[#6B7B73] uppercase font-bold mr-1">Accepted Payments:</span>
+            <div className="bg-white rounded px-2 py-1 h-7 flex items-center shadow-sm">
+              <img src="/payment-visa.png" alt="Visa" className="h-4 object-contain" />
+            </div>
+            <div className="bg-white rounded px-2 py-1 h-7 flex items-center shadow-sm">
+              <img src="/payment-mastercard.png" alt="MasterCard" className="h-5 object-contain" />
+            </div>
+            <div className="bg-white rounded px-2 py-1 h-7 flex items-center shadow-sm">
+              <img src="/payment-applepay.png" alt="Apple Pay" className="h-5 object-contain" />
+            </div>
+            <div className="bg-[#BFA4F8] rounded px-2 py-1 h-7 flex items-center shadow-sm">
+              <img src="/payment-payflex.png" alt="Payflex" className="h-4 object-contain" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Bottom Bar */}
-      <div className="border-t border-[#1B2420] py-6 px-4 sm:px-6 text-[11px] font-mono text-[#6B7B73]">
+      <div className="border-t border-[#141A17] py-6 px-4 sm:px-6 text-[11px] font-mono text-[#6B7B73]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             © {new Date().getFullYear()} KINETIX ENERGY TECHNOLOGIES (PTY) LTD. All rights reserved.

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from './context/AuthContext';
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
 import { CartDrawer } from './components/cart/CartDrawer';
@@ -28,6 +29,22 @@ export function App() {
   const [currentRoute, setCurrentRoute] = useState<string>('home');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isConfiguratorModalOpen, setIsConfiguratorModalOpen] = useState(false);
+  const { isAuthenticated, isAdmin } = useAuth();
+
+  // Scroll to top on every route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentRoute]);
+
+  // Auth guards: redirect to login if accessing protected routes without being signed in
+  useEffect(() => {
+    if (currentRoute === 'portal' && !isAuthenticated) {
+      setCurrentRoute('login');
+    }
+    if (currentRoute === 'admin' && (!isAuthenticated || !isAdmin)) {
+      setCurrentRoute('login');
+    }
+  }, [currentRoute, isAuthenticated, isAdmin]);
 
   const openConfigurator = () => {
     setIsConfiguratorModalOpen(true);
@@ -137,7 +154,7 @@ export function App() {
       <Footer setCurrentRoute={setCurrentRoute} />
 
       {/* Slide-out Cart Drawer with Instant EFT / Card / Financing */}
-      <CartDrawer />
+      <CartDrawer onNavigate={(route) => { setCurrentRoute(route); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
 
       {/* Interactive AI & Engineering Chatbot Widget */}
       <SolarChatWidget onOpenConfigurator={openConfigurator} />

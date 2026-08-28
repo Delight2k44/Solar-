@@ -57,29 +57,9 @@ export const ProjectTracker: React.FC<ProjectTrackerProps> = ({ initialOrderId =
             </h2>
           </div>
 
-          {/* Quick Demo Selector */}
-          <div className="flex items-center gap-2 text-xs font-mono">
-            <span className="text-[#6B7B73]">Quick References:</span>
-            <button
-              onClick={() => handleQuickSelect('KX-9042')}
-              className={`px-2.5 py-1 rounded border transition-colors ${
-                activeRecord?.orderId === 'KX-9042' 
-                  ? 'bg-[#1B4D3E] text-white border-[#286D58]' 
-                  : 'bg-[#141A17] text-[#9EADA5] border-[#24302A]'
-              }`}
-            >
-              KX-9042 (In Progress)
-            </button>
-            <button
-              onClick={() => handleQuickSelect('KX-8105')}
-              className={`px-2.5 py-1 rounded border transition-colors ${
-                activeRecord?.orderId === 'KX-8105' 
-                  ? 'bg-[#1B4D3E] text-white border-[#286D58]' 
-                  : 'bg-[#141A17] text-[#9EADA5] border-[#24302A]'
-              }`}
-            >
-              KX-8105 (Completed)
-            </button>
+          <div className="flex items-center gap-2 text-xs font-mono text-[#9EADA5]">
+            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
+            <span>Real-Time Milestone System</span>
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useData } from '../../context/DataContext';
 import { 
   Wrench, 
   Calendar, 
@@ -21,6 +22,7 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
   onSuccess,
   defaultCity = ''
 }) => {
+  const { createInstallationBooking } = useData();
   const [submitted, setSubmitted] = useState(false);
   const [bookingRef, setBookingRef] = useState('');
 
@@ -38,8 +40,19 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const ref = `KX-INST-${Math.floor(1000 + Math.random() * 9000)}`;
-    setBookingRef(ref);
+    const generatedRef = createInstallationBooking({
+      clientName: clientName || 'Valued Client',
+      email: email || 'client@domain.co.za',
+      phone: phone || '+27 82 000 0000',
+      address: address || 'Site Address',
+      city: city || 'Johannesburg',
+      targetDate: targetDate || new Date().toISOString().split('T')[0],
+      roofType: roofType,
+      phaseConnection: phaseConnection,
+      dbLocation: dbLocation,
+      specialAccess: specialAccess
+    });
+    setBookingRef(generatedRef);
     setSubmitted(true);
     if (onSuccess) onSuccess();
   };

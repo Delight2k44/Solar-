@@ -1,0 +1,138 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // HELPER SECURITY FUNCTIONS
+    // =========================================================================
+    
+    // Check if the user is authenticated with Firebase
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if the authenticated user is the designated Administrator
+    function isAdmin() {
+      return isAuthenticated() && 
+        (
+          request.auth.token.email.lower() == 'delightchetter@gmail.com' ||
+          request.auth.token.email.lower() == 'admin@kinetixenergy.co.za'
+        );
+    }
+
+    // Check if user owns the document by UID
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // =========================================================================
+    // 1. PRODUCTS & STORE CATALOG
+    // =========================================================================
+    match /products/{productId} {
+      // Anyone can browse products and view pricing in ZAR
+      allow read: if true;
+      // Only the Admin (delightchetter@gmail.com) can add, modify prices/pictures, or delete
+      allow create, update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 2. HARDWARE ORDERS & SALES FULFILLMENT
+    // =========================================================================
+    match /orders/{orderId} {
+      // Anyone can create an order upon checkout
+      allow create: if true;
+      // Admin can view all orders; customers can view their own orders
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.customerEmail.lower() == request.auth.token.email.lower());
+      // Only Admin can approve orders, change shipping stages, or delete
+      allow update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 3. INSTALLATION ASSESSMENT BOOKINGS (Confirm Installation Assessment Window)
+    // =========================================================================
+    match /installation_bookings/{bookingId} {
+      // Anyone can submit a site assessment booking form
+      allow create: if true;
+      // Admin has full view; user can view if submitted with their email
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.email.lower() == request.auth.token.email.lower());
+      // Admin can change status (scheduled, confirmed) or delete
+      allow update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 4. MAINTENANCE & SERVICE DISPATCH TICKETS (Dispatch Maintenance Booking Request)
+    // =========================================================================
+    match /maintenance_tickets/{ticketId} {
+      // Users can log service tickets
+      allow create: if true;
+      // Admin can view all tickets; users can view tickets for their email
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.clientEmail.lower() == request.auth.token.email.lower());
+      // Admin can assign technicians, update SLA status, or delete
+      allow update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 5. SOLAR SIZING PROPOSALS & QUOTES (Request Formal Proposal for this Sizing)
+    // =========================================================================
+    match /leads_quotes/{quoteId} {
+      // Solar configurator creates quotes
+      allow create: if true;
+      // Admin views all proposal leads; user can view their quote
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.email.lower() == request.auth.token.email.lower());
+      // Admin can update pipeline status (won, quoted) or delete
+      allow update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 6. CONTACT ENQUIRIES (Send Enquiry)
+    // =========================================================================
+    match /contact_enquiries/{enquiryId} {
+      // Anyone can submit an enquiry from the Contact page
+      allow create: if true;
+      // Only Admin can review customer inquiries and update reply status
+      allow read, update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 7. COMMERCIAL 3-PHASE AUDITS (Commercial & Section 12B)
+    // =========================================================================
+    match /commercial_leads/{leadId} {
+      // Businesses can request commercial load profiling audits
+      allow create: if true;
+      // Admin views and manages commercial sales leads
+      allow read, update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 8. USER NOTIFICATIONS & BROADCAST MESSAGES
+    // =========================================================================
+    match /user_notifications/{notificationId} {
+      // Users can read broadcasts ('all') or direct notifications sent to their email
+      allow read: if isAdmin() || (isAuthenticated() && 
+        (resource.data.targetUserEmail == 'all' || resource.data.targetUserEmail.lower() == request.auth.token.email.lower()));
+      // Users can mark their own notifications as read
+      allow update: if isAuthenticated() && 
+        (resource.data.targetUserEmail == 'all' || resource.data.targetUserEmail.lower() == request.auth.token.email.lower());
+      // Only Admin can compose new notifications or delete
+      allow create, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // 9. CMS CONTENT & SITE MEDIA (Hero, Photos, Headlines)
+    // =========================================================================
+    match /site_content/{contentId} {
+      // Public read for website headlines, banners, hero image
+      allow read: if true;
+      // Only Admin can update website content
+      allow write: if isAdmin();
+    }
+
+    // =========================================================================
+    // 10. USER PROFILES
+    // =========================================================================
+    match /users/{userId} {
+      // Users can read and update their own profile; Admin has full access
+      allow read, write: if isAdmin() || isOwner(userId);
+    }
+  }
+}

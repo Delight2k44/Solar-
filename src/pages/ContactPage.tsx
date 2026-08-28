@@ -11,8 +11,10 @@ import {
   Building2
 } from 'lucide-react';
 import { PlaceholderBadge } from '../components/common/PlaceholderBadge';
+import { useData } from '../context/DataContext';
 
 export const ContactPage: React.FC = () => {
+  const { createContactEnquiry } = useData();
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -27,6 +29,13 @@ export const ContactPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    createContactEnquiry({
+      name: `${formData.name} ${formData.surname}`.trim(),
+      email: formData.email,
+      phone: formData.phone,
+      subject: `${formData.customerType} - ${formData.serviceRequired} (${formData.propertyType})`,
+      message: formData.message
+    });
     setSubmitted(true);
   };
 

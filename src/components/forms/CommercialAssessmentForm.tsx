@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useData } from '../../context/DataContext';
 import { 
   Building2, 
   Zap, 
@@ -16,6 +17,7 @@ interface CommercialAssessmentFormProps {
 }
 
 export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> = ({ onSuccess }) => {
+  const { createCommercialLead } = useData();
   const [submitted, setSubmitted] = useState(false);
   const [referenceId, setReferenceId] = useState('');
 
@@ -36,8 +38,20 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const ref = `KX-COMM-${Math.floor(1000 + Math.random() * 9000)}`;
-    setReferenceId(ref);
+    const generatedRef = createCommercialLead({
+      companyName: companyName || 'Commercial Client',
+      industrySector: facilityType,
+      monthlySpend: monthlySpend,
+      peakKva: peakKva,
+      dieselMonthly: dieselMonthly,
+      taxSection12b: taxSection12b,
+      contactName: contactName || 'Authorized Contact',
+      designation: designation || 'Executive',
+      email: email || 'commercial@client.co.za',
+      phone: phone || '+27 11 000 0000',
+      locationCity: locationCity || 'Gauteng'
+    });
+    setReferenceId(generatedRef);
     setSubmitted(true);
     if (onSuccess) onSuccess();
   };

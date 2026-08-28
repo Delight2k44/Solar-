@@ -87,10 +87,10 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
             {isAdmin && (
               <button 
                 onClick={() => handleNav('admin')}
-                className="px-2 py-0.5 bg-[#D97706]/20 border border-[#D97706] text-[#D97706] hover:bg-[#D97706] hover:text-black rounded text-[10px] font-mono font-bold uppercase transition-colors flex items-center gap-1"
+                className="px-3 py-1 bg-[#10B981] hover:bg-[#059669] text-black rounded text-[10px] font-mono font-extrabold uppercase transition-all flex items-center gap-1.5 shadow-md animate-pulse"
               >
-                <SlidersHorizontal className="w-3 h-3" />
-                <span>Admin CMS</span>
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span>Admin Operations Portal</span>
               </button>
             )}
 
