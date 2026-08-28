@@ -341,7 +341,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [products, setProducts] = useState<Product[]>(() => {
     try {
       const saved = localStorage.getItem('kinetix_products');
-      return saved ? JSON.parse(saved) : PRODUCTS_CATALOG;
+      if (saved) {
+        const parsed: Product[] = JSON.parse(saved);
+        return parsed.map(p => {
+          const defaultProd = PRODUCTS_CATALOG.find(dp => dp.id === p.id);
+          if (defaultProd && defaultProd.image) {
+            return { ...p, image: defaultProd.image };
+          }
+          return p;
+        });
+      }
+      return PRODUCTS_CATALOG;
     } catch {
       return PRODUCTS_CATALOG;
     }

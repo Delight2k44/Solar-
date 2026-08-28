@@ -97,7 +97,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     sku: 'SS-5K-HYB-ZA',
     ratingKw: 5.0,
     warrantyYears: 5,
-    image: '/electrician-wiring-db.jpg',
+    image: '/hybrid-inverter-deye.jpg',
     summary: 'The benchmark residential hybrid inverter for South African homes. Exceptional software control, Wi-Fi data logging, and proven reliability.',
     specs: [
       { label: 'Continuous AC Power', value: '5,000 W' },
@@ -159,7 +159,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     sku: 'DYN-BX51100',
     capacityKwh: 5.12,
     warrantyYears: 10,
-    image: '/battery-inverter-room.jpg',
+    image: '/lithium-battery-etower.jpg',
     summary: 'High-density wall-mounted or rack-mounted LiFePO4 battery pack with intelligent cell-level BMS balancing and rapid charge capabilities.',
     specs: [
       { label: 'Nominal Capacity', value: '5.12 kWh' },
@@ -212,7 +212,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     sku: 'JA-545W-JAM72S30',
     ratingKw: 0.545,
     warrantyYears: 25,
-    image: '/solar-farm-agricultural.jpg',
+    image: '/solar-panel-mono.jpg',
     summary: 'Industry-standard high-yield solar panel engineered with gallium-doped wafers to mitigate LID and provide consistent kilowatt-hour generation year over year.',
     specs: [
       { label: 'Max Output Power', value: '545 W' },
@@ -237,7 +237,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     ratingKw: 5.0,
     capacityKwh: 5.12,
     warrantyYears: 10,
-    image: '/commercial-solar-sa.jpg',
+    image: '/battery-inverter-room.jpg',
     summary: 'Pre-matched, pre-fused, turnkey residential setup. Includes 5kW Inverter, 5.12kWh LiFePO4 battery, 6x 550W Canadian Solar panels, DC/AC protection box, and roof mounting kit.',
     specs: [
       { label: 'Inverter Capacity', value: '5.0 kW Continuous' },
