@@ -168,13 +168,17 @@ html.light .bg-\[\#1B4D3E\]\/90 * {
   color: #111827 !important;
 }
 
-/* Hero Section Gradient in Light Mode */
+/* Hero Section Gradient in Light Mode: left fade for text legibility, crystal clear view on the right */
 html.light .bg-gradient-to-r.from-\[\#0E1311\] {
-  background-image: linear-gradient(to right, #F6F8F7 0%, rgba(246, 248, 247, 0.95) 45%, rgba(246, 248, 247, 0.4) 100%) !important;
+  background-image: linear-gradient(to right, #F6F8F7 0%, rgba(246, 248, 247, 0.96) 28%, rgba(246, 248, 247, 0.6) 42%, transparent 60%) !important;
 }
 
 html.light .bg-gradient-to-t.from-\[\#0E1311\] {
-  background-image: linear-gradient(to top, #F6F8F7 0%, rgba(246, 248, 247, 0.9) 70%, rgba(246, 248, 247, 0.6) 100%) !important;
+  background-image: linear-gradient(to top, #F6F8F7 0%, rgba(246, 248, 247, 0.85) 35%, transparent 60%) !important;
+}
+
+html.light .subtle-grid {
+  opacity: 0.05 !important;
 }
 
 /* Scrollbar */
