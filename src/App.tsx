@@ -11,6 +11,8 @@ import { CustomerPortal } from './components/portal/CustomerPortal';
 
 import { HomePage } from './pages/HomePage';
 import { SolarSolutionsPage } from './pages/SolarSolutionsPage';
+import { BusinessPage } from './pages/BusinessPage';
+import { WhatsAppWidget } from './components/common/WhatsAppWidget';
 import { ShopPage } from './pages/ShopPage';
 import { InstallationPage } from './pages/InstallationPage';
 import { MaintenancePage } from './pages/MaintenancePage';
@@ -70,6 +72,13 @@ export function App() {
             setCurrentRoute={setCurrentRoute}
             openConfigurator={openConfigurator}
             onSelectProduct={setSelectedProduct}
+          />
+        )}
+
+        {(currentRoute === 'commercial' || currentRoute === 'business') && (
+          <BusinessPage
+            openConfigurator={openConfigurator}
+            setCurrentRoute={setCurrentRoute}
           />
         )}
 
@@ -155,6 +164,9 @@ export function App() {
 
       {/* Slide-out Cart Drawer with Instant EFT / Card / Financing */}
       <CartDrawer onNavigate={(route) => { setCurrentRoute(route); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+
+      {/* Floating WhatsApp Live Chat Widget (078 780 8569) */}
+      <WhatsAppWidget />
 
       {/* Interactive AI & Engineering Chatbot Widget */}
       <SolarChatWidget onOpenConfigurator={openConfigurator} />

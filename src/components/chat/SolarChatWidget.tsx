@@ -52,6 +52,7 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
       timestamp: 'Just now',
       options: [
         { label: '⚡ Recommend a Solar Package', action: () => handleBotRecommend() },
+        { label: '💬 WhatsApp Support (078 780 8569)', action: () => window.open('https://wa.me/27787808569?text=Hello%20Kinetix%20Energy,%20I%20would%20like%20to%20inquire%20about%20a%20solar%20system', '_blank') },
         { label: '💰 How much will I save?', action: () => handleBotSavings() },
         { label: '💳 Payment Options', action: () => handleBotPayment() },
         { label: '📋 SANS 10142 Compliance', action: () => handleBotCompliance() }
@@ -226,7 +227,7 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
 
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 left-6 z-50">
       {/* Floating Launcher Button */}
       {!isOpen && (
         <button

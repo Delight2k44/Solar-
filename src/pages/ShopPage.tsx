@@ -43,38 +43,38 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-10">
+    <div className="max-w-7xl mx-auto px-6 sm:px-12 pt-28 sm:pt-36 pb-24 space-y-10 text-white font-sans selection:bg-[#00D2FF] selection:text-black">
       {/* Shop Header */}
-      <div className="border-b border-[#24302A] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <span className="text-[11px] font-mono uppercase tracking-widest text-[#286D58] font-bold block mb-1">
+      <div className="border-b border-[#1E2530] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-2">
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold block">
             Certified Hardware Store
           </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white uppercase">
-            Solar Equipment, Without the Guesswork.
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            Solar Equipment Store.
           </h1>
-          <p className="text-xs sm:text-sm text-[#9EADA5] mt-1 max-w-2xl">
+          <p className="text-xs sm:text-sm text-[#94A3B8] max-w-2xl">
             Direct sales of Tier-1 solar panels, hybrid inverters, lithium iron phosphate batteries, and SABS-compliant protection hardware.
           </p>
         </div>
 
-        <div className="text-xs font-mono text-[#9EADA5] bg-[#141A17] border border-[#24302A] px-4 py-2 rounded shrink-0">
+        <div className="text-xs font-mono text-[#94A3B8] bg-[#0D1117] border border-[#1E2530] px-4 py-2 rounded-xl shrink-0">
           Showing <span className="text-white font-bold">{filteredProducts.length}</span> verified components
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-[#141A17] border border-[#24302A] rounded-lg p-4 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+      <div className="bg-[#0D1117] border border-[#1E2530] rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 font-mono text-xs">
           {/* Search Box */}
           <div className="md:col-span-6 relative">
-            <Search className="w-4 h-4 text-[#6B7B73] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by model, brand, wattage, or SKU..."
-              className="w-full bg-[#0E1311] border border-[#24302A] rounded pl-10 pr-4 py-2 text-xs font-mono text-white placeholder:text-[#6B7B73] focus:border-[#286D58]"
+              className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl pl-10 pr-4 py-2.5 text-white placeholder:text-[#64748B] focus:border-[#00D2FF] focus:outline-none"
             />
           </div>
 
@@ -83,7 +83,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
             <select
               value={selectedBrand}
               onChange={e => setSelectedBrand(e.target.value)}
-              className="w-full bg-[#0E1311] border border-[#24302A] rounded px-3 py-2 text-xs font-mono text-white focus:border-[#286D58]"
+              className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-2.5 text-white focus:border-[#00D2FF] focus:outline-none"
             >
               <option value="all">All Manufacturers</option>
               {brands.filter(b => b !== 'all').map(brand => (
@@ -97,7 +97,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value as any)}
-              className="w-full bg-[#0E1311] border border-[#24302A] rounded px-3 py-2 text-xs font-mono text-white focus:border-[#286D58]"
+              className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-2.5 text-white focus:border-[#00D2FF] focus:outline-none"
             >
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
@@ -106,16 +106,16 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
           </div>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-[#1B2420]">
+        {/* Category Pills */}
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-[#1E2530]">
           {categories.map(cat => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1.5 rounded text-xs font-mono transition-colors ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all uppercase ${
                 selectedCategory === cat.id
-                  ? 'bg-[#1B4D3E] text-white border border-[#286D58] font-semibold'
-                  : 'bg-[#0E1311] text-[#9EADA5] border border-[#24302A] hover:text-white'
+                  ? 'bg-white text-black font-bold shadow-md'
+                  : 'bg-[#05070A] text-[#94A3B8] border border-[#1E2530] hover:text-white'
               }`}
             >
               {cat.label}
@@ -124,22 +124,8 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
         </div>
       </div>
 
-      {/* Product Grid */}
-      {filteredProducts.length === 0 ? (
-        <div className="p-12 text-center bg-[#141A17] border border-[#24302A] rounded-lg">
-          <p className="text-sm text-[#9EADA5]">No hardware matches your active filters.</p>
-          <button
-            onClick={() => {
-              setSelectedCategory('all');
-              setSelectedBrand('all');
-              setSearchQuery('');
-            }}
-            className="mt-3 text-xs font-mono text-[#286D58] hover:underline font-bold"
-          >
-            Reset Filters
-          </button>
-        </div>
-      ) : (
+      {/* Products Grid */}
+      {filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map(product => (
             <ProductCard
@@ -148,6 +134,22 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
               onSelectProduct={onSelectProduct}
             />
           ))}
+        </div>
+      ) : (
+        <div className="p-16 text-center bg-[#0D1117] border border-[#1E2530] rounded-2xl space-y-4 font-mono">
+          <ShoppingBag className="w-10 h-10 text-[#64748B] mx-auto" />
+          <h3 className="text-base font-bold text-white uppercase">No hardware found matching filters</h3>
+          <p className="text-xs text-[#94A3B8]">Try adjusting your search keywords or switching category filters.</p>
+          <button
+            onClick={() => {
+              setSelectedCategory('all');
+              setSelectedBrand('all');
+              setSearchQuery('');
+            }}
+            className="px-4 py-2 bg-white text-black font-bold uppercase text-xs rounded-xl"
+          >
+            Clear Filters
+          </button>
         </div>
       )}
     </div>

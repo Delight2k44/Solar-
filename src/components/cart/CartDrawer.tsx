@@ -23,7 +23,10 @@ import {
   Smartphone,
   Check,
   HelpCircle,
-  Truck
+  Truck,
+  AlertTriangle,
+  MessageCircle,
+  ExternalLink
 } from 'lucide-react';
 
 export interface CartDrawerProps {
@@ -52,6 +55,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'applepay' | 'payflex' | 'instant_eft' | 'ozow' | 'deposit'>('card');
   const [selectedBank, setSelectedBank] = useState<string>('Capitec Pay');
   const [paymentRef, setPaymentRef] = useState<string>('');
+  const [showTechnicianAlert, setShowTechnicianAlert] = useState(false);
 
   // Card Inputs
   const [cardNumber, setCardNumber] = useState('4532 8821 9012 3456');
@@ -99,7 +103,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
 
   const handleExecutePayment = (e: React.FormEvent) => {
     e.preventDefault();
-    setCheckoutStep('processing');
+    setShowTechnicianAlert(true);
+    return;
 
     const orderItems = items.map(item => ({
       productId: item.product.id,
@@ -920,7 +925,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
               </div>
 
               <button
-                onClick={() => setCheckoutStep('shipping')}
+                onClick={() => setShowTechnicianAlert(true)}
                 className="w-full py-4 bg-[#10B981] hover:bg-[#059669] text-black font-extrabold uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-xl text-xs tracking-wider"
               >
                 <span>Proceed to Checkout</span>
@@ -931,6 +936,67 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
 
         </div>
       </div>
+
+      {/* TECHNICIAN WORKING ON IT MAINTENANCE MODAL */}
+      {showTechnicianAlert && (
+        <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0D1117] border border-[#00D2FF]/40 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-[0_0_50px_rgba(0,210,255,0.2)] font-sans text-xs animate-in fade-in zoom-in-95 relative">
+            <button
+              onClick={() => setShowTechnicianAlert(false)}
+              className="absolute top-4 right-4 p-2 text-[#94A3B8] hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="w-16 h-16 rounded-2xl bg-[#00D2FF]/15 border border-[#00D2FF]/40 flex items-center justify-center text-[#00D2FF] mx-auto shadow-inner">
+              <AlertTriangle className="w-8 h-8 animate-bounce" />
+            </div>
+
+            <div className="text-center space-y-2">
+              <span className="px-3 py-1 bg-[#00D2FF]/10 text-[#00D2FF] font-mono text-[10px] font-bold uppercase rounded-full tracking-wider border border-[#00D2FF]/30">
+                Payment Gateway Update
+              </span>
+              <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                Our technicians are still working on it.
+              </h3>
+              <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
+                Our engineering team is currently completing scheduled 3D Secure 2.0 gateway encryption upgrades. Direct automated online checkout is temporarily paused.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#05070A] border border-white/10 rounded-2xl space-y-2 text-left font-mono">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-[#64748B]">Cart Value:</span>
+                <strong className="text-[#00D2FF]">R {totalCartZAR.toLocaleString()} ({totalItemsCount} items)</strong>
+              </div>
+              <p className="text-[10px] text-[#94A3B8] leading-normal">
+                To reserve your equipment and finalize your invoice directly, please connect with our dispatch consultant on WhatsApp at <strong>078 780 8569</strong>.
+              </p>
+            </div>
+
+            <div className="space-y-2.5 pt-2 font-mono">
+              <a
+                href={`https://wa.me/27787808569?text=${encodeURIComponent(`Hello Kinetix Energy, I would like to place an order for: ${items.map(i => `${i.quantity}x ${i.product.name}`).join(', ')} (Total: R ${totalCartZAR.toLocaleString()})`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-extrabold uppercase rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-xs"
+              >
+                <MessageCircle className="w-4 h-4 fill-current" />
+                <span>Complete Order on WhatsApp (078 780 8569)</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+
+              <button
+                onClick={() => setShowTechnicianAlert(false)}
+                className="w-full py-3 bg-white/5 hover:bg-white/10 text-[#94A3B8] hover:text-white border border-white/10 rounded-xl transition-colors text-xs font-semibold"
+              >
+                Close Notice
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
