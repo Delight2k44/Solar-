@@ -85,14 +85,14 @@ export const BusinessPage: React.FC<BusinessPageProps> = ({ openConfigurator, se
     <div className="space-y-24 text-white font-sans selection:bg-[#00D2FF] selection:text-black pb-24">
       
       {/* 1. Cinematic Hero Section */}
-      <section className="relative min-h-[580px] lg:min-h-[660px] flex items-center justify-start overflow-hidden border-b border-[#1E2530] pt-20">
+      <section className="relative min-h-[500px] sm:min-h-[580px] lg:min-h-[660px] flex items-center justify-start overflow-hidden border-b border-[#1E2530] pt-20">
         <div className="absolute inset-0 z-0">
           <img
             src="/commercial-solar-sa.jpg"
             alt="Large commercial solar microgrid installation on industrial warehouse in South Africa"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[center_35%] sm:object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-transparent hidden lg:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/40 sm:bg-gradient-to-r sm:from-black/95 sm:via-black/80 sm:to-transparent hidden lg:block" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 to-black/30 lg:hidden" />
           <div className="absolute inset-0 subtle-grid opacity-10 pointer-events-none" />
         </div>

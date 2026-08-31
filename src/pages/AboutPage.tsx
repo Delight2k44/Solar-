@@ -11,14 +11,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setCurrentRoute }) => {
     <div className="space-y-24 text-white font-sans selection:bg-[#00D2FF] selection:text-black pb-24">
       
       {/* 1. Header */}
-      <section className="relative min-h-[500px] flex items-center justify-start overflow-hidden border-b border-[#1E2530] pt-20">
+      <section className="relative min-h-[460px] sm:min-h-[500px] flex items-center justify-start overflow-hidden border-b border-[#1E2530] pt-20">
         <div className="absolute inset-0 z-0">
           <img
             src="/kinetix-team-crew.jpg"
             alt="Kinetix Energy Engineering Crew"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[center_35%] sm:object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/40 sm:bg-gradient-to-r sm:from-black/95 sm:via-black/80 sm:to-transparent" />
         </div>
 
         <div className="max-w-7xl mx-auto px-6 sm:px-12 py-20 relative z-10 w-full space-y-6">

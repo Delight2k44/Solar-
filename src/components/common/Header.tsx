@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
-import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { 
   ShoppingBag, 
@@ -10,9 +9,6 @@ import {
   Globe, 
   User, 
   SlidersHorizontal,
-  Sun,
-  Moon,
-  BatteryCharging,
   Wrench,
   Layers,
   FileText,
@@ -24,7 +20,8 @@ import {
   Building2,
   Home,
   LogOut,
-  PhoneCall
+  PhoneCall,
+  MessageCircle
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -39,28 +36,13 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [segmentMode, setSegmentMode] = useState<'personal' | 'business'>('personal');
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   
   const { totalItemsCount, setIsCartOpen } = useCart();
-  const { theme, toggleTheme } = useTheme();
   const { currentUser, isAuthenticated, isAdmin, logout } = useAuth();
 
   const solutionsRef = useRef<HTMLDivElement>(null);
   const resourcesRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-
-  // Detect scroll to add slight transparent backdrop blur only when scrolling down
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -99,22 +81,22 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
 
   return (
     <header className="absolute top-0 left-0 right-0 z-50 bg-transparent border-none shadow-none">
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 sm:h-20 flex items-center justify-between font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 h-16 sm:h-20 flex items-center justify-between font-sans">
         
         {/* ========================================================================= */}
-        {/* 1. LEFT: STARLINK-STYLE WORDMARK + CLEAN TEXT LINKS */}
+        {/* 1. LEFT: STARLINK-STYLE WORDMARK + DESKTOP TEXT LINKS */}
         {/* ========================================================================= */}
-        <div className="flex items-center gap-8 lg:gap-10">
+        <div className="flex items-center gap-6 sm:gap-8 lg:gap-10">
           {/* Starlink-Style Tracked Bold Wordmark */}
           <button 
             onClick={() => handleNav('home')}
-            className="text-white font-extrabold tracking-[0.25em] text-sm sm:text-base uppercase hover:opacity-80 transition-opacity drop-shadow-md"
+            className="text-white font-extrabold tracking-[0.22em] sm:tracking-[0.25em] text-sm sm:text-base uppercase hover:opacity-80 transition-opacity drop-shadow-md shrink-0"
           >
             KINETIX
           </button>
 
-          {/* Clean Text Navigation Links (Transparent Starlink Style) */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-xs font-semibold text-[#CBD5E1] drop-shadow-sm">
+          {/* Desktop Clean Text Navigation Links */}
+          <nav className="hidden md:flex items-center gap-5 lg:gap-8 text-xs font-semibold text-[#CBD5E1] drop-shadow-sm">
             
             {/* Solutions Dropdown */}
             <div className="relative" ref={solutionsRef}>
@@ -270,11 +252,11 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
         </div>
 
         {/* ========================================================================= */}
-        {/* 2. RIGHT: SEGMENTED PILL [Personal | Business] + GLOBE + USER AVATAR + CART + THEME */}
+        {/* 2. RIGHT CONTROLS: DESKTOP PILL + PROFILE + CART | MOBILE CLEAN ICONS */}
         {/* ========================================================================= */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5">
+        <div className="flex items-center gap-2 sm:gap-3">
           
-          {/* Admin Operations Pill (if authenticated as admin) */}
+          {/* Admin Operations Pill (Desktop only) */}
           {isAdmin && (
             <button
               onClick={() => handleNav('admin')}
@@ -286,12 +268,12 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
             </button>
           )}
 
-          {/* Starlink Segmented Pill: [ Personal | Business ] */}
-          <div className="bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 rounded-lg p-0.5 flex items-center text-xs font-semibold shadow-sm transition-all">
+          {/* Starlink Segmented Pill: [ Personal | Business ] (Desktop & Tablet only) */}
+          <div className="hidden md:flex bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 rounded-lg p-0.5 items-center text-xs font-semibold shadow-sm transition-all">
             <button
               onClick={() => handleSegmentSwitch('personal')}
               className={`px-3 py-1 rounded-md transition-all ${
-                segmentMode === 'personal' && currentRoute !== 'commercial'
+                segmentMode === 'personal' && currentRoute !== 'commercial' && currentRoute !== 'business'
                   ? 'bg-white/25 text-white font-bold shadow-sm'
                   : 'text-[#CBD5E1] hover:text-white'
               }`}
@@ -301,7 +283,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
             <button
               onClick={() => handleSegmentSwitch('business')}
               className={`px-3 py-1 rounded-md transition-all ${
-                segmentMode === 'business' || currentRoute === 'commercial'
+                segmentMode === 'business' || currentRoute === 'commercial' || currentRoute === 'business'
                   ? 'bg-white/25 text-white font-bold shadow-sm'
                   : 'text-[#CBD5E1] hover:text-white'
               }`}
@@ -310,17 +292,17 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
             </button>
           </div>
 
-          {/* South Africa Region Globe Icon Button */}
+          {/* South Africa Region Globe Icon (Desktop only) */}
           <button
             onClick={() => alert('Region: South Africa (Eskom / SSEG Tariffs • ZAR currency)')}
             title="Region: South Africa (ZAR)"
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-[#E2E8F0] hover:text-white flex items-center justify-center transition-colors shadow-sm"
+            className="hidden md:flex w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-[#E2E8F0] hover:text-white items-center justify-center transition-colors shadow-sm"
           >
             <Globe className="w-4 h-4" />
           </button>
 
-          {/* User Profile / Customer Portal Button */}
-          <div className="relative" ref={profileRef}>
+          {/* User Profile / Customer Portal Button (Desktop only) */}
+          <div className="relative hidden md:block" ref={profileRef}>
             <button
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
               title={isAuthenticated ? `Signed in as ${currentUser?.name}` : 'Sign In / Customer Portal'}
@@ -403,10 +385,10 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
             )}
           </div>
 
-          {/* Cart Icon Button */}
+          {/* Cart Icon Button (Visible on both Desktop & Mobile) */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-[#E2E8F0] hover:text-white flex items-center justify-center transition-colors relative shadow-sm"
+            className="w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-[#E2E8F0] hover:text-white flex items-center justify-center transition-colors relative shadow-sm shrink-0"
             title="View Cart"
           >
             <ShoppingBag className="w-4 h-4" />
@@ -417,95 +399,165 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
             )}
           </button>
 
-          {/* Theme Toggle Icon (Sun / Moon) */}
-          <button
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-[#E2E8F0] hover:text-white flex items-center justify-center transition-colors shadow-sm"
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-cyan-300" />}
-          </button>
-
-          {/* Mobile Menu Hamburger Toggle */}
+          {/* Mobile Menu Hamburger Button (iPhone 15 Pro Optimized) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-8 h-8 rounded-lg bg-white/10 border border-white/20 text-white flex items-center justify-center"
+            className="md:hidden w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white flex items-center justify-center transition-colors shrink-0"
+            aria-label="Open Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. MOBILE SLIDEOUT DRAWER */}
+      {/* 3. NATIVE MOBILE SLIDEOUT DRAWER (iPhone 15 Pro Friendly) */}
       {/* ========================================================================= */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#05070A]/95 backdrop-blur-2xl border-b border-white/10 px-6 py-6 space-y-5 text-sm animate-in slide-in-from-top-2 font-mono">
-          <div className="space-y-2">
+        <div className="md:hidden fixed inset-x-0 top-16 bottom-0 z-50 bg-[#05070A]/98 backdrop-blur-3xl border-t border-white/10 p-5 overflow-y-auto space-y-6 font-sans animate-in slide-in-from-top-4 duration-300">
+          
+          {/* Segmented Switch on Mobile */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-1 flex items-center text-xs font-semibold">
             <button
-              onClick={() => handleNav('solar')}
-              className="w-full text-left py-2 text-[#94A3B8] hover:text-white flex items-center justify-between"
+              onClick={() => handleSegmentSwitch('personal')}
+              className={`flex-1 py-2 rounded-lg text-center transition-all ${
+                segmentMode === 'personal' && currentRoute !== 'commercial' && currentRoute !== 'business'
+                  ? 'bg-white text-black font-bold shadow-md'
+                  : 'text-[#94A3B8] hover:text-white'
+              }`}
             >
-              <span>Residential Solar Kits</span>
-              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#00D2FF]" />
+              Personal Solutions
             </button>
             <button
-              onClick={() => handleNav('commercial')}
-              className="w-full text-left py-2 text-[#94A3B8] hover:text-white flex items-center justify-between"
+              onClick={() => handleSegmentSwitch('business')}
+              className={`flex-1 py-2 rounded-lg text-center transition-all ${
+                segmentMode === 'business' || currentRoute === 'commercial' || currentRoute === 'business'
+                  ? 'bg-white text-black font-bold shadow-md'
+                  : 'text-[#94A3B8] hover:text-white'
+              }`}
             >
-              <span>Commercial Microgrids</span>
-              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#00D2FF]" />
-            </button>
-            <button
-              onClick={() => handleNav('shop')}
-              className="w-full text-left py-2 text-[#94A3B8] hover:text-white flex items-center justify-between"
-            >
-              <span>Solar Hardware Store</span>
-              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#00D2FF]" />
-            </button>
-            <button
-              onClick={() => handleNav('maintenance')}
-              className="w-full text-left py-2 text-[#94A3B8] hover:text-white flex items-center justify-between"
-            >
-              <span>Service Plans & Maintenance</span>
-              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#00D2FF]" />
-            </button>
-            <button
-              onClick={() => handleNav('tracking')}
-              className="w-full text-left py-2 text-[#94A3B8] hover:text-white flex items-center justify-between"
-            >
-              <span>Track Installation Pipeline</span>
-              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#00D2FF]" />
+              Business 50kW+
             </button>
           </div>
 
-          <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
+          {/* Core Navigation Links */}
+          <div className="space-y-1.5 font-mono text-xs">
+            <button
+              onClick={() => handleNav('solar')}
+              className="w-full p-3 bg-white/5 hover:bg-white/10 rounded-xl text-left text-white flex items-center justify-between border border-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <Home className="w-4 h-4 text-[#00D2FF]" />
+                <span>Residential Solar Kits</span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#64748B]" />
+            </button>
+
+            <button
+              onClick={() => handleNav('commercial')}
+              className="w-full p-3 bg-white/5 hover:bg-white/10 rounded-xl text-left text-white flex items-center justify-between border border-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <Building2 className="w-4 h-4 text-[#00D2FF]" />
+                <span>Commercial Microgrids & Section 12B</span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#64748B]" />
+            </button>
+
+            <button
+              onClick={() => handleNav('shop')}
+              className="w-full p-3 bg-white/5 hover:bg-white/10 rounded-xl text-left text-white flex items-center justify-between border border-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <ShoppingBag className="w-4 h-4 text-[#00D2FF]" />
+                <span>Solar Hardware Store</span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#64748B]" />
+            </button>
+
+            <button
+              onClick={() => handleNav('installation')}
+              className="w-full p-3 bg-white/5 hover:bg-white/10 rounded-xl text-left text-white flex items-center justify-between border border-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <Wrench className="w-4 h-4 text-[#00D2FF]" />
+                <span>DoL Master Installation Standards</span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#64748B]" />
+            </button>
+
+            <button
+              onClick={() => handleNav('maintenance')}
+              className="w-full p-3 bg-white/5 hover:bg-white/10 rounded-xl text-left text-white flex items-center justify-between border border-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="w-4 h-4 text-[#00D2FF]" />
+                <span>Service Plans & 24/7 SLA</span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#64748B]" />
+            </button>
+
+            <button
+              onClick={() => handleNav('tracking')}
+              className="w-full p-3 bg-white/5 hover:bg-white/10 rounded-xl text-left text-white flex items-center justify-between border border-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <Activity className="w-4 h-4 text-[#00D2FF]" />
+                <span>Track Active Order & Freight</span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#64748B]" />
+            </button>
+
+            <button
+              onClick={() => handleNav('faq')}
+              className="w-full p-3 bg-white/5 hover:bg-white/10 rounded-xl text-left text-white flex items-center justify-between border border-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <HelpCircle className="w-4 h-4 text-[#00D2FF]" />
+                <span>Technical FAQ & Knowledge Base</span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-[#64748B]" />
+            </button>
+          </div>
+
+          {/* Action CTAs */}
+          <div className="pt-2 space-y-3 font-mono">
             <button
               onClick={() => {
                 openConfigurator();
                 setMobileMenuOpen(false);
               }}
-              className="w-full py-3 bg-white text-black font-bold uppercase text-xs rounded-xl text-center"
+              className="w-full py-3.5 bg-white text-black font-bold uppercase text-xs rounded-xl text-center shadow-lg"
             >
-              Launch Solar Configurator
+              Calculate Solar Capacity
             </button>
 
             {isAuthenticated ? (
               <button
                 onClick={() => handleNav('portal')}
-                className="w-full py-3 bg-white/10 border border-white/20 text-white font-bold uppercase text-xs rounded-xl text-center"
+                className="w-full py-3.5 bg-[#00D2FF]/20 border border-[#00D2FF]/40 text-[#00D2FF] font-bold uppercase text-xs rounded-xl text-center"
               >
-                My Asset Portal
+                Customer Asset Portal ({currentUser?.name})
               </button>
             ) : (
               <button
                 onClick={() => handleNav('login')}
-                className="w-full py-3 bg-white/10 border border-white/20 text-white font-bold uppercase text-xs rounded-xl text-center"
+                className="w-full py-3.5 bg-white/10 border border-white/20 text-white font-bold uppercase text-xs rounded-xl text-center"
               >
                 Customer Sign In
               </button>
             )}
+
+            <a
+              href="https://wa.me/27787808569"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-extrabold uppercase text-xs rounded-xl text-center flex items-center justify-center gap-2 shadow-md"
+            >
+              <MessageCircle className="w-4 h-4 fill-current" />
+              <span>WhatsApp Support (078 780 8569)</span>
+            </a>
           </div>
         </div>
       )}

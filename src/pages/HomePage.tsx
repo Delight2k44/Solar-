@@ -41,20 +41,20 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ========================================================================= */}
       {/* 1. STARLINK-STYLE FULL-BLEED CINEMATIC HERO */}
       {/* ========================================================================= */}
-      <section className="relative min-h-screen flex items-center justify-start overflow-hidden border-b border-[#1E2530]">
+      <section className="relative min-h-[90vh] sm:min-h-screen flex items-center justify-start overflow-hidden border-b border-[#1E2530]">
         {/* Full-Bleed Edge-to-Edge Architectural Photo */}
         <div className="absolute inset-0 z-0">
           <img
             src="/hero-solar-home.jpg"
             alt="Modern luxury eco-home with integrated solar rooftop and battery storage under dramatic sky"
-            className="w-full h-full object-cover object-center lg:object-right"
+            className="w-full h-full object-cover object-[center_30%] sm:object-center lg:object-right"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/hero-solar-home.jpg';
             }}
           />
           {/* Subtle Starlink-Style Cinematic Dark Vignette */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent hidden lg:block" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/30 lg:hidden" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-transparent hidden lg:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/40 lg:hidden" />
           <div className="absolute inset-0 subtle-grid opacity-10 pointer-events-none" />
         </div>
 
@@ -65,7 +65,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
 
             {/* Massive Bold Headline */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.05]">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
               Reliable, uninterrupted power.
             </h1>
 

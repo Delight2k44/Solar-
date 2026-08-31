@@ -88,12 +88,12 @@ export const SolarSolutionsPage: React.FC<SolarSolutionsPageProps> = ({
     <div className="space-y-24 text-white font-sans selection:bg-[#00D2FF] selection:text-black pb-24">
       
       {/* 1. Starlink-Style Cinematic Header */}
-      <section className="relative min-h-[520px] flex items-center justify-start overflow-hidden border-b border-[#1E2530] pt-20">
+      <section className="relative min-h-[460px] sm:min-h-[520px] flex items-center justify-start overflow-hidden border-b border-[#1E2530] pt-20">
         <div className="absolute inset-0 z-0">
           <img
             src="/hero-solar-home.jpg"
             alt="Rooftop solar solutions across South Africa"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[center_35%] sm:object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/75 to-black/30" />
         </div>
@@ -209,14 +209,14 @@ export const SolarSolutionsPage: React.FC<SolarSolutionsPageProps> = ({
       </section>
 
       {/* 3. Commercial Microgrids Slide */}
-      <section className="relative min-h-[560px] flex items-center overflow-hidden border-y border-[#1E2530]">
+      <section className="relative min-h-[460px] sm:min-h-[520px] flex items-center overflow-hidden border-y border-[#1E2530]">
         <div className="absolute inset-0 z-0">
           <img
             src="/commercial-solar-sa.jpg"
             alt="Commercial solar microgrid on warehouse roof in South Africa"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[center_35%] sm:object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/40 sm:bg-gradient-to-r sm:from-black/95 sm:via-black/80 sm:to-transparent" />
         </div>
 
         <div className="max-w-7xl mx-auto px-6 sm:px-12 py-20 relative z-10 w-full">
