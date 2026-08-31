@@ -40,7 +40,7 @@ export const InstallationPipeline: React.FC<InstallationPipelineProps> = ({
     { num: '01', title: 'Order Placed', subtitle: '3D Secure / EFT Cleared', icon: ShoppingBag },
     { num: '02', title: 'Tech Review', subtitle: 'CAD & Single Line Diagram', icon: ShieldCheck },
     { num: '03', title: 'Allocation', subtitle: '1000V DC Bench Testing', icon: Cpu },
-    { num: '04', title: 'Freight Dispatch', subtitle: 'RAM Logistics In-Transit', icon: Truck },
+    { num: '04', title: 'Freight Dispatch', subtitle: 'The Courier Guy (TCG) In-Transit', icon: Truck },
     { num: '05', title: 'On-Site Setup', subtitle: 'DoL Master Electrician', icon: Wrench },
     { num: '06', title: 'Commissioning', subtitle: 'SANS 10142 CoC Issued', icon: CheckCircle2 }
   ];
