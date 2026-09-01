@@ -1,3 +1,4 @@
+import { sendMaintenanceTicketEmail } from '../../services/emailService';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { 
@@ -60,6 +61,18 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
 
     setTicketRef(ref);
     setSubmitted(true);
+    sendMaintenanceTicketEmail({
+      ticketId: ref,
+      clientName: clientName || 'Valued Client',
+      clientEmail: clientEmail || 'client@domain.co.za',
+      clientPhone: clientPhone || '+27 82 000 0000',
+      siteAddress: siteAddress || 'Site Address',
+      city: city || 'Johannesburg',
+      tier: packageTier,
+      inverterBrand: inverterBrand,
+      primaryReason: primaryReason,
+      issueDetails: issueDetails
+    }).catch(e => console.log('Maintenance email notice:', e));
     if (onSuccess) onSuccess();
   };
 

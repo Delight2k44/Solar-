@@ -398,3 +398,132 @@ export async function sendContactInquiryEmail(data: {
       </div>`
   });
 }
+
+// ─── 5. Installation Booking (Sent to Admin + Customer) ───────────────────────
+
+export async function sendInstallationBookingEmail(data: {
+  bookingId: string;
+  clientName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  targetDate: string;
+  roofType?: string;
+  phaseConnection?: string;
+  dbLocation?: string;
+}) {
+  const recipients = [ADMIN_EMAIL];
+  if (data.email && data.email.includes('@')) {
+    recipients.push(data.email);
+  }
+
+  return sendEmail({
+    to: recipients,
+    subject: `📅 [Site Assessment Booked] Ref #${data.bookingId} — ${data.clientName} | Kinetix Energy`,
+    replyTo: data.email,
+    metadata: {
+      type: 'installation_booking',
+      bookingId: data.bookingId,
+      clientName: data.clientName,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+      city: data.city,
+      targetDate: data.targetDate
+    },
+    html: `
+      <div style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#05070A;color:#F1F5F9;padding:32px;border-radius:16px;max-width:600px;margin:0 auto;border:1px solid #1E2530;">
+        <div style="text-align:center;padding-bottom:24px;border-bottom:1px solid #1E2530;">
+          <h1 style="color:#00D2FF;margin:0;font-size:24px;letter-spacing:1px;">⚡ KINETIX ENERGY</h1>
+          <p style="color:#94A3B8;font-size:12px;margin-top:4px;letter-spacing:2px;text-transform:uppercase;">Installation Site Assessment Booking</p>
+        </div>
+
+        <div style="margin:24px 0;">
+          <h2 style="color:#FFFFFF;font-size:18px;margin-bottom:8px;">Booking Staged: #${data.bookingId}</h2>
+          <p style="color:#94A3B8;font-size:14px;line-height:1.6;margin:0;">
+            Hello ${data.clientName}, your DoL certified site assessment request has been recorded.
+          </p>
+        </div>
+
+        <div style="background:#0D1117;border:1px solid #1E2530;border-radius:12px;padding:20px;margin-bottom:20px;">
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Client:</strong> <span style="color:#FFF;">${data.clientName}</span></p>
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Phone:</strong> <span style="color:#FFF;">${data.phone}</span></p>
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Site Address:</strong> <span style="color:#FFF;">${data.address}, ${data.city}</span></p>
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Target Assessment Date:</strong> <span style="color:#10B981;font-weight:bold;">${data.targetDate}</span></p>
+          ${data.roofType ? `<p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Roof Type:</strong> <span style="color:#FFF;">${data.roofType}</span></p>` : ''}
+          ${data.phaseConnection ? `<p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Electrical Connection:</strong> <span style="color:#FFF;">${data.phaseConnection}</span></p>` : ''}
+          ${data.dbLocation ? `<p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>DB Board Location:</strong> <span style="color:#FFF;">${data.dbLocation}</span></p>` : ''}
+        </div>
+
+        <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
+          <p style="margin:4px 0;">Installation Operations Hotline: <strong style="color:#00D2FF;">+27 78 780 8569</strong></p>
+          <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd.</p>
+        </div>
+      </div>`
+  });
+}
+
+// ─── 6. Maintenance Ticket (Sent to Admin + Customer) ──────────────────────────
+
+export async function sendMaintenanceTicketEmail(data: {
+  ticketId: string;
+  clientName: string;
+  clientEmail: string;
+  clientPhone: string;
+  siteAddress: string;
+  city: string;
+  tier: string;
+  inverterBrand: string;
+  primaryReason: string;
+  issueDetails?: string;
+}) {
+  const recipients = [ADMIN_EMAIL];
+  if (data.clientEmail && data.clientEmail.includes('@')) {
+    recipients.push(data.clientEmail);
+  }
+
+  return sendEmail({
+    to: recipients,
+    subject: `🛠️ [Maintenance Ticket Logged] Ref #${data.ticketId} — ${data.clientName} | Kinetix Energy`,
+    replyTo: data.clientEmail,
+    metadata: {
+      type: 'maintenance_ticket',
+      ticketId: data.ticketId,
+      clientName: data.clientName,
+      clientEmail: data.clientEmail,
+      clientPhone: data.clientPhone,
+      tier: data.tier,
+      inverterBrand: data.inverterBrand,
+      primaryReason: data.primaryReason
+    },
+    html: `
+      <div style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#05070A;color:#F1F5F9;padding:32px;border-radius:16px;max-width:600px;margin:0 auto;border:1px solid #1E2530;">
+        <div style="text-align:center;padding-bottom:24px;border-bottom:1px solid #1E2530;">
+          <h1 style="color:#00D2FF;margin:0;font-size:24px;letter-spacing:1px;">⚡ KINETIX ENERGY</h1>
+          <p style="color:#94A3B8;font-size:12px;margin-top:4px;letter-spacing:2px;text-transform:uppercase;">Technical Maintenance & Service Ticket</p>
+        </div>
+
+        <div style="margin:24px 0;">
+          <h2 style="color:#FFFFFF;font-size:18px;margin-bottom:8px;">Service Ticket Logged: #${data.ticketId}</h2>
+          <p style="color:#94A3B8;font-size:14px;line-height:1.6;margin:0;">
+            Hello ${data.clientName}, your service request has been logged with our certified technician queue.
+          </p>
+        </div>
+
+        <div style="background:#0D1117;border:1px solid #1E2530;border-radius:12px;padding:20px;margin-bottom:20px;">
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Service Tier:</strong> <span style="color:#00D2FF;">${data.tier}</span></p>
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Client:</strong> <span style="color:#FFF;">${data.clientName} (${data.clientPhone})</span></p>
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Site Location:</strong> <span style="color:#FFF;">${data.siteAddress}, ${data.city}</span></p>
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Hardware:</strong> <span style="color:#FFF;">${data.inverterBrand}</span></p>
+          <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Primary Objective:</strong> <span style="color:#10B981;">${data.primaryReason}</span></p>
+          ${data.issueDetails ? `<p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Details:</strong> <span style="color:#E2E8F0;">${data.issueDetails}</span></p>` : ''}
+        </div>
+
+        <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
+          <p style="margin:4px 0;">Technical Service Desk: <strong style="color:#00D2FF;">+27 78 780 8569</strong></p>
+          <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd.</p>
+        </div>
+      </div>`
+  });
+}

@@ -1,3 +1,4 @@
+import { sendInstallationBookingEmail } from '../../services/emailService';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { 
@@ -54,6 +55,18 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
     });
     setBookingRef(generatedRef);
     setSubmitted(true);
+    sendInstallationBookingEmail({
+      bookingId: generatedRef,
+      clientName: clientName || 'Valued Client',
+      email: email || 'client@domain.co.za',
+      phone: phone || '+27 82 000 0000',
+      address: address || 'Site Address',
+      city: city || 'Johannesburg',
+      targetDate: targetDate || new Date().toISOString().split('T')[0],
+      roofType: roofType,
+      phaseConnection: phaseConnection,
+      dbLocation: dbLocation
+    }).catch(e => console.log('Booking email notice:', e));
     if (onSuccess) onSuccess();
   };
 
