@@ -5,11 +5,15 @@ service cloud.firestore {
 
     // Helper to check if current user is an authorized Kinetix Admin
     function isAdmin() {
-      return request.auth != null && 
+      return request.auth != null &&
         (
           request.auth.token.email.lower() == 'delightchetter@gmail.com' ||
           request.auth.token.email.lower() == 'admin@kinetixenergy.co.za'
         );
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
     }
 
     // Public Collections (Products, Site Content)
@@ -23,11 +27,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Customer Submissions (Orders, Quotes, Commercial Leads, Contact Enquiries)
+    // Customer Submissions — anyone may submit, only staff (or the owner) may read back.
     match /orders/{orderId} {
       allow create: if true;
-      allow read: if true;
-      allow update, delete: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow update, delete: if isAdmin();
     }
 
     match /leads_quotes/{quoteId} {
@@ -61,14 +65,14 @@ service cloud.firestore {
     }
 
     match /user_notifications/{notifId} {
-      allow create, read: if true;
+      allow create: if true;
+      allow read: if isAdmin() || isOwner(resource.data.userId);
       allow update, delete: if isAdmin();
     }
 
-    // Catch-all fallback
+    // Deny by default: any collection not listed above is admin-only.
     match /{document=**} {
-      allow read, create: if true;
-      allow update, delete: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow read, write: if isAdmin();
     }
   }
 }

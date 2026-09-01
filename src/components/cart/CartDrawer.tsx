@@ -58,6 +58,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
   const [isPayFastSandbox, setIsPayFastSandbox] = useState(true);
   const [selectedBank, setSelectedBank] = useState<string>('Capitec Pay');
   const [paymentRef, setPaymentRef] = useState<string>('');
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [showTechnicianAlert, setShowTechnicianAlert] = useState(false);
 
   // Card Inputs
@@ -104,7 +105,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
   const finalTotalZAR = Math.round((totalCartZAR + vatZAR) * 100) / 100;
   const payflexInstallment = Math.round((finalTotalZAR / 4) * 100) / 100;
 
-    const handleExecutePayment = (e: React.FormEvent) => {
+    const handleExecutePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setCheckoutStep('processing');
 
@@ -143,7 +144,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
         setPaymentRef(generatedOrderId);
 
     // Dispatch real order confirmation email
-    sendOrderConfirmationEmail({
+    const emailResult = await sendOrderConfirmationEmail({
       orderId: generatedOrderId,
       customerName: formData.name || currentUser?.name || 'Valued Client',
       customerEmail: formData.email || currentUser?.email || 'client@kinetixenergy.co.za',
@@ -153,7 +154,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
       totalAmountZAR: finalTotalZAR,
       paymentMethod: paymentMethod,
       items: orderItems
-    }).catch((err: any) => console.log('Order email notice:', err));
+    });
+
+    if (!emailResult.success) {
+      console.error('Order confirmation email failed:', emailResult.error);
+      setEmailError(emailResult.error || 'Order confirmation email could not be sent');
+    }
 
     // If PayFast is selected, launch PayFast gateway or simulated test clearance
     if (paymentMethod === 'payfast') {
@@ -932,6 +938,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
                   <p className="text-xs text-[#9EADA5]">
                     Order Tracking Ref: <strong className="text-white font-bold">{paymentRef}</strong>
                   </p>
+                  {emailError && (
+                    <p className="text-[11px] text-[#F59E0B] leading-relaxed">
+                      We could not email your confirmation. Your order is saved — keep this reference for follow-up.
+                    </p>
+                  )}
                 </div>
 
                 <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl text-left text-xs space-y-2 text-[#9EADA5]">

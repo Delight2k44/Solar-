@@ -20,6 +20,8 @@ interface CommercialAssessmentFormProps {
 export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> = ({ onSuccess }) => {
   const { createCommercialLead } = useData();
   const [submitted, setSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [referenceId, setReferenceId] = useState('');
 
   // Form State
@@ -37,8 +39,9 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
   const [phone, setPhone] = useState('');
   const [locationCity, setLocationCity] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSending(true);
     const generatedRef = createCommercialLead({
       companyName: companyName || 'Commercial Client',
       industrySector: facilityType,
@@ -53,8 +56,8 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
       locationCity: locationCity || 'Gauteng'
     });
     setReferenceId(generatedRef);
-    setSubmitted(true);
-    sendCommercialAuditEmail({
+
+    const result = await sendCommercialAuditEmail({
       referenceId: generatedRef,
       companyName,
       contactName,
@@ -64,7 +67,14 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
       facilityType,
       monthlySpend,
       taxSection12b
-    }).catch(e => console.log('Email notice:', e));
+    });
+
+    if (!result.success) {
+      console.error('Commercial audit email failed:', result.error);
+      setEmailError(result.error || 'Audit confirmation email could not be sent');
+    }
+    setIsSending(false);
+    setSubmitted(true);
     if (onSuccess) onSuccess();
   };
 
@@ -85,6 +95,11 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
           <p className="text-xs sm:text-sm text-[#9EADA5] max-w-md mx-auto leading-relaxed">
             Our Principal Electrical Engineer has received the commercial load profiling inquiry for <strong className="text-white">{companyName}</strong>. We will reach out to <strong className="text-white">{contactName}</strong> within 4 business hours to arrange interval data / bill analysis.
           </p>
+          {emailError && (
+            <p className="text-xs text-[#F59E0B] max-w-md mx-auto leading-relaxed">
+              We could not email your confirmation. Your audit request is saved — keep reference {referenceId} for follow-up.
+            </p>
+          )}
         </div>
 
         <div className="p-4 bg-[#0E1311] border border-[#24302A] rounded-xl text-left text-xs font-mono text-[#9EADA5] space-y-2">
@@ -292,10 +307,11 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
         <div className="pt-2">
           <button
             type="submit"
-            className="w-full py-4 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+            disabled={isSending}
+            className="w-full py-4 bg-[#1B4D3E] hover:bg-[#286D58] disabled:opacity-60 text-white font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             <FileSpreadsheet className="w-4 h-4" />
-            <span>Request Commercial Engineering Feasibility Study</span>
+            <span>{isSending ? 'Submitting...' : 'Request Commercial Engineering Feasibility Study'}</span>
           </button>
         </div>
       </form>

@@ -25,6 +25,8 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
 }) => {
   const { createInstallationBooking } = useData();
   const [submitted, setSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [bookingRef, setBookingRef] = useState('');
 
   // Form State
@@ -39,8 +41,9 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
   const [dbLocation, setDbLocation] = useState('Garage');
   const [specialAccess, setSpecialAccess] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSending(true);
     const generatedRef = createInstallationBooking({
       clientName: clientName || 'Valued Client',
       email: email || 'client@domain.co.za',
@@ -54,8 +57,8 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
       specialAccess: specialAccess
     });
     setBookingRef(generatedRef);
-    setSubmitted(true);
-    sendInstallationBookingEmail({
+
+    const result = await sendInstallationBookingEmail({
       bookingId: generatedRef,
       clientName: clientName || 'Valued Client',
       email: email || 'client@domain.co.za',
@@ -66,7 +69,14 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
       roofType: roofType,
       phaseConnection: phaseConnection,
       dbLocation: dbLocation
-    }).catch(e => console.log('Booking email notice:', e));
+    });
+
+    if (!result.success) {
+      console.error('Installation booking email failed:', result.error);
+      setEmailError(result.error || 'Booking confirmation email could not be sent');
+    }
+    setIsSending(false);
+    setSubmitted(true);
     if (onSuccess) onSuccess();
   };
 
@@ -87,6 +97,11 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
           <p className="text-xs sm:text-sm text-[#9EADA5] max-w-md mx-auto leading-relaxed">
             Thank you, <strong className="text-white">{clientName}</strong>. Our Regional Operations Dispatcher for <strong className="text-white">{city}</strong> has logged your assessment for <strong className="text-white">{targetDate || 'upcoming dispatch'}</strong>. A registered Installation Electrician (IE) has been assigned to your reference.
           </p>
+          {emailError && (
+            <p className="text-xs text-[#F59E0B] max-w-md mx-auto leading-relaxed">
+              We could not email your confirmation. Your booking is saved — keep this reference and call +27 78 780 8569 to confirm.
+            </p>
+          )}
         </div>
 
         <div className="p-4 bg-[#0E1311] border border-[#24302A] rounded-xl text-left text-xs font-mono text-[#9EADA5] space-y-2">
@@ -282,10 +297,11 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
         <div className="pt-2">
           <button
             type="submit"
-            className="w-full py-4 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+            disabled={isSending}
+            className="w-full py-4 bg-[#1B4D3E] hover:bg-[#286D58] disabled:opacity-60 text-white font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             <Calendar className="w-4 h-4" />
-            <span>Confirm Installation Assessment Window</span>
+            <span>{isSending ? 'Confirming...' : 'Confirm Installation Assessment Window'}</span>
           </button>
         </div>
       </form>

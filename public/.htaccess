@@ -5,10 +5,17 @@
   RewriteEngine On
   RewriteBase /
 
+  # Extensionless alias for the email proxy
+  RewriteRule ^api/send-email$ api/send-email.php [L]
+
   # If the request is for a real file (JS, CSS, images, PHP), serve it directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
+
+  # API paths must never fall through to the SPA, otherwise a missing endpoint
+  # silently returns index.html to fetch() callers
+  RewriteRule ^api/ - [R=404,L]
 
   # Everything else → index.html (React SPA routing)
   RewriteRule ^ index.html [L]

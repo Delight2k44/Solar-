@@ -30,6 +30,8 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
   const initialTier = selectedTier || defaultTier;
   const { createMaintenanceTicket } = useData();
   const [submitted, setSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [ticketRef, setTicketRef] = useState('');
 
   // Form State
@@ -44,8 +46,9 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
   const [city, setCity] = useState('Johannesburg');
   const [issueDetails, setIssueDetails] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSending(true);
     const ref = createMaintenanceTicket({
       clientName,
       clientEmail,
@@ -60,8 +63,8 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
     });
 
     setTicketRef(ref);
-    setSubmitted(true);
-    sendMaintenanceTicketEmail({
+
+    const result = await sendMaintenanceTicketEmail({
       ticketId: ref,
       clientName: clientName || 'Valued Client',
       clientEmail: clientEmail || 'client@domain.co.za',
@@ -72,7 +75,14 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
       inverterBrand: inverterBrand,
       primaryReason: primaryReason,
       issueDetails: issueDetails
-    }).catch(e => console.log('Maintenance email notice:', e));
+    });
+
+    if (!result.success) {
+      console.error('Maintenance ticket email failed:', result.error);
+      setEmailError(result.error || 'Ticket confirmation email could not be sent');
+    }
+    setIsSending(false);
+    setSubmitted(true);
     if (onSuccess) onSuccess();
   };
 
@@ -93,6 +103,11 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
           <p className="text-xs sm:text-sm text-[#9EADA5] max-w-md mx-auto leading-relaxed">
             Thank you, <strong className="text-white">{clientName}</strong>. Your preventative service request has been logged under our <strong className="text-white">{packageTier}</strong> protocol. An SLA technician will contact you to confirm on-site arrival window.
           </p>
+          {emailError && (
+            <p className="text-xs text-[#F59E0B] max-w-md mx-auto leading-relaxed">
+              We could not email your confirmation. Your ticket is logged — keep this reference and call +27 78 780 8569 if it is urgent.
+            </p>
+          )}
         </div>
 
         <div className="p-4 bg-[#0E1311] border border-[#24302A] rounded-xl text-left text-xs font-mono text-[#9EADA5] space-y-2">
@@ -293,9 +308,10 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
         <div className="pt-3">
           <button
             type="submit"
-            className="w-full py-4 bg-[#111827] dark:bg-[#1B4D3E] hover:bg-black dark:hover:bg-[#286D58] border border-[#374151] dark:border-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-xl flex items-center justify-center gap-2"
+            disabled={isSending}
+            className="w-full py-4 bg-[#111827] dark:bg-[#1B4D3E] hover:bg-black dark:hover:bg-[#286D58] disabled:opacity-60 border border-[#374151] dark:border-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-xl flex items-center justify-center gap-2"
           >
-            <span>Dispatch Maintenance Booking Request</span>
+            <span>{isSending ? 'Dispatching...' : 'Dispatch Maintenance Booking Request'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
