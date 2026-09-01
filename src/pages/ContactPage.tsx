@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle2 } from 'lucide-react';
 import { useData } from '../context/DataContext';
+import { sendContactInquiryEmail } from '../services/emailService';
 
 export const ContactPage: React.FC = () => {
   const { createContactEnquiry } = useData();
@@ -26,6 +27,13 @@ export const ContactPage: React.FC = () => {
     });
 
     setIsSubmitted(true);
+    sendContactInquiryEmail({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      subject: formData.subject,
+      message: formData.message
+    }).catch(e => console.log('Email notice:', e));
   };
 
   return (

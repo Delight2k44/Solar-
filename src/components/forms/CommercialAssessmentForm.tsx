@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import { sendCommercialAuditEmail } from '../../services/emailService';
 import { 
   Building2, 
   Zap, 
@@ -53,6 +54,17 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
     });
     setReferenceId(generatedRef);
     setSubmitted(true);
+    sendCommercialAuditEmail({
+      referenceId: generatedRef,
+      companyName,
+      contactName,
+      email,
+      phone,
+      locationCity,
+      facilityType,
+      monthlySpend,
+      taxSection12b
+    }).catch(e => console.log('Email notice:', e));
     if (onSuccess) onSuccess();
   };
 

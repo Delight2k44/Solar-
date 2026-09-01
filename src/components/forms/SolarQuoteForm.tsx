@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import { sendSolarQuoteEmail } from '../../services/emailService';
 import { 
   Sun, 
   Battery, 
@@ -73,6 +74,18 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
 
     setQuoteId(newQuoteId);
     setSubmitted(true);
+    sendSolarQuoteEmail({
+      quoteId: newQuoteId,
+      fullName,
+      email,
+      phone,
+      suburb,
+      province,
+      monthlyBillZAR: monthlyBill,
+      recommendedInverterKw,
+      recommendedBatteryKwh,
+      recommendedSolarKwp
+    }).catch(e => console.log('Email notice:', e));
     if (onSuccess) onSuccess();
   };
 
