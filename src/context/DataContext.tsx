@@ -1,13 +1,24 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PRODUCTS_CATALOG, SAMPLE_PROJECT_RECORDS, MAINTENANCE_PACKAGES } from '../data/mockData';
+import { db } from '../services/firebase';
+import { 
+  collection, 
+  doc, 
+  setDoc, 
+  updateDoc, 
+  deleteDoc, 
+  onSnapshot,
+  query,
+  orderBy
+} from 'firebase/firestore';
 import { 
   Product, 
   ProjectRecord, 
   OrderRecord, 
   InstallationBooking, 
-  CommercialLead,
-  ContactEnquiry,
-  UserNotification
+  CommercialLead, 
+  ContactEnquiry, 
+  UserNotification 
 } from '../types';
 
 export interface MaintenanceTicket {
@@ -186,45 +197,12 @@ const INITIAL_ORDERS: OrderRecord[] = [
     paymentStatus: 'completed',
     orderStatus: 'installed',
     currentStageIndex: 3,
-    courierName: 'RAM Specialized Freight (Pty) Ltd',
-    trackingNumber: 'RAM-KX-904288ZA',
+    courierName: 'The Courier Guy (TCG)',
+    trackingNumber: 'TCG-KX-904288ZA',
     estimatedDeliveryDate: '2026-08-25',
     adminApproved: true,
     adminNotes: 'Bench-tested at Sandton Central Hub. Passed 1000V DC isolation and firmware checks.',
     createdAt: '2026-08-22'
-  },
-  {
-    id: 'KX-PAY-810520',
-    userId: 'usr-client-02',
-    customerName: 'Camps Bay Design Studio',
-    customerEmail: 'owner@campsbaystudio.co.za',
-    customerPhone: '+27 83 123 9988',
-    shippingAddress: '22 Victoria Road, Camps Bay',
-    city: 'Cape Town',
-    propertyType: 'Commercial Studio',
-    roofType: 'Corrugated Klip-Lok',
-    items: [
-      {
-        productId: 'sunsynk-12kw-3phase',
-        productName: 'Sunsynk 12kW 3-Phase Hybrid Inverter',
-        brand: 'Sunsynk',
-        sku: 'INV-SUN-12K-3P',
-        image: '/hybrid-inverter-deye.jpg',
-        quantity: 1,
-        unitPriceZAR: 54999,
-        includeInstallation: true,
-        installationPriceZAR: 12500
-      }
-    ],
-    equipmentSubtotalZAR: 54999,
-    installationSubtotalZAR: 12500,
-    vatZAR: 10124.85,
-    totalCartZAR: 77623.85,
-    paymentMethod: 'card',
-    paymentStatus: 'completed',
-    orderStatus: 'bench_testing',
-    currentStageIndex: 1,
-    createdAt: '2026-08-25'
   }
 ];
 
@@ -248,18 +226,18 @@ const INITIAL_INSTALL_BOOKINGS: InstallationBooking[] = [
 
 const INITIAL_COMMERCIAL_LEADS: CommercialLead[] = [
   {
-    id: 'KX-COMM-8201',
-    companyName: 'Bredasdorp Agrivoltaics Cooperative',
-    industrySector: 'Agriculture & Cold Storage',
-    monthlySpend: 'R 85,000 – R 140,000 / month',
-    peakKva: '250 kVA – 500 kVA',
-    dieselMonthly: 'R 45,000 / month',
+    id: 'KX-COMM-901',
+    companyName: 'Blyvoor Fruit & Cold Storage (Pty) Ltd',
+    industrySector: 'Agricultural Cold Chain & Packhouse',
+    monthlySpend: 'R 120,000 - R 250,000 / mo',
+    peakKva: '350 kVA',
+    dieselMonthly: 'R 65,000 / mo',
     taxSection12b: true,
     contactName: 'Dirk van der Merwe',
-    designation: 'Managing Director',
-    email: 'dirk@bredasdorpfarming.co.za',
-    phone: '+27 82 777 3412',
-    locationCity: 'Overberg, Western Cape',
+    designation: 'Managing Director & Plant Engineer',
+    email: 'dirk@blyvoorfruit.co.za',
+    phone: '+27 82 444 8901',
+    locationCity: 'Ceres, Western Cape',
     status: 'audit_booked',
     createdAt: '2026-08-23'
   }
@@ -267,36 +245,19 @@ const INITIAL_COMMERCIAL_LEADS: CommercialLead[] = [
 
 const INITIAL_TICKETS: MaintenanceTicket[] = [
   {
-    id: 'KX-SRV-8941',
-    clientName: 'Bryanston Residential Client',
-    clientEmail: 'client@bryanston.co.za',
-    clientPhone: '+27 82 456 7890',
-    siteAddress: '14 Protea Avenue, Bryanston',
-    city: 'Johannesburg',
-    tier: 'Performance SLA (Quarterly)',
+    id: 'KX-SRV-1029',
+    clientName: 'Gareth Edwards',
+    clientEmail: 'gareth@waterfallprop.co.za',
+    clientPhone: '+27 82 777 4321',
+    siteAddress: '42 Eagle Canyon Boulevard',
+    city: 'Honeydew, Roodepoort',
+    tier: 'Essential Care',
     inverterBrand: 'Deye 8kW Hybrid',
-    systemAge: '1 Year',
-    primaryReason: 'Annual SANS 10142 Health Audit & Thermal Scan',
-    issueDetails: 'Preventative check before winter high peak tariff period.',
-    status: 'in_progress',
-    assignedTechnician: 'Master Electrician J. Botha',
-    scheduledDate: '28 Aug 2026',
-    createdAt: '2026-08-20'
-  },
-  {
-    id: 'KX-SRV-7712',
-    clientName: 'Camps Bay Commercial Studio',
-    clientEmail: 'owner@campsbaystudio.co.za',
-    clientPhone: '+27 83 123 9988',
-    siteAddress: '22 Victoria Road, Camps Bay',
-    city: 'Cape Town',
-    tier: 'Complete Asset Protection',
-    inverterBrand: 'Sunsynk 12kW 3-Phase',
-    systemAge: '2 Years',
-    primaryReason: 'Panel De-soiling & Hydro-Wash',
-    issueDetails: 'Coastal salt mist film reduction on roof panels.',
+    systemAge: '1 - 2 Years',
+    primaryReason: 'Inverter Firmware & Battery Calibration',
+    issueDetails: 'Battery SOC drifts to 85% prematurely. Requesting DoL certified technician for onsite recalibration.',
     status: 'dispatched',
-    assignedTechnician: 'Senior Solar Tech D. Visser',
+    assignedTechnician: 'Master Electrician J. Botha (#88210)',
     scheduledDate: '30 Aug 2026',
     createdAt: '2026-08-22'
   }
@@ -317,21 +278,6 @@ const INITIAL_LEADS: LeadQuote[] = [
     recommendedSolarKwp: 9.8,
     createdAt: '2026-08-24',
     status: 'new'
-  },
-  {
-    id: 'KX-Q-881203',
-    fullName: 'Thabo Mokoena',
-    email: 'thabo@mokoena-holdings.co.za',
-    phone: '+27 83 555 4321',
-    suburb: 'Midrand',
-    province: 'Gauteng',
-    propertyType: 'Commercial Warehouse',
-    monthlyBillZAR: 45000,
-    recommendedInverterKw: 50,
-    recommendedBatteryKwh: 60,
-    recommendedSolarKwp: 45,
-    createdAt: '2026-08-23',
-    status: 'contacted'
   }
 ];
 
@@ -414,29 +360,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [contactEnquiries, setContactEnquiries] = useState<ContactEnquiry[]>(() => {
     try {
       const saved = localStorage.getItem('kinetix_enquiries');
-      return saved ? JSON.parse(saved) : [
-        {
-          id: 'KX-ENQ-8192',
-          name: 'Sipho Ndlovu',
-          email: 'sipho.ndlovu@outlook.com',
-          phone: '+27 82 555 7711',
-          subject: '3-Phase Inverter Compatibility for Waterfall Estate',
-          message: 'Good day, I have an existing borehole pump (3.5kW 3-Phase). Can your Sunsynk 12kW inverter handle the inductive starting surge with 2x Freedom Won batteries?',
-          status: 'new',
-          createdAt: '2026-08-27'
-        },
-        {
-          id: 'KX-ENQ-7720',
-          name: 'Helena Marais',
-          email: 'helena@marais-arch.co.za',
-          phone: '+27 83 222 9900',
-          subject: 'Architectural Flush Solar Roof Mounts',
-          message: 'Hi Kinetix team, we are designing a residential home in Franschhoek and require black-framed bi-facial panels with hidden cable trays. Please send spec sheets.',
-          status: 'reviewed',
-          replyNotes: 'Technical datasheets dispatched via email.',
-          createdAt: '2026-08-26'
-        }
-      ];
+      return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
     }
@@ -445,29 +369,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userNotifications, setUserNotifications] = useState<UserNotification[]>(() => {
     try {
       const saved = localStorage.getItem('kinetix_notifications');
-      return saved ? JSON.parse(saved) : [
-        {
-          id: 'NOTIF-101',
-          targetUserEmail: 'all',
-          title: 'Spring Solar Yield Optimization Audit Window Open',
-          message: 'Prepare your solar PV array for peak spring generation with our complimentary inverter diagnostic scan.',
-          type: 'general',
-          read: false,
-          sender: 'Kinetix Engineering Desk',
-          createdAt: '2026-08-25'
-        },
-        {
-          id: 'NOTIF-102',
-          targetUserEmail: 'client@bryanston.co.za',
-          targetUserName: 'Bryanston Residential Client',
-          title: 'Hardware Allocation & Bench-Testing Complete',
-          message: 'Your 8kW Deye inverter and Freedom Won eTower modules have passed 1000V DC bench testing and are staged for freight dispatch.',
-          type: 'order',
-          read: false,
-          sender: 'Sandton Logistics Hub',
-          createdAt: '2026-08-26'
-        }
-      ];
+      return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
     }
@@ -482,7 +384,93 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  // Sync to localStorage
+  // ─── Real-Time Firebase Firestore Listeners ─────────────────────────────────
+  useEffect(() => {
+    // 1. Orders listener
+    const unsubOrders = onSnapshot(collection(db, 'orders'), (snapshot) => {
+      if (!snapshot.empty) {
+        const firestoreOrders: OrderRecord[] = [];
+        snapshot.forEach((docSnap) => {
+          firestoreOrders.push(docSnap.data() as OrderRecord);
+        });
+        if (firestoreOrders.length > 0) {
+          setOrders(prev => {
+            const merged = [...firestoreOrders];
+            prev.forEach(p => {
+              if (!merged.find(m => m.id === p.id)) merged.push(p);
+            });
+            return merged;
+          });
+        }
+      }
+    }, (err) => console.log('Firestore orders snapshot notice:', err));
+
+    // 2. Leads & Quotes listener
+    const unsubQuotes = onSnapshot(collection(db, 'leads_quotes'), (snapshot) => {
+      if (!snapshot.empty) {
+        const firestoreQuotes: LeadQuote[] = [];
+        snapshot.forEach((docSnap) => {
+          firestoreQuotes.push(docSnap.data() as LeadQuote);
+        });
+        if (firestoreQuotes.length > 0) {
+          setLeadsQuotes(prev => {
+            const merged = [...firestoreQuotes];
+            prev.forEach(p => {
+              if (!merged.find(m => m.id === p.id)) merged.push(p);
+            });
+            return merged;
+          });
+        }
+      }
+    }, (err) => console.log('Firestore quotes snapshot notice:', err));
+
+    // 3. Commercial Leads listener
+    const unsubCommercial = onSnapshot(collection(db, 'commercial_leads'), (snapshot) => {
+      if (!snapshot.empty) {
+        const firestoreCommercial: CommercialLead[] = [];
+        snapshot.forEach((docSnap) => {
+          firestoreCommercial.push(docSnap.data() as CommercialLead);
+        });
+        if (firestoreCommercial.length > 0) {
+          setCommercialLeads(prev => {
+            const merged = [...firestoreCommercial];
+            prev.forEach(p => {
+              if (!merged.find(m => m.id === p.id)) merged.push(p);
+            });
+            return merged;
+          });
+        }
+      }
+    }, (err) => console.log('Firestore commercial snapshot notice:', err));
+
+    // 4. Contact Enquiries listener
+    const unsubEnquiries = onSnapshot(collection(db, 'contact_enquiries'), (snapshot) => {
+      if (!snapshot.empty) {
+        const firestoreEnquiries: ContactEnquiry[] = [];
+        snapshot.forEach((docSnap) => {
+          firestoreEnquiries.push(docSnap.data() as ContactEnquiry);
+        });
+        if (firestoreEnquiries.length > 0) {
+          setContactEnquiries(prev => {
+            const merged = [...firestoreEnquiries];
+            prev.forEach(p => {
+              if (!merged.find(m => m.id === p.id)) merged.push(p);
+            });
+            return merged;
+          });
+        }
+      }
+    }, (err) => console.log('Firestore enquiries snapshot notice:', err));
+
+    return () => {
+      unsubOrders();
+      unsubQuotes();
+      unsubCommercial();
+      unsubEnquiries();
+    };
+  }, []);
+
+  // Sync to localStorage as backup
   useEffect(() => {
     localStorage.setItem('kinetix_products', JSON.stringify(products));
   }, [products]);
@@ -523,41 +511,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('kinetix_site_content', JSON.stringify(siteContent));
   }, [siteContent]);
 
-  useEffect(() => {
-    localStorage.setItem('kinetix_orders', JSON.stringify(orders));
-  }, [orders]);
-
-  useEffect(() => {
-    localStorage.setItem('kinetix_install_bookings', JSON.stringify(installationBookings));
-  }, [installationBookings]);
-
-  useEffect(() => {
-    localStorage.setItem('kinetix_commercial_leads', JSON.stringify(commercialLeads));
-  }, [commercialLeads]);
-
-  useEffect(() => {
-    localStorage.setItem('kinetix_tickets', JSON.stringify(maintenanceTickets));
-  }, [maintenanceTickets]);
-
-  useEffect(() => {
-    localStorage.setItem('kinetix_leads', JSON.stringify(leadsQuotes));
-  }, [leadsQuotes]);
-
-  useEffect(() => {
-    localStorage.setItem('kinetix_site_content', JSON.stringify(siteContent));
-  }, [siteContent]);
-
   // Product Actions
   const updateProduct = (id: string, updates: Partial<Product>) => {
     setProducts(prev => prev.map(p => (p.id === id ? { ...p, ...updates } : p)));
+    setDoc(doc(db, 'products', id), updates, { merge: true }).catch(() => {});
   };
 
   const addProduct = (product: Product) => {
     setProducts(prev => [product, ...prev]);
+    setDoc(doc(db, 'products', product.id), product).catch(() => {});
   };
 
   const deleteProduct = (id: string) => {
     setProducts(prev => prev.filter(p => p.id !== id));
+    deleteDoc(doc(db, 'products', id)).catch(() => {});
   };
 
   // Order Actions (Takealot Core)
@@ -573,18 +540,23 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       paymentStatus: 'completed',
       orderStatus: 'hardware_reserved',
       currentStageIndex: 0,
-      courierName: 'RAM Specialized Solar Logistics (Pty) Ltd',
-      trackingNumber: `RAM-ZA-${Math.floor(100000 + Math.random() * 900000)}`,
+      courierName: 'The Courier Guy (TCG)',
+      trackingNumber: `TCG-ZA-${Math.floor(100000 + Math.random() * 900000)}`,
       estimatedDeliveryDate: estDateString,
       adminApproved: false,
       adminNotes: 'Order received. Awaiting dispatch manager technical approval.',
       createdAt: new Date().toISOString().split('T')[0]
     };
     
-    // Save to orders array
+    // 1. Local state update
     setOrders(prev => [newOrder, ...prev]);
 
-    // Also register in projects tracker so the customer can immediately track milestones
+    // 2. Firebase Firestore Real-Time Write
+    setDoc(doc(db, 'orders', newOrderId), newOrder)
+      .then(() => console.log('✅ Order synced to Firestore:', newOrderId))
+      .catch((err) => console.log('Firestore order write notice:', err));
+
+    // Register project tracking record
     const newProjectRecord: ProjectRecord = {
       orderId: newOrderId,
       customerName: orderData.customerName,
@@ -629,7 +601,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (o.id === orderId) {
         const nextStage = stageIndex !== undefined ? stageIndex : o.currentStageIndex;
         const isApproved = nextStage >= 1 || (trackingData?.adminApproved ?? o.adminApproved ?? false);
-        return {
+        const updated = {
           ...o,
           ...trackingData,
           orderStatus: status,
@@ -637,6 +609,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           adminApproved: isApproved,
           adminNotes: trackingData?.adminNotes || o.adminNotes || (isApproved ? 'Approved by Admin Engineering Desk' : 'Pending dispatch review')
         };
+        // Update in Firestore
+        updateDoc(doc(db, 'orders', orderId), updated).catch(() => {});
+        return updated;
       }
       return o;
     }));
@@ -648,6 +623,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const deleteOrder = (orderId: string) => {
     setOrders(prev => prev.filter(o => o.id !== orderId));
+    deleteDoc(doc(db, 'orders', orderId)).catch(() => {});
     setProjects(prev => {
       const copy = { ...prev };
       delete copy[orderId];
@@ -665,15 +641,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: new Date().toISOString().split('T')[0]
     };
     setInstallationBookings(prev => [newBooking, ...prev]);
+    setDoc(doc(db, 'installation_bookings', newId), newBooking).catch(() => {});
     return newId;
   };
 
   const updateInstallationBookingStatus = (bookingId: string, status: InstallationBooking['status']) => {
     setInstallationBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status } : b));
+    updateDoc(doc(db, 'installation_bookings', bookingId), { status }).catch(() => {});
   };
 
   const deleteInstallationBooking = (bookingId: string) => {
     setInstallationBookings(prev => prev.filter(b => b.id !== bookingId));
+    deleteDoc(doc(db, 'installation_bookings', bookingId)).catch(() => {});
   };
 
   const createCommercialLead = (data: Omit<CommercialLead, 'id' | 'createdAt' | 'status'>): string => {
@@ -685,15 +664,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: new Date().toISOString().split('T')[0]
     };
     setCommercialLeads(prev => [newLead, ...prev]);
+    setDoc(doc(db, 'commercial_leads', newId), newLead)
+      .then(() => console.log('✅ Commercial lead synced to Firestore:', newId))
+      .catch((err) => console.log('Firestore commercial write notice:', err));
     return newId;
   };
 
   const updateCommercialLeadStatus = (leadId: string, status: CommercialLead['status']) => {
     setCommercialLeads(prev => prev.map(l => l.id === leadId ? { ...l, status } : l));
+    updateDoc(doc(db, 'commercial_leads', leadId), { status }).catch(() => {});
   };
 
   const deleteCommercialLead = (leadId: string) => {
     setCommercialLeads(prev => prev.filter(l => l.id !== leadId));
+    deleteDoc(doc(db, 'commercial_leads', leadId)).catch(() => {});
   };
 
   // Project Stage Actions
@@ -743,6 +727,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setMaintenanceTickets(prev =>
       prev.map(t => (t.id === ticketId ? { ...t, status, ...(tech ? { assignedTechnician: tech } : {}) } : t))
     );
+    updateDoc(doc(db, 'maintenance_tickets', ticketId), { status, ...(tech ? { assignedTechnician: tech } : {}) }).catch(() => {});
   };
 
   const createMaintenanceTicket = (data: Omit<MaintenanceTicket, 'id' | 'createdAt' | 'status'>): string => {
@@ -754,14 +739,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: new Date().toISOString().split('T')[0]
     };
     setMaintenanceTickets(prev => [newTicket, ...prev]);
+    setDoc(doc(db, 'maintenance_tickets', newId), newTicket).catch(() => {});
     return newId;
   };
 
   const deleteMaintenanceTicket = (ticketId: string) => {
     setMaintenanceTickets(prev => prev.filter(t => t.id !== ticketId));
+    deleteDoc(doc(db, 'maintenance_tickets', ticketId)).catch(() => {});
   };
 
-  // Lead Actions
+  // Lead Actions (Quotes)
   const addLeadQuote = (data: Omit<LeadQuote, 'id' | 'createdAt' | 'status'>): string => {
     const newId = `KX-Q-${Math.floor(100000 + Math.random() * 900000)}`;
     const newLead: LeadQuote = {
@@ -771,15 +758,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: new Date().toISOString().split('T')[0]
     };
     setLeadsQuotes(prev => [newLead, ...prev]);
+    setDoc(doc(db, 'leads_quotes', newId), newLead)
+      .then(() => console.log('✅ Lead quote synced to Firestore:', newId))
+      .catch((err) => console.log('Firestore quote write notice:', err));
     return newId;
   };
 
   const updateLeadStatus = (leadId: string, status: LeadQuote['status']) => {
-    setLeadsQuotes(prev => prev.map(l => (l.id === leadId ? { ...l, status } : l)));
+    setLeadsQuotes(prev => prev.map(l => l.id === leadId ? { ...l, status } : l));
+    updateDoc(doc(db, 'leads_quotes', leadId), { status }).catch(() => {});
   };
 
   const deleteLeadQuote = (leadId: string) => {
     setLeadsQuotes(prev => prev.filter(l => l.id !== leadId));
+    deleteDoc(doc(db, 'leads_quotes', leadId)).catch(() => {});
   };
 
   // Contact Enquiries Actions
@@ -792,15 +784,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: new Date().toISOString().split('T')[0]
     };
     setContactEnquiries(prev => [newEnquiry, ...prev]);
+    setDoc(doc(db, 'contact_enquiries', newId), newEnquiry)
+      .then(() => console.log('✅ Contact enquiry synced to Firestore:', newId))
+      .catch((err) => console.log('Firestore enquiry write notice:', err));
     return newId;
   };
 
   const updateContactEnquiryStatus = (id: string, status: ContactEnquiry['status'], replyNotes?: string) => {
     setContactEnquiries(prev => prev.map(e => e.id === id ? { ...e, status, ...(replyNotes ? { replyNotes } : {}) } : e));
+    updateDoc(doc(db, 'contact_enquiries', id), { status, ...(replyNotes ? { replyNotes } : {}) }).catch(() => {});
   };
 
   const deleteContactEnquiry = (id: string) => {
     setContactEnquiries(prev => prev.filter(e => e.id !== id));
+    deleteDoc(doc(db, 'contact_enquiries', id)).catch(() => {});
   };
 
   // Notifications & Customer Communication
@@ -813,15 +810,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: new Date().toISOString().split('T')[0]
     };
     setUserNotifications(prev => [newNotif, ...prev]);
+    setDoc(doc(db, 'user_notifications', newId), newNotif).catch(() => {});
     return newId;
   };
 
   const markNotificationRead = (id: string) => {
     setUserNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    updateDoc(doc(db, 'user_notifications', id), { read: true }).catch(() => {});
   };
 
   const deleteNotification = (id: string) => {
     setUserNotifications(prev => prev.filter(n => n.id !== id));
+    deleteDoc(doc(db, 'user_notifications', id)).catch(() => {});
   };
 
   // Content Actions
@@ -911,4 +911,3 @@ export const useData = (): DataContextType => {
   }
   return context;
 };
-
