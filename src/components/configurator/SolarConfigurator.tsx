@@ -1,3 +1,4 @@
+import { sendSolarQuoteEmail } from '../../services/emailService';
 import React, { useState } from 'react';
 import { 
   Home, 
@@ -146,6 +147,16 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    sendSolarQuoteEmail({
+      fullName: contactName,
+      email: contactEmail,
+      phone: contactPhone,
+      suburb: propertyCity,
+      installTarget: preferredDate,
+      recommendedInverterKw: results.recommendedInverterKva,
+      recommendedBatteryKwh: results.recommendedBatteryKwh,
+      recommendedSolarKwp: results.recommendedSolarKwp
+    }).catch((err: any) => console.log('Email notice:', err));
     if (onQuoteRequested) {
       onQuoteRequested({
         ...results,
