@@ -1,14 +1,11 @@
 /**
- * Enterprise Email Notification Service
- * Dispatches automated email alerts to delightchetter@gmail.com for quotes, commercial audits, bookings, and orders.
+ * Kinetix Energy — Email Notification Service
+ * Sends via server-side PHP proxy (/api/send-email.php) which forwards to Resend API.
+ * This avoids CORS issues since browser never calls Resend directly.
  */
 
-const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY || (
-  ['re_', 'fTujWKwg_', '2yy9juGsSUxwxGNz3gQdEMHL'].join('')
-);
-
 export const ADMIN_EMAIL = 'delightchetter@gmail.com';
-const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>'; // or notifications@kinetixes.com
+const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
 
 interface SendEmailParams {
   to?: string | string[];
@@ -20,63 +17,36 @@ interface SendEmailParams {
 export async function sendEmail({ to = ADMIN_EMAIL, subject, html, replyTo }: SendEmailParams): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
     const recipients = Array.isArray(to) ? to : [to];
-    
-    // Attempt 1: Direct Resend API
-    const response = await fetch('https://api.resend.com/emails', {
+
+    const response = await fetch('/api/send-email.php', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: recipients,
-        reply_to: replyTo,
-        subject: subject,
-        html: html
+        reply_to: replyTo || undefined,
+        subject,
+        html
       })
     });
 
     const result = await response.json();
-    if (response.ok) {
-      console.log('✅ Email successfully delivered via Resend:', result);
-      return { success: true, data: result };
+
+    if (result.success) {
+      console.log('✅ Email delivered:', result.data);
+      return { success: true, data: result.data };
     }
 
-    console.warn('Resend primary notice:', result);
-
-    // Attempt 2: Resend with default verified sender fallback
-    const fallbackResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'onboarding@resend.dev',
-        to: [ADMIN_EMAIL],
-        reply_to: replyTo,
-        subject: subject,
-        html: html
-      })
-    });
-
-    const fallbackResult = await fallbackResponse.json();
-    if (fallbackResponse.ok) {
-      console.log('✅ Email delivered via Resend fallback:', fallbackResult);
-      return { success: true, data: fallbackResult };
-    }
-
-    return { success: false, error: fallbackResult.message || 'Notification queued' };
+    console.warn('Email API notice:', result.error);
+    return { success: false, error: result.error };
   } catch (err: any) {
     console.error('Email dispatch error:', err);
     return { success: false, error: err.message };
   }
 }
 
-/**
- * 1. Order Confirmation Email (Itemized hardware, installation, and waybill)
- */
+// ─── 1. Order Confirmation ────────────────────────────────────────────────────
+
 export async function sendOrderConfirmationEmail(data: {
   orderId: string;
   customerName: string;
@@ -96,59 +66,38 @@ export async function sendOrderConfirmationEmail(data: {
   }>;
 }) {
   const waybill = data.waybillNumber || `TCG-ZA-${data.orderId.replace(/[^0-9]/g, '')}`;
-  
-  const itemsHtml = data.items.map(item => `
-    <tr style="border-bottom: 1px solid #1e2530;">
-      <td style="padding: 10px 0; color: #ffffff;">
-        <strong>${item.quantity}x ${item.productName}</strong>
-        ${item.includeInstallation ? '<br/><span style="color: #00d2ff; font-size: 11px;">+ Turnkey SANS Installation</span>' : ''}
-      </td>
-      <td style="padding: 10px 0; text-align: right; color: #00d2ff; font-weight: bold;">
-        R ${((item.unitPriceZAR * item.quantity) + (item.includeInstallation ? (item.installationPriceZAR || 0) : 0)).toLocaleString()}
-      </td>
-    </tr>
-  `).join('');
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; background-color: #05070a; color: #ffffff; padding: 30px; border-radius: 12px;">
-      <h2 style="color: #00d2ff; margin-bottom: 5px;">⚡ New Solar Order Confirmed • Tax Invoice</h2>
-      <p style="color: #94a3b8; font-size: 14px;">Order Reference: <strong style="color: #ffffff;">${data.orderId}</strong></p>
-      
-      <div style="background-color: #0d1117; border: 1px solid #1e2530; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #ffffff; margin-top: 0;">Customer & Delivery Details</h3>
-        <p style="margin: 5px 0;"><strong>Customer:</strong> ${data.customerName}</p>
-        <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${data.customerEmail}" style="color: #00d2ff;">${data.customerEmail}</a></p>
-        <p style="margin: 5px 0;"><strong>Phone:</strong> <a href="tel:${data.customerPhone}" style="color: #00d2ff;">${data.customerPhone}</a></p>
-        <p style="margin: 5px 0;"><strong>Delivery Address:</strong> ${data.shippingAddress}, ${data.city}</p>
-        <p style="margin: 5px 0;"><strong>Payment Method:</strong> ${data.paymentMethod.toUpperCase()}</p>
-        <p style="margin: 5px 0;"><strong>The Courier Guy Waybill:</strong> <strong style="color: #00d2ff;">${waybill}</strong></p>
-      </div>
-
-      <div style="background-color: #0d1117; border: 1px solid #1e2530; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #ffffff; margin-top: 0;">Purchased Equipment</h3>
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-          ${itemsHtml}
-          <tr>
-            <td style="padding: 15px 0 5px; font-weight: bold; color: #ffffff; font-size: 14px;">Total Paid (Incl. 15% VAT):</td>
-            <td style="padding: 15px 0 5px; text-align: right; color: #00d2ff; font-weight: 900; font-size: 16px;">R ${data.totalAmountZAR.toLocaleString()}</td>
-          </tr>
-        </table>
-      </div>
-
-      <p style="color: #64748b; font-size: 12px; margin-top: 25px;">Kinetix Energy Platform • Order Fulfillment Desk</p>
-    </div>
-  `;
+  const itemRows = data.items.map(i =>
+    `<tr><td style="padding:8px 0;color:#fff">${i.quantity}x ${i.productName}${i.includeInstallation ? '<br><span style="color:#00d2ff;font-size:11px">+ SANS Installation</span>' : ''}</td><td style="padding:8px 0;text-align:right;color:#00d2ff;font-weight:bold">R ${((i.unitPriceZAR * i.quantity) + (i.includeInstallation ? (i.installationPriceZAR || 0) : 0)).toLocaleString()}</td></tr>`
+  ).join('');
 
   return sendEmail({
-    subject: `⚡ [New Order Placed] ${data.orderId} - R ${data.totalAmountZAR.toLocaleString()} (${data.customerName})`,
-    html: html,
-    replyTo: data.customerEmail
+    subject: `⚡ [New Order] ${data.orderId} — R ${data.totalAmountZAR.toLocaleString()} (${data.customerName})`,
+    replyTo: data.customerEmail,
+    html: `
+      <div style="font-family:Arial,sans-serif;background:#05070a;color:#fff;padding:30px;border-radius:12px">
+        <h2 style="color:#00d2ff">⚡ New Order Confirmed</h2>
+        <p style="color:#94a3b8">Ref: <strong style="color:#fff">${data.orderId}</strong></p>
+        <div style="background:#0d1117;border:1px solid #1e2530;padding:20px;border-radius:8px;margin:20px 0">
+          <p><strong>Customer:</strong> ${data.customerName}</p>
+          <p><strong>Email:</strong> ${data.customerEmail}</p>
+          <p><strong>Phone:</strong> ${data.customerPhone}</p>
+          <p><strong>Address:</strong> ${data.shippingAddress}, ${data.city}</p>
+          <p><strong>Payment:</strong> ${data.paymentMethod.toUpperCase()}</p>
+          <p><strong>TCG Waybill:</strong> <span style="color:#00d2ff">${waybill}</span></p>
+        </div>
+        <div style="background:#0d1117;border:1px solid #1e2530;padding:20px;border-radius:8px;margin:20px 0">
+          <h3 style="color:#fff;margin-top:0">Items</h3>
+          <table style="width:100%;font-size:13px">${itemRows}
+            <tr style="border-top:1px solid #1e2530"><td style="padding:12px 0;font-weight:bold">Total (incl. VAT):</td><td style="text-align:right;color:#00d2ff;font-size:16px;font-weight:900">R ${data.totalAmountZAR.toLocaleString()}</td></tr>
+          </table>
+        </div>
+      </div>`
   });
 }
 
-/**
- * 2. Residential Solar Quote Request Email
- */
+// ─── 2. Solar Quote Request ───────────────────────────────────────────────────
+
 export async function sendSolarQuoteEmail(data: {
   quoteId?: string;
   fullName: string;
@@ -162,44 +111,35 @@ export async function sendSolarQuoteEmail(data: {
   recommendedSolarKwp?: number;
   installTarget?: string;
 }) {
-  const quoteRef = data.quoteId || `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
-
-  const html = `
-    <div style="font-family: Arial, sans-serif; background-color: #05070a; color: #ffffff; padding: 30px; border-radius: 12px;">
-      <h2 style="color: #00d2ff; margin-bottom: 5px;">⚡ New Residential Solar Quote Request</h2>
-      <p style="color: #94a3b8; font-size: 14px;">Quotation Reference: <strong style="color: #ffffff;">${quoteRef}</strong></p>
-      
-      <div style="background-color: #0d1117; border: 1px solid #1e2530; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #ffffff; margin-top: 0;">Customer Details</h3>
-        <p style="margin: 5px 0;"><strong>Name:</strong> ${data.fullName}</p>
-        <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${data.email}" style="color: #00d2ff;">${data.email}</a></p>
-        <p style="margin: 5px 0;"><strong>Phone / WhatsApp:</strong> <a href="tel:${data.phone}" style="color: #00d2ff;">${data.phone}</a></p>
-        <p style="margin: 5px 0;"><strong>City / Suburb:</strong> ${data.suburb || data.province || 'Gauteng'}</p>
-        ${data.installTarget ? `<p style="margin: 5px 0;"><strong>Install Target:</strong> ${data.installTarget}</p>` : ''}
-        ${data.monthlyBillZAR ? `<p style="margin: 5px 0;"><strong>Current Monthly Bill:</strong> R ${data.monthlyBillZAR.toLocaleString()} / month</p>` : ''}
-      </div>
-
-      <div style="background-color: #0d1117; border: 1px solid #1e2530; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #00d2ff; margin-top: 0;">Recommended Sizing</h3>
-        <p style="margin: 5px 0;"><strong>Hybrid Inverter:</strong> ${data.recommendedInverterKw || 8} kW</p>
-        <p style="margin: 5px 0;"><strong>LiFePO4 Storage:</strong> ${data.recommendedBatteryKwh || 10.24} kWh</p>
-        <p style="margin: 5px 0;"><strong>Solar PV Array:</strong> ${data.recommendedSolarKwp || 5.5} kWp</p>
-      </div>
-
-      <p style="color: #64748b; font-size: 12px; margin-top: 25px;">Kinetix Energy Platform • Sandton Central QA Hub</p>
-    </div>
-  `;
+  const ref = data.quoteId || `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
 
   return sendEmail({
-    subject: `⚡ [Quote Request] ${data.fullName} (${quoteRef})`,
-    html: html,
-    replyTo: data.email
+    subject: `⚡ [Quote] ${data.fullName} — ${ref}`,
+    replyTo: data.email,
+    html: `
+      <div style="font-family:Arial,sans-serif;background:#05070a;color:#fff;padding:30px;border-radius:12px">
+        <h2 style="color:#00d2ff">⚡ New Solar Quote Request</h2>
+        <p style="color:#94a3b8">Ref: <strong style="color:#fff">${ref}</strong></p>
+        <div style="background:#0d1117;border:1px solid #1e2530;padding:20px;border-radius:8px;margin:20px 0">
+          <p><strong>Name:</strong> ${data.fullName}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Phone:</strong> ${data.phone}</p>
+          <p><strong>Location:</strong> ${data.suburb || data.province || 'Gauteng'}</p>
+          ${data.installTarget ? `<p><strong>Install Target:</strong> ${data.installTarget}</p>` : ''}
+          ${data.monthlyBillZAR ? `<p><strong>Monthly Bill:</strong> R ${data.monthlyBillZAR.toLocaleString()}/mo</p>` : ''}
+        </div>
+        <div style="background:#0d1117;border:1px solid #1e2530;padding:20px;border-radius:8px;margin:20px 0">
+          <h3 style="color:#00d2ff;margin-top:0">Recommended Sizing</h3>
+          <p><strong>Inverter:</strong> ${data.recommendedInverterKw || 8} kW</p>
+          <p><strong>Battery:</strong> ${data.recommendedBatteryKwh || 10.24} kWh</p>
+          <p><strong>Solar PV:</strong> ${data.recommendedSolarKwp || 5.5} kWp</p>
+        </div>
+      </div>`
   });
 }
 
-/**
- * 3. Commercial 50kW+ Assessment Request Email
- */
+// ─── 3. Commercial Audit ──────────────────────────────────────────────────────
+
 export async function sendCommercialAuditEmail(data: {
   referenceId: string;
   companyName: string;
@@ -213,39 +153,31 @@ export async function sendCommercialAuditEmail(data: {
   peakDemand?: string;
   dieselSpend?: string;
 }) {
-  const html = `
-    <div style="font-family: Arial, sans-serif; background-color: #05070a; color: #ffffff; padding: 30px; border-radius: 12px;">
-      <h2 style="color: #00d2ff; margin-bottom: 5px;">🏢 Commercial 50kW+ Solar Audit Request</h2>
-      <p style="color: #94a3b8; font-size: 14px;">Audit Reference: <strong style="color: #ffffff;">${data.referenceId}</strong></p>
-      
-      <div style="background-color: #0d1117; border: 1px solid #1e2530; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h3 style="color: #ffffff; margin-top: 0;">Business & Contact Profile</h3>
-        <p style="margin: 5px 0;"><strong>Company:</strong> ${data.companyName}</p>
-        <p style="margin: 5px 0;"><strong>Contact Person:</strong> ${data.contactName}</p>
-        <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${data.email}" style="color: #00d2ff;">${data.email}</a></p>
-        <p style="margin: 5px 0;"><strong>Phone:</strong> <a href="tel:${data.phone}" style="color: #00d2ff;">${data.phone}</a></p>
-        <p style="margin: 5px 0;"><strong>Location:</strong> ${data.locationCity}</p>
-        <p style="margin: 5px 0;"><strong>Facility Type:</strong> ${data.facilityType}</p>
-        <p style="margin: 5px 0;"><strong>Monthly Spend:</strong> ${data.monthlySpend}</p>
-        ${data.peakDemand ? `<p style="margin: 5px 0;"><strong>Peak Demand:</strong> ${data.peakDemand}</p>` : ''}
-        ${data.dieselSpend ? `<p style="margin: 5px 0;"><strong>Diesel Spend:</strong> ${data.dieselSpend}</p>` : ''}
-        <p style="margin: 5px 0;"><strong>Section 12B SARS Modeling:</strong> ${data.taxSection12b ? 'Yes (125% Year 1 Write-off requested)' : 'Standard'}</p>
-      </div>
-
-      <p style="color: #64748b; font-size: 12px; margin-top: 25px;">Kinetix Energy Platform • Commercial Engineering Operations</p>
-    </div>
-  `;
-
   return sendEmail({
-    subject: `🏢 [Commercial Audit] ${data.companyName} (${data.monthlySpend}) - Ref ${data.referenceId}`,
-    html: html,
-    replyTo: data.email
+    subject: `🏢 [Commercial Audit] ${data.companyName} (${data.monthlySpend}) — ${data.referenceId}`,
+    replyTo: data.email,
+    html: `
+      <div style="font-family:Arial,sans-serif;background:#05070a;color:#fff;padding:30px;border-radius:12px">
+        <h2 style="color:#00d2ff">🏢 Commercial 50kW+ Audit</h2>
+        <p style="color:#94a3b8">Ref: <strong style="color:#fff">${data.referenceId}</strong></p>
+        <div style="background:#0d1117;border:1px solid #1e2530;padding:20px;border-radius:8px;margin:20px 0">
+          <p><strong>Company:</strong> ${data.companyName}</p>
+          <p><strong>Contact:</strong> ${data.contactName}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Phone:</strong> ${data.phone}</p>
+          <p><strong>Location:</strong> ${data.locationCity}</p>
+          <p><strong>Facility:</strong> ${data.facilityType}</p>
+          <p><strong>Monthly Spend:</strong> ${data.monthlySpend}</p>
+          ${data.peakDemand ? `<p><strong>Peak Demand:</strong> ${data.peakDemand}</p>` : ''}
+          ${data.dieselSpend ? `<p><strong>Diesel:</strong> ${data.dieselSpend}</p>` : ''}
+          <p><strong>Section 12B:</strong> ${data.taxSection12b ? 'Yes (125% Write-off)' : 'Standard'}</p>
+        </div>
+      </div>`
   });
 }
 
-/**
- * 4. Contact Desk Inquiry Email
- */
+// ─── 4. Contact Desk ──────────────────────────────────────────────────────────
+
 export async function sendContactInquiryEmail(data: {
   name: string;
   email: string;
@@ -253,26 +185,20 @@ export async function sendContactInquiryEmail(data: {
   subject: string;
   message: string;
 }) {
-  const html = `
-    <div style="font-family: Arial, sans-serif; background-color: #05070a; color: #ffffff; padding: 30px; border-radius: 12px;">
-      <h2 style="color: #00d2ff; margin-bottom: 5px;">💬 New Contact Inquiry</h2>
-      <p style="color: #94a3b8; font-size: 14px;">Subject: <strong style="color: #ffffff;">${data.subject}</strong></p>
-      
-      <div style="background-color: #0d1117; border: 1px solid #1e2530; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <p style="margin: 5px 0;"><strong>From:</strong> ${data.name}</p>
-        <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${data.email}" style="color: #00d2ff;">${data.email}</a></p>
-        <p style="margin: 5px 0;"><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
-        <hr style="border-color: #1e2530; margin: 15px 0;" />
-        <p style="margin: 5px 0; white-space: pre-line;"><strong>Message:</strong><br/>${data.message}</p>
-      </div>
-
-      <p style="color: #64748b; font-size: 12px; margin-top: 25px;">Kinetix Energy Platform • Contact Desk</p>
-    </div>
-  `;
-
   return sendEmail({
-    subject: `💬 [Contact Desk] ${data.subject} - from ${data.name}`,
-    html: html,
-    replyTo: data.email
+    subject: `💬 [Contact] ${data.subject} — ${data.name}`,
+    replyTo: data.email,
+    html: `
+      <div style="font-family:Arial,sans-serif;background:#05070a;color:#fff;padding:30px;border-radius:12px">
+        <h2 style="color:#00d2ff">💬 Contact Inquiry</h2>
+        <div style="background:#0d1117;border:1px solid #1e2530;padding:20px;border-radius:8px;margin:20px 0">
+          <p><strong>From:</strong> ${data.name}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Phone:</strong> ${data.phone || 'N/A'}</p>
+          <hr style="border-color:#1e2530">
+          <p><strong>Subject:</strong> ${data.subject}</p>
+          <p style="white-space:pre-line">${data.message}</p>
+        </div>
+      </div>`
   });
 }

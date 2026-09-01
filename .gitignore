@@ -25,3 +25,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Resend API key config (uploaded to Hostinger separately)
+.resend-config.php
