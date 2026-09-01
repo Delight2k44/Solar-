@@ -3,6 +3,7 @@ import { useCart } from '../../context/CartContext';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
 import { initiatePayFastRedirect, PAYFAST_CONFIG } from '../../services/payfastService';
+import { sendOrderConfirmationEmail } from '../../services/emailService';
 import { 
   X, 
   Trash2, 
@@ -139,19 +140,32 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
       paymentStatus: 'completed'
     });
 
-    setPaymentRef(generatedOrderId);
+        setPaymentRef(generatedOrderId);
+
+    // Dispatch real order confirmation email
+    sendOrderConfirmationEmail({
+      orderId: generatedOrderId,
+      customerName: formData.name || currentUser?.name || 'Valued Client',
+      customerEmail: formData.email || currentUser?.email || 'client@kinetixenergy.co.za',
+      customerPhone: formData.phone || '+27 82 000 0000',
+      shippingAddress: formData.address || 'Standard Delivery Address',
+      city: formData.city || 'Johannesburg',
+      totalAmountZAR: finalTotalZAR,
+      paymentMethod: paymentMethod,
+      items: orderItems
+    }).catch((err: any) => console.log('Order email notice:', err));
 
     // If PayFast is selected, launch PayFast gateway or simulated test clearance
     if (paymentMethod === 'payfast') {
       setTimeout(() => {
         setCheckoutStep('success');
         clearCart();
-      }, 2200);
+      }, 1500);
     } else {
       setTimeout(() => {
         setCheckoutStep('success');
         clearCart();
-      }, 1800);
+      }, 1200);
     }
   };
 
@@ -988,7 +1002,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigate }) => {
               </div>
 
               <button
-                onClick={() => setShowTechnicianAlert(true)}
+                onClick={() => setCheckoutStep("shipping")}
                 className="w-full py-4 bg-[#10B981] hover:bg-[#059669] text-black font-extrabold uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-xl text-xs tracking-wider"
               >
                 <span>Proceed to Checkout</span>

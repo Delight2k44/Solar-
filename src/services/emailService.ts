@@ -1,6 +1,6 @@
 /**
  * Enterprise Email Notification Service
- * Dispatches automated email alerts to delightchetter@gmail.com for quotes, commercial audits, and bookings.
+ * Dispatches automated email alerts to delightchetter@gmail.com for quotes, commercial audits, bookings, and orders.
  */
 
 const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY || (
@@ -8,7 +8,7 @@ const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY || (
 );
 
 export const ADMIN_EMAIL = 'delightchetter@gmail.com';
-const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>'; // or notifications@kinetixes.com once domain DNS is active
+const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>'; // or notifications@kinetixes.com
 
 interface SendEmailParams {
   to?: string | string[];
@@ -75,7 +75,79 @@ export async function sendEmail({ to = ADMIN_EMAIL, subject, html, replyTo }: Se
 }
 
 /**
- * 1. Residential Solar Quote Request Email (Configurator & Sizing Forms)
+ * 1. Order Confirmation Email (Itemized hardware, installation, and waybill)
+ */
+export async function sendOrderConfirmationEmail(data: {
+  orderId: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress: string;
+  city: string;
+  totalAmountZAR: number;
+  paymentMethod: string;
+  waybillNumber?: string;
+  items: Array<{
+    productName: string;
+    quantity: number;
+    unitPriceZAR: number;
+    includeInstallation?: boolean;
+    installationPriceZAR?: number;
+  }>;
+}) {
+  const waybill = data.waybillNumber || `TCG-ZA-${data.orderId.replace(/[^0-9]/g, '')}`;
+  
+  const itemsHtml = data.items.map(item => `
+    <tr style="border-bottom: 1px solid #1e2530;">
+      <td style="padding: 10px 0; color: #ffffff;">
+        <strong>${item.quantity}x ${item.productName}</strong>
+        ${item.includeInstallation ? '<br/><span style="color: #00d2ff; font-size: 11px;">+ Turnkey SANS Installation</span>' : ''}
+      </td>
+      <td style="padding: 10px 0; text-align: right; color: #00d2ff; font-weight: bold;">
+        R ${((item.unitPriceZAR * item.quantity) + (item.includeInstallation ? (item.installationPriceZAR || 0) : 0)).toLocaleString()}
+      </td>
+    </tr>
+  `).join('');
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; background-color: #05070a; color: #ffffff; padding: 30px; border-radius: 12px;">
+      <h2 style="color: #00d2ff; margin-bottom: 5px;">⚡ New Solar Order Confirmed • Tax Invoice</h2>
+      <p style="color: #94a3b8; font-size: 14px;">Order Reference: <strong style="color: #ffffff;">${data.orderId}</strong></p>
+      
+      <div style="background-color: #0d1117; border: 1px solid #1e2530; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="color: #ffffff; margin-top: 0;">Customer & Delivery Details</h3>
+        <p style="margin: 5px 0;"><strong>Customer:</strong> ${data.customerName}</p>
+        <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${data.customerEmail}" style="color: #00d2ff;">${data.customerEmail}</a></p>
+        <p style="margin: 5px 0;"><strong>Phone:</strong> <a href="tel:${data.customerPhone}" style="color: #00d2ff;">${data.customerPhone}</a></p>
+        <p style="margin: 5px 0;"><strong>Delivery Address:</strong> ${data.shippingAddress}, ${data.city}</p>
+        <p style="margin: 5px 0;"><strong>Payment Method:</strong> ${data.paymentMethod.toUpperCase()}</p>
+        <p style="margin: 5px 0;"><strong>The Courier Guy Waybill:</strong> <strong style="color: #00d2ff;">${waybill}</strong></p>
+      </div>
+
+      <div style="background-color: #0d1117; border: 1px solid #1e2530; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="color: #ffffff; margin-top: 0;">Purchased Equipment</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          ${itemsHtml}
+          <tr>
+            <td style="padding: 15px 0 5px; font-weight: bold; color: #ffffff; font-size: 14px;">Total Paid (Incl. 15% VAT):</td>
+            <td style="padding: 15px 0 5px; text-align: right; color: #00d2ff; font-weight: 900; font-size: 16px;">R ${data.totalAmountZAR.toLocaleString()}</td>
+          </tr>
+        </table>
+      </div>
+
+      <p style="color: #64748b; font-size: 12px; margin-top: 25px;">Kinetix Energy Platform • Order Fulfillment Desk</p>
+    </div>
+  `;
+
+  return sendEmail({
+    subject: `⚡ [New Order Placed] ${data.orderId} - R ${data.totalAmountZAR.toLocaleString()} (${data.customerName})`,
+    html: html,
+    replyTo: data.customerEmail
+  });
+}
+
+/**
+ * 2. Residential Solar Quote Request Email
  */
 export async function sendSolarQuoteEmail(data: {
   quoteId?: string;
@@ -126,7 +198,7 @@ export async function sendSolarQuoteEmail(data: {
 }
 
 /**
- * 2. Commercial 50kW+ Assessment Request Email
+ * 3. Commercial 50kW+ Assessment Request Email
  */
 export async function sendCommercialAuditEmail(data: {
   referenceId: string;
@@ -172,7 +244,7 @@ export async function sendCommercialAuditEmail(data: {
 }
 
 /**
- * 3. Contact Desk Inquiry Email
+ * 4. Contact Desk Inquiry Email
  */
 export async function sendContactInquiryEmail(data: {
   name: string;
