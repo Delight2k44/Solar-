@@ -13,11 +13,14 @@ export const ContactPage: React.FC = () => {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
 
+    setIsSending(true);
     createContactEnquiry({
       name: formData.name,
       email: formData.email,
@@ -26,14 +29,20 @@ export const ContactPage: React.FC = () => {
       message: formData.message
     });
 
-    setIsSubmitted(true);
-    sendContactInquiryEmail({
+    const result = await sendContactInquiryEmail({
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
       subject: formData.subject,
       message: formData.message
-    }).catch(e => console.log('Email notice:', e));
+    });
+
+    if (!result.success) {
+      console.error('Contact inquiry email failed:', result.error);
+      setEmailError(result.error || 'Email confirmation could not be sent');
+    }
+    setIsSending(false);
+    setIsSubmitted(true);
   };
 
   return (
@@ -97,6 +106,11 @@ export const ContactPage: React.FC = () => {
                 <p className="text-xs text-[#94A3B8] max-w-md mx-auto">
                   A certified technical engineer has received your message and will respond within 2 business hours.
                 </p>
+                {emailError && (
+                  <p className="text-xs text-[#F59E0B] max-w-md mx-auto">
+                    We could not send your email confirmation, but your message is logged. Call +27 78 780 8569 if you need an urgent response.
+                  </p>
+                )}
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4 text-xs font-mono">
@@ -166,10 +180,11 @@ export const ContactPage: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-bold uppercase rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
+                  disabled={isSending}
+                  className="w-full py-4 bg-[#00D2FF] hover:bg-[#38BDF8] disabled:opacity-60 text-black font-bold uppercase rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
                 >
                   <Send className="w-4 h-4" />
-                  <span>Transmit Technical Message</span>
+                  <span>{isSending ? 'Transmitting...' : 'Transmit Technical Message'}</span>
                 </button>
               </form>
             )}

@@ -43,6 +43,8 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
   const [propertyCity, setPropertyCity] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   // Dynamic Calculation Engine
   const calculateResult = (): ConfiguratorResult => {
@@ -144,10 +146,10 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    sendSolarQuoteEmail({
+    setIsSending(true);
+    const result = await sendSolarQuoteEmail({
       fullName: contactName,
       email: contactEmail,
       phone: contactPhone,
@@ -156,7 +158,14 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
       recommendedInverterKw: results.recommendedInverterKva,
       recommendedBatteryKwh: results.recommendedBatteryKwh,
       recommendedSolarKwp: results.recommendedSolarKwp
-    }).catch((err: any) => console.log('Email notice:', err));
+    });
+
+    if (!result.success) {
+      console.error('Solar quote email failed:', result.error);
+      setEmailError(result.error || 'Quote email could not be sent');
+    }
+    setIsSending(false);
+    setSubmitted(true);
     if (onQuoteRequested) {
       onQuoteRequested({
         ...results,
@@ -539,9 +548,10 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-3 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors"
+                disabled={isSending}
+                className="w-full py-3 bg-[#1B4D3E] hover:bg-[#286D58] disabled:opacity-60 text-white font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors"
               >
-                Request My Detailed Quote & Engineering Proposal
+                {isSending ? 'Submitting...' : 'Request My Detailed Quote & Engineering Proposal'}
               </button>
             </form>
           ) : (
@@ -553,6 +563,11 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
               <p className="text-xs text-[#9EADA5] max-w-md mx-auto leading-relaxed">
                 Thank you, <strong className="text-white">{contactName}</strong>. Reference: <span className="font-mono text-white">VX-SYS-{Math.floor(1000 + Math.random() * 9000)}</span>. An energy specialist will review your bill profile and email your single-line diagram and official proposal.
               </p>
+              {emailError && (
+                <p className="text-xs text-[#F59E0B] max-w-md mx-auto leading-relaxed">
+                  We could not email your proposal confirmation. Your request is saved — call +27 78 780 8569 if you do not hear from us.
+                </p>
+              )}
             </div>
           )}
         </div>

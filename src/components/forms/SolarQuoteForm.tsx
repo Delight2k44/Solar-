@@ -28,6 +28,8 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
   const { addLeadQuote } = useData();
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [quoteId, setQuoteId] = useState('');
 
   // Form State
@@ -57,8 +59,9 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
   const recommendedBatteryKwh = monthlyBill > 8000 ? 15.36 : (monthlyBill > 4000 ? 10.24 : 5.12);
   const estimatedMonthlySavingsZAR = Math.round(monthlyBill * 0.75);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSending(true);
     const newQuoteId = addLeadQuote({
       fullName,
       email,
@@ -73,8 +76,8 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
     });
 
     setQuoteId(newQuoteId);
-    setSubmitted(true);
-    sendSolarQuoteEmail({
+
+    const result = await sendSolarQuoteEmail({
       quoteId: newQuoteId,
       fullName,
       email,
@@ -85,7 +88,14 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
       recommendedInverterKw,
       recommendedBatteryKwh,
       recommendedSolarKwp
-    }).catch(e => console.log('Email notice:', e));
+    });
+
+    if (!result.success) {
+      console.error('Solar quote email failed:', result.error);
+      setEmailError(result.error || 'Proposal email could not be sent');
+    }
+    setIsSending(false);
+    setSubmitted(true);
     if (onSuccess) onSuccess();
   };
 
@@ -104,8 +114,14 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
             Quotation Reference: <span className="font-mono text-[#D97706]">{quoteId}</span>
           </h3>
           <p className="text-xs sm:text-sm text-[#9EADA5] max-w-md mx-auto leading-relaxed">
-            Thank you, <strong className="text-white">{fullName}</strong>. An itemized proposal based on your <strong className="text-white">R {monthlyBill.toLocaleString()} / mo</strong> profile has been compiled and emailed to <strong className="text-white">{email}</strong>.
+            Thank you, <strong className="text-white">{fullName}</strong>. An itemized proposal based on your <strong className="text-white">R {monthlyBill.toLocaleString()} / mo</strong> profile has been compiled
+            {emailError ? '.' : <> and emailed to <strong className="text-white">{email}</strong>.</>}
           </p>
+          {emailError && (
+            <p className="text-xs text-[#F59E0B] max-w-md mx-auto leading-relaxed">
+              We could not email your copy. Your request is saved and our desk will call you on {phone || 'your listed number'}.
+            </p>
+          )}
         </div>
 
         {/* System Summary Badge */}
@@ -459,10 +475,11 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
 
               <button
                 type="submit"
-                className="px-8 py-3.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-lg flex items-center gap-2 transition-colors"
+                disabled={isSending}
+                className="px-8 py-3.5 bg-[#1B4D3E] hover:bg-[#286D58] disabled:opacity-60 text-white font-mono font-bold text-xs uppercase tracking-wider rounded-lg flex items-center gap-2 transition-colors"
               >
                 <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
-                <span>Generate Official Quotation</span>
+                <span>{isSending ? 'Generating...' : 'Generate Official Quotation'}</span>
               </button>
             </div>
           </div>

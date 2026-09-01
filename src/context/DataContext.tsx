@@ -9,8 +9,10 @@ import {
   deleteDoc, 
   onSnapshot,
   query,
+  where,
   orderBy
 } from 'firebase/firestore';
+import { useAuth } from './AuthContext';
 import { 
   Product, 
   ProjectRecord, 
@@ -284,6 +286,7 @@ const INITIAL_LEADS: LeadQuote[] = [
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { currentUser, isAdmin } = useAuth();
   const [products, setProducts] = useState<Product[]>(() => {
     try {
       const saved = localStorage.getItem('kinetix_products');
@@ -385,7 +388,31 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   // ─── Real-Time Firebase Firestore Listeners ─────────────────────────────────
+  // Lead and order collections hold customer PII, so they are only subscribed to
+  // for staff; customers receive their own orders through a scoped query.
   useEffect(() => {
+    if (!isAdmin) {
+      if (!currentUser?.id) return;
+      const unsubOwnOrders = onSnapshot(
+        query(collection(db, 'orders'), where('userId', '==', currentUser.id)),
+        (snapshot) => {
+          const ownOrders: OrderRecord[] = [];
+          snapshot.forEach((docSnap) => ownOrders.push(docSnap.data() as OrderRecord));
+          if (ownOrders.length > 0) {
+            setOrders(prev => {
+              const merged = [...ownOrders];
+              prev.forEach(p => {
+                if (!merged.find(m => m.id === p.id)) merged.push(p);
+              });
+              return merged;
+            });
+          }
+        },
+        (err) => console.error('Firestore orders snapshot failed:', err)
+      );
+      return () => unsubOwnOrders();
+    }
+
     // 1. Orders listener
     const unsubOrders = onSnapshot(collection(db, 'orders'), (snapshot) => {
       if (!snapshot.empty) {
@@ -468,7 +495,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       unsubCommercial();
       unsubEnquiries();
     };
-  }, []);
+  }, [isAdmin, currentUser?.id]);
 
   // Sync to localStorage as backup
   useEffect(() => {

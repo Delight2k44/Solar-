@@ -28,3 +28,7 @@ dist-ssr
 
 # Resend API key config (uploaded to Hostinger separately)
 .resend-config.php
+
+# Deployment bundles (may contain secrets)
+hostinger-deploy.zip
+*-deploy.zip
