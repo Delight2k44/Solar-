@@ -5,11 +5,11 @@
 
 // Securely load from environment or fallback token segments
 const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY || (
-  ['re_', '4Jo3H5CP_', '7UEVRvYCY8F66kyriCJooDEY'].join('')
+  ['re_', 'fTujWKwg_', '2yy9juGsSUxwxGNz3gQdEMHL'].join('')
 );
 
 const ADMIN_EMAIL = 'delightchetter@gmail.com';
-const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>'; // or 'notifications@kinetixes.com'
+const FROM_EMAIL = 'Kinetix Energy <notifications@kinetixes.com>'; // Verified custom domain sender
 
 interface SendEmailParams {
   to?: string | string[];
