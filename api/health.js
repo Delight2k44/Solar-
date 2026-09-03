@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const resendKeyPresent = !!process.env.RESEND_API_KEY || true; // fallback exists
+  const hasKey = Boolean(process.env.RESEND_API_KEY);
 
   return res.status(200).json({
     status: 'online',
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       api_router: 'healthy',
       json_parser: 'healthy',
       auth_service: 'healthy',
-      mailer_service: resendKeyPresent ? 'configured' : 'key_missing'
+      resend_key_configured: hasKey ? 'configured_in_env' : 'missing_in_env_settings'
     }
   });
 }

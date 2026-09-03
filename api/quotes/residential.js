@@ -20,7 +20,6 @@ export default async function handler(req, res) {
     suburb,
     city,
     province,
-    propertyType,
     monthlyBillZAR,
     installTarget,
     recommendedInverterKw,
@@ -28,7 +27,6 @@ export default async function handler(req, res) {
     recommendedSolarKwp
   } = req.body || {};
 
-  // 1. Strict Validation
   const errors = [];
   if (!fullName || typeof fullName !== 'string' || fullName.trim().length < 2) {
     errors.push('Full name is required (minimum 2 characters)');
@@ -41,14 +39,9 @@ export default async function handler(req, res) {
   }
 
   if (errors.length > 0) {
-    return res.status(400).json({
-      success: false,
-      error: 'Validation failed',
-      details: errors
-    });
+    return res.status(400).json({ success: false, error: 'Validation failed', details: errors });
   }
 
-  // 2. Sanitize Inputs
   const escapeHtml = (str) => String(str || '').replace(/[&<>"']/g, (m) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
   }[m]));
@@ -66,61 +59,53 @@ export default async function handler(req, res) {
   const quoteId = `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
   const ADMIN_EMAIL = 'delightchetter@gmail.com';
   const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
-  const RESEND_API_KEY = process.env.RESEND_API_KEY || ['re_fTu', 'jWKwg', '_2yy9j', 'uGsSUx', 'wxGNz3g', 'QdEMHL'].join('');
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-  // 3. Build Email HTML
+  if (!RESEND_API_KEY) {
+    return res.status(500).json({
+      success: false,
+      error: 'RESEND_API_KEY is not set in Vercel environment variables.'
+    });
+  }
+
   const emailHtml = `
     <div style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#05070A;color:#F1F5F9;padding:32px;border-radius:16px;max-width:600px;margin:0 auto;border:1px solid #1E2530;">
       <div style="text-align:center;padding-bottom:24px;border-bottom:1px solid #1E2530;">
         <h1 style="color:#00D2FF;margin:0;font-size:24px;letter-spacing:1px;">⚡ KINETIX ENERGY</h1>
         <p style="color:#94A3B8;font-size:12px;margin-top:4px;letter-spacing:2px;text-transform:uppercase;">Engineering Proposal & Sizing Assessment</p>
       </div>
-
       <div style="margin:24px 0;">
         <h2 style="color:#FFFFFF;font-size:18px;margin-bottom:8px;">Proposal Reference: ${quoteId}</h2>
         <p style="color:#94A3B8;font-size:14px;line-height:1.6;margin:0;">
-          Hello <strong style="color:#FFF;">${safeName}</strong>, thank you for requesting an engineered solar proposal. Our DoL certified engineering team has received your sizing profile.
+          Hello <strong style="color:#FFF;">${safeName}</strong>, thank you for requesting an engineered solar proposal.
         </p>
       </div>
-
       <div style="background:#0D1117;border:1px solid #1E2530;border-radius:12px;padding:20px;margin-bottom:20px;">
-        <h3 style="color:#00D2FF;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-top:0;margin-bottom:12px;">Client & Location Profile</h3>
+        <h3 style="color:#00D2FF;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-top:0;margin-bottom:12px;">Client Profile</h3>
         <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Name:</strong> <span style="color:#FFF;">${safeName}</span></p>
         <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Email:</strong> <span style="color:#FFF;">${safeEmail}</span></p>
-        <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Contact Phone:</strong> <span style="color:#FFF;">${safePhone}</span></p>
+        <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Phone:</strong> <span style="color:#FFF;">${safePhone}</span></p>
         <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Location:</strong> <span style="color:#FFF;">${safeLocation}</span></p>
-        <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Target Install Date:</strong> <span style="color:#10B981;">${safeTarget}</span></p>
-        <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Monthly Electricity Spend:</strong> <span style="color:#FFF;font-family:monospace;">R ${safeBill.toLocaleString()} / mo</span></p>
+        <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Monthly Spend:</strong> <span style="color:#FFF;font-family:monospace;">R ${safeBill.toLocaleString()} / mo</span></p>
       </div>
-
       <div style="background:#0D1117;border:1px solid #1E2530;border-radius:12px;padding:20px;margin-bottom:24px;">
-        <h3 style="color:#10B981;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-top:0;margin-bottom:12px;">Engineered Sizing Recommendation</h3>
-        <p style="margin:6px 0;font-size:14px;color:#94A3B8;"><strong>Hybrid Inverter:</strong> <span style="color:#00D2FF;font-weight:bold;font-family:monospace;">${invKw} kW Pure Sine Wave</span></p>
-        <p style="margin:6px 0;font-size:14px;color:#94A3B8;"><strong>LiFePO4 Battery:</strong> <span style="color:#00D2FF;font-weight:bold;font-family:monospace;">${batKwh} kWh Tier-1 Lithium</span></p>
-        <p style="margin:6px 0;font-size:14px;color:#94A3B8;"><strong>Tier-1 Solar PV:</strong> <span style="color:#00D2FF;font-weight:bold;font-family:monospace;">${pvKwp} kWp Monocrystalline</span></p>
+        <h3 style="color:#10B981;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-top:0;margin-bottom:12px;">Engineered Sizing</h3>
+        <p style="margin:4px 0;font-size:14px;color:#94A3B8;"><strong>Inverter:</strong> <span style="color:#00D2FF;font-weight:bold;">${invKw} kW</span></p>
+        <p style="margin:4px 0;font-size:14px;color:#94A3B8;"><strong>Battery:</strong> <span style="color:#00D2FF;font-weight:bold;">${batKwh} kWh</span></p>
+        <p style="margin:4px 0;font-size:14px;color:#94A3B8;"><strong>Solar PV:</strong> <span style="color:#00D2FF;font-weight:bold;">${pvKwp} kWp</span></p>
       </div>
-
-      <div style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.2);border-radius:12px;padding:16px;margin-bottom:24px;">
-        <p style="margin:0;font-size:13px;color:#00D2FF;font-weight:bold;">Next Steps:</p>
-        <p style="margin:4px 0 0;font-size:12px;color:#94A3B8;line-height:1.5;">
-          Our master electrician will review your municipal grid connection parameters and reach out via phone/WhatsApp to confirm site assessment availability.
-        </p>
-      </div>
-
       <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
-        <p style="margin:4px 0;">WhatsApp Hotline: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Admin: <strong style="color:#00D2FF;">delightchetter@gmail.com</strong></p>
-        <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd. SANS 10142-1 Certified.</p>
+        <p style="margin:4px 0;">WhatsApp Hotline: <strong style="color:#00D2FF;">+27 78 780 8569</strong></p>
+        <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd.</p>
       </div>
     </div>
   `;
 
-  // 4. Dispatch Email to Admin & Customer
   const recipients = [ADMIN_EMAIL];
   if (safeEmail && safeEmail.includes('@') && safeEmail !== ADMIN_EMAIL) {
     recipients.push(safeEmail);
   }
 
-  let mailerResult = { status: 'logged' };
   try {
     const resendResp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -138,27 +123,25 @@ export default async function handler(req, res) {
     });
 
     const resendJson = await resendResp.json();
+
     if (resendResp.ok) {
-      mailerResult = { status: 'delivered', resendId: resendJson.id };
+      return res.status(200).json({
+        success: true,
+        quoteId,
+        message: 'Residential quote proposal created and dispatched successfully',
+        recipients,
+        sizing: { inverterKw: invKw, batteryKwh: batKwh, solarKwp: pvKwp, monthlyBillZAR: safeBill },
+        mailer: { status: 'delivered', resendId: resendJson.id },
+        timestamp: new Date().toISOString()
+      });
     } else {
-      mailerResult = { status: 'mailer_notice', error: resendJson.message || 'Resend response' };
+      return res.status(resendResp.status).json({
+        success: false,
+        error: resendJson.message || 'Resend error',
+        quoteId
+      });
     }
   } catch (err) {
-    mailerResult = { status: 'mailer_error', error: err.message };
+    return res.status(500).json({ success: false, error: err.message, quoteId });
   }
-
-  return res.status(200).json({
-    success: true,
-    quoteId,
-    message: 'Residential quote proposal created and dispatched successfully',
-    recipients,
-    sizing: {
-      inverterKw: invKw,
-      batteryKwh: batKwh,
-      solarKwp: pvKwp,
-      monthlyBillZAR: safeBill
-    },
-    mailer: mailerResult,
-    timestamp: new Date().toISOString()
-  });
 }

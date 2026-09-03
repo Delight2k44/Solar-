@@ -1,8 +1,5 @@
 // Vercel Serverless Function — Resend Email Proxy
-// This runs server-side on Vercel, forwarding email requests to Resend API.
-
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -15,9 +12,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'POST only' });
   }
 
-  const RESEND_API_KEY = process.env.RESEND_API_KEY || ['re_fTu', 'jWKwg', '_2yy9j', 'uGsSUx', 'wxGNz3g', 'QdEMHL'].join('');
-  const ADMIN_EMAIL = 'delightchetter@gmail.com';
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  if (!RESEND_API_KEY) {
+    return res.status(500).json({
+      success: false,
+      error: 'RESEND_API_KEY is not configured in Vercel Project Environment Variables.'
+    });
+  }
 
+  const ADMIN_EMAIL = 'delightchetter@gmail.com';
   const { from, to, reply_to, subject, html } = req.body || {};
 
   if (!subject || !html) {

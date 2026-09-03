@@ -1,5 +1,4 @@
 <?php
-// Hostinger PHP Endpoint: POST /api/support/contact
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -16,8 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$input = json_decode(file_get_contents('php://input'), true);
+$configFile = __DIR__ . '/../../.resend-config.php';
+if (!file_exists($configFile)) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Server configuration missing (.resend-config.php)']);
+    exit;
+}
+require_once $configFile;
 
+$input = json_decode(file_get_contents('php://input'), true);
 $name = trim($input['name'] ?? '');
 $email = trim($input['email'] ?? '');
 $phone = trim($input['phone'] ?? 'N/A');
@@ -38,13 +44,6 @@ if (!empty($errors)) {
 $inquiryId = 'KX-ENQ-' . rand(1000, 9999);
 $ADMIN_EMAIL = 'delightchetter@gmail.com';
 $FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
-
-$configFile = __DIR__ . '/../../.resend-config.php';
-if (file_exists($configFile)) {
-    require_once $configFile;
-} else {
-    $RESEND_API_KEY = implode('', ['re_fTu', 'jWKwg', '_2yy9j', 'uGsSUx', 'wxGNz3g', 'QdEMHL']);
-}
 
 $recipients = [$ADMIN_EMAIL];
 if (!empty($email) && $email !== $ADMIN_EMAIL) {
@@ -106,11 +105,21 @@ $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-echo json_encode([
-    'success' => true,
-    'message' => 'Inquiry processed successfully',
-    'inquiryId' => $inquiryId,
-    'recipients' => $recipients,
-    'http_code' => $httpCode,
-    'timestamp' => gmdate('Y-m-d\TH:i:s\Z')
-]);
+$result = json_decode($response, true);
+
+if ($httpCode >= 200 && $httpCode < 300) {
+    echo json_encode([
+        'success' => true,
+        'message' => 'Inquiry processed successfully',
+        'inquiryId' => $inquiryId,
+        'recipients' => $recipients,
+        'timestamp' => gmdate('Y-m-d\TH:i:s\Z')
+    ]);
+} else {
+    http_response_code($httpCode ?: 500);
+    echo json_encode([
+        'success' => false,
+        'error' => $result['message'] ?? 'Resend API error',
+        'inquiryId' => $inquiryId
+    ]);
+}
