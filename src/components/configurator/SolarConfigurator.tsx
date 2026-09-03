@@ -1,3 +1,4 @@
+import { useData } from '../../context/DataContext';
 import { sendSolarQuoteEmail } from '../../services/emailService';
 import React, { useState } from 'react';
 import { 
@@ -26,6 +27,7 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
   onQuoteRequested, 
   isStandalone = true 
 }) => {
+  const { addLeadQuote } = useData();
   const [currentStep, setCurrentStep] = useState(1);
   
   // Form State
@@ -43,6 +45,9 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
   const [propertyCity, setPropertyCity] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [quoteRefId, setQuoteRefId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Dynamic Calculation Engine
   const calculateResult = (): ConfiguratorResult => {
@@ -144,28 +149,75 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    sendSolarQuoteEmail({
-      fullName: contactName,
-      email: contactEmail,
-      phone: contactPhone,
-      suburb: propertyCity,
-      installTarget: preferredDate,
-      recommendedInverterKw: results.recommendedInverterKva,
-      recommendedBatteryKwh: results.recommendedBatteryKwh,
-      recommendedSolarKwp: results.recommendedSolarKwp
-    }).catch((err: any) => console.log('Email notice:', err));
-    if (onQuoteRequested) {
-      onQuoteRequested({
-        ...results,
-        contactName,
-        contactEmail,
-        contactPhone,
-        propertyCity,
-        preferredDate,
+    if (!contactName || !contactEmail || !contactPhone) {
+      setErrorMessage('Please fill in all required contact fields.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const payload = {
+        fullName: contactName,
+        email: contactEmail,
+        phone: contactPhone,
+        city: propertyCity,
+        suburb: propertyCity,
+        installTarget: preferredDate || 'Within 2-4 weeks',
+        monthlyBillZAR: results.monthlyBillZAR,
+        recommendedInverterKw: results.recommendedInverterKva,
+        recommendedBatteryKwh: results.recommendedBatteryKwh,
+        recommendedSolarKwp: results.recommendedSolarKwp,
+      };
+
+      const res = await fetch('/api/quotes/residential', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        const generatedId = data.quoteId || `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
+        setQuoteRefId(generatedId);
+
+        // Save into Firebase Firestore
+        addLeadQuote({
+          fullName: contactName,
+          email: contactEmail,
+          phone: contactPhone,
+          suburb: propertyCity,
+          province: 'Gauteng',
+          propertyType: 'Residential Single Family',
+          monthlyBillZAR: results.monthlyBillZAR,
+          recommendedInverterKw: results.recommendedInverterKva,
+          recommendedBatteryKwh: results.recommendedBatteryKwh,
+          recommendedSolarKwp: results.recommendedSolarKwp
+        });
+
+        setSubmitted(true);
+
+        if (onQuoteRequested) {
+          onQuoteRequested({
+            ...results,
+            contactName,
+            contactEmail,
+            contactPhone,
+            propertyCity,
+            preferredDate,
+          });
+        }
+      } else {
+        setErrorMessage(data.error || 'Failed to submit quote proposal. Please check your inputs.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Network error connecting to quote engine.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -537,11 +589,18 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
                 </div>
               </div>
 
+              {errorMessage && (
+                <div className="p-3 bg-red-950/40 border border-red-500/50 rounded text-red-300 text-xs font-mono">
+                  ⚠️ {errorMessage}
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full py-3 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors"
+                disabled={isSubmitting}
+                className="w-full py-3 bg-[#1B4D3E] hover:bg-[#286D58] disabled:opacity-50 text-white font-mono font-bold text-xs uppercase tracking-wider rounded transition-colors flex items-center justify-center gap-2"
               >
-                Request My Detailed Quote & Engineering Proposal
+                {isSubmitting ? '⚡ Generating & Dispatching Proposal...' : 'Request My Detailed Quote & Engineering Proposal'}
               </button>
             </form>
           ) : (
@@ -551,7 +610,7 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
               </div>
               <h4 className="text-base font-bold text-white uppercase">System Sizing Request Submitted</h4>
               <p className="text-xs text-[#9EADA5] max-w-md mx-auto leading-relaxed">
-                Thank you, <strong className="text-white">{contactName}</strong>. Reference: <span className="font-mono text-white">VX-SYS-{Math.floor(1000 + Math.random() * 9000)}</span>. An energy specialist will review your bill profile and email your single-line diagram and official proposal.
+                Thank you, <strong className="text-white">{contactName}</strong>. Reference: <span className="font-mono text-[#00D2FF] font-bold">{quoteRefId || 'KX-QT-STAGED'}</span>. A DoL certified engineering specialist will review your sizing profile and email your CAD single-line schematic and official proposal.
               </p>
             </div>
           )}
