@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kinetix Energy — Interactive API Playground (Swagger/OpenAPI)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #05070A;
+      --card-bg: #0D1117;
+      --border: #1E2530;
+      --accent: #00D2FF;
+      --accent-green: #10B981;
+      --text: #F1F5F9;
+      --text-muted: #94A3B8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 32px 16px;
+      line-height: 1.5;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .title h1 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      background: rgba(0, 210, 255, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+    .endpoint-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .endpoint-card:hover { border-color: #2D3748; }
+    .endpoint-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border);
+    }
+    .method-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .method-get { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .method-post { background: rgba(0, 210, 255, 0.15); color: var(--accent); border: 1px solid rgba(0, 210, 255, 0.3); }
+    .endpoint-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: #FFF;
+      margin-left: 12px;
+    }
+    .endpoint-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-left: auto;
+      padding-right: 16px;
+    }
+    .btn-test {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+    .btn-test:hover { opacity: 0.9; }
+    .endpoint-body {
+      padding: 20px;
+    }
+    .result-box {
+      margin-top: 16px;
+      background: #05070A;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      display: none;
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+    }
+    .status-badge {
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .status-200 { background: #065F46; color: #34D399; }
+    .status-err { background: #7F1D1D; color: #F87171; }
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #E2E8F0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title">
+        <h1>⚡ Kinetix API Playground</h1>
+        <span class="badge">OpenAPI / Step-by-Step Testing</span>
+      </div>
+      <div>
+        <span style="font-size:12px;color:var(--text-muted)">Testing live on current host</span>
+      </div>
+    </header>
+
+    <!-- STEP 1: HEALTH CHECK -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <div style="display:flex;align-items:center;">
+          <span class="method-tag method-get">GET</span>
+          <span class="endpoint-path">/api/health</span>
+        </div>
+        <span class="endpoint-desc">Step 1: Baseline Server & Routing Probe</span>
+        <button class="btn-test" onclick="testHealth()">⚡ Run Test</button>
+      </div>
+      <div class="endpoint-body">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">
+          Verifies that the server responds with a valid JSON payload (not an HTML fallback) and reports environment status.
+        </p>
+        <div id="health-result" class="result-box">
+          <div class="result-header">
+            <span>Response: <span id="health-status" class="status-badge"></span></span>
+            <span id="health-time"></span>
+          </div>
+          <pre id="health-json"></pre>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    async function testHealth() {
+      const box = document.getElementById('health-result');
+      const statusSpan = document.getElementById('health-status');
+      const timeSpan = document.getElementById('health-time');
+      const jsonPre = document.getElementById('health-json');
+      
+      box.style.display = 'block';
+      jsonPre.textContent = 'Probing /api/health...';
+      const start = performance.now();
+
+      try {
+        const res = await fetch('/api/health');
+        const elapsed = Math.round(performance.now() - start);
+        const contentType = res.headers.get('content-type') || '';
+        
+        statusSpan.textContent = `${res.status} ${res.statusText}`;
+        statusSpan.className = 'status-badge ' + (res.ok ? 'status-200' : 'status-err');
+        timeSpan.textContent = `${elapsed} ms | ${contentType}`;
+
+        const text = await res.text();
+        try {
+          const json = JSON.parse(text);
+          jsonPre.textContent = JSON.stringify(json, null, 2);
+        } catch(e) {
+          jsonPre.textContent = '❌ ERROR: Response is NOT valid JSON! Received raw response:\n\n' + text.substring(0, 500);
+        }
+      } catch (err) {
+        statusSpan.textContent = 'Network Error';
+        statusSpan.className = 'status-badge status-err';
+        jsonPre.textContent = 'Failed to connect to /api/health: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
