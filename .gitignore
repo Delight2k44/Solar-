@@ -22,9 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Environment & Secret Configurations (Strictly Local / Server-Side)
 .env
 .env.*
 !.env.example
-
-# Resend API key config (uploaded to Hostinger separately)
+**/.env
+**/.env.*
+**/.resend-config.php
 .resend-config.php
+
+# Deploy Archives
+*.zip
+hostinger-deploy.zip
