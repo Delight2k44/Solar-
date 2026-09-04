@@ -1,5 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Sun, MapPin, ChevronDown, Wrench, LogOut, Check } from 'lucide-react';
+import React from 'react';
+import { 
+  Sun, 
+  MapPin, 
+  ShieldCheck, 
+  Wrench, 
+  LogOut, 
+  SlidersHorizontal, 
+  ArrowRight,
+  UserCheck
+} from 'lucide-react';
 import { CustomerSite, UserProfile, SupportInfo } from '../../types/dashboard';
 import { getInitials } from '../../utils/formatters';
 
@@ -8,8 +17,10 @@ interface DashboardHeaderProps {
   sites: CustomerSite[];
   activeSite: CustomerSite | null;
   support: SupportInfo;
+  isAdmin?: boolean;
   onSelectSite: (siteId: string) => void;
   onRequestService: () => void;
+  onNavigateToAdmin?: () => void;
   onLogout: () => void;
 }
 
@@ -18,131 +29,108 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   sites,
   activeSite,
   support,
+  isAdmin = false,
   onSelectSite,
   onRequestService,
+  onNavigateToAdmin,
   onLogout
 }) => {
-  const [isSiteDropdownOpen, setIsSiteDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsSiteDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const initials = getInitials(user.name);
 
   return (
-    <header className="bg-[#141A17]/90 backdrop-blur-xl border border-[#24302A] rounded-2xl px-5 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
-      {/* Left: Brand Identity & Portal Pill */}
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-[#1B4D3E] border border-[#286D58] flex items-center justify-center text-white shadow-inner">
-          <Sun className="w-4 h-4 text-white" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold tracking-tight text-white uppercase">Kinetix Energy</span>
-            <span className="px-2 py-0.5 bg-[#1B4D3E]/40 border border-[#286D58]/60 text-[#10B981] text-[9px] font-mono font-bold uppercase rounded-full tracking-wider">
-              Asset Portal
-            </span>
-          </div>
-          <span className="text-[10px] font-mono text-[#6B7B73]">Renewable Energy Asset Management</span>
-        </div>
-      </div>
-
-      {/* Right: Site Selector Dropdown + SLA Status + Profile + Quick Action */}
-      <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-        {/* Multi-Site Selector Dropdown */}
-        <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setIsSiteDropdownOpen(!isSiteDropdownOpen)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-[#0E1311] hover:bg-[#1B2420] border border-[#24302A] hover:border-[#286D58] rounded-xl text-[#9EADA5] transition-colors text-left"
-            title="Switch Active Property"
-          >
-            <MapPin className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
-            <span className="truncate max-w-[170px] sm:max-w-[210px] font-medium text-white">
-              {activeSite ? `${activeSite.address}` : 'Select Property'}
-            </span>
-            {sites.length > 1 && <ChevronDown className="w-3 h-3 text-[#6B7B73]" />}
-          </button>
-
-          {/* Dropdown Menu */}
-          {isSiteDropdownOpen && sites.length > 0 && (
-            <div className="absolute right-0 mt-1.5 w-72 bg-[#141A17] border border-[#24302A] rounded-xl shadow-2xl z-50 overflow-hidden font-mono text-xs animate-in fade-in zoom-in-95">
-              <div className="p-2 border-b border-[#24302A] text-[10px] font-bold text-[#6B7B73] uppercase tracking-wider">
-                Select Active Site ({sites.length})
+    <div className="space-y-4 font-sans">
+      {/* Admin Quick Switcher Banner (Shown when Administrator is logged in) */}
+      {isAdmin && onNavigateToAdmin && (
+        <div className="bg-gradient-to-r from-[#00D2FF]/15 via-[#0D1117] to-[#10B981]/15 border border-[#00D2FF]/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xl">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-[#00D2FF]/20 border border-[#00D2FF]/40 flex items-center justify-center text-[#00D2FF] shrink-0">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="text-sm font-bold text-white uppercase tracking-tight">
+                  Master Operations Center
+                </h4>
+                <span className="px-2 py-0.5 bg-[#00D2FF]/20 text-[#00D2FF] text-[10px] font-mono font-bold uppercase rounded-full">
+                  Admin Privileges
+                </span>
               </div>
-              <div className="max-h-60 overflow-y-auto p-1 space-y-1">
-                {sites.map(site => (
-                  <button
-                    key={site.id}
-                    onClick={() => {
-                      onSelectSite(site.id);
-                      setIsSiteDropdownOpen(false);
-                    }}
-                    className={`w-full p-2.5 rounded-lg text-left flex items-start justify-between gap-2 transition-colors ${
-                      site.id === activeSite?.id
-                        ? 'bg-[#1B4D3E]/30 border border-[#10B981]/50 text-white'
-                        : 'hover:bg-[#0E1311] text-[#9EADA5] hover:text-white'
-                    }`}
-                  >
-                    <div className="space-y-0.5 truncate">
-                      <div className="font-bold text-white truncate">{site.name}</div>
-                      <div className="text-[10px] text-[#6B7B73] truncate">{site.address}, {site.city}</div>
-                    </div>
-                    {site.id === activeSite?.id && (
-                      <Check className="w-3.5 h-3.5 text-[#10B981] shrink-0 mt-0.5" />
-                    )}
-                  </button>
-                ))}
+              <p className="text-xs text-[#94A3B8] mt-0.5">
+                You are authenticated as <strong>{user.email}</strong> with full read/write/pricing control.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onNavigateToAdmin}
+            className="px-5 py-2.5 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            <span>Open Admin Operations Desk</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Main Executive User Profile Header */}
+      <header className="bg-[#0D1117] border border-[#1E2530] rounded-2xl p-5 sm:p-6 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        
+        {/* User Identity & Avatar */}
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1E2530] to-[#0D1117] border border-[#2D3748] flex items-center justify-center text-white font-bold text-lg shadow-inner">
+              {initials || 'DC'}
+            </div>
+            <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#10B981] border-2 border-[#0D1117] rounded-full" title="Active Connection" />
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                {user.name}
+              </h2>
+              {isAdmin ? (
+                <span className="px-2.5 py-0.5 bg-[#00D2FF]/15 border border-[#00D2FF]/30 text-[#00D2FF] text-[10px] font-bold uppercase rounded-full">
+                  System Administrator
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 bg-[#10B981]/15 border border-[#10B981]/30 text-[#10B981] text-[10px] font-bold uppercase rounded-full">
+                  Verified Client Account
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 text-xs text-[#94A3B8]">
+              <span>{user.email}</span>
+              <span>•</span>
+              <div className="flex items-center gap-1 text-[#CBD5E1]">
+                <MapPin className="w-3.5 h-3.5 text-[#00D2FF]" />
+                <span>{activeSite?.city || 'Johannesburg, South Africa'}</span>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Dynamic SLA Status Pill */}
-        <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold text-[11px] border ${
-          support.isAvailable
-            ? 'bg-[#10B981]/10 border-[#10B981]/30 text-[#10B981]'
-            : 'bg-[#D97706]/10 border-[#D97706]/30 text-[#D97706]'
-        }`}>
-          <span className={`w-2 h-2 rounded-full ${support.isAvailable ? 'bg-[#10B981] animate-pulse' : 'bg-[#D97706]'}`} />
-          <span>{support.slaStatus}</span>
-        </div>
-
-        {/* User Monogram Initials Avatar & Name */}
-        <div className="flex items-center gap-2 pl-1 border-l border-[#24302A]">
-          <div className="w-7 h-7 rounded-lg bg-[#1B4D3E] border border-[#286D58] flex items-center justify-center text-white text-[11px] font-bold shadow-inner">
-            {initials}
           </div>
-          <span className="text-xs text-white font-semibold hidden sm:inline truncate max-w-[120px]">
-            {user.name}
-          </span>
         </div>
 
-        {/* Ghost Service Request Button */}
-        <button
-          onClick={onRequestService}
-          className="px-3 py-1.5 bg-transparent hover:bg-[#1A221E] border border-[#24302A] hover:border-[#286D58] text-[#E6ECE8] hover:text-white rounded-xl text-[11px] font-semibold transition-all flex items-center gap-1.5"
-        >
-          <Wrench className="w-3 h-3 text-[#10B981]" />
-          <span>Request Service</span>
-        </button>
+        {/* Action Controls */}
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={onRequestService}
+            className="px-4 py-2.5 bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] hover:border-[#8B949E] text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 shadow-sm"
+          >
+            <Wrench className="w-3.5 h-3.5 text-[#00D2FF]" />
+            <span>Request Maintenance SLA</span>
+          </button>
 
-        {/* Sign Out Button */}
-        <button
-          onClick={onLogout}
-          title="Sign Out"
-          className="p-1.5 text-[#6B7B73] hover:text-red-400 hover:bg-red-950/20 rounded-lg transition-colors"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-        </button>
-      </div>
-    </header>
+          <button
+            onClick={onLogout}
+            className="px-4 py-2.5 bg-[#161B22] hover:bg-red-950/40 border border-[#30363D] hover:border-red-500/40 text-[#94A3B8] hover:text-red-300 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2"
+            title="Sign Out"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </header>
+    </div>
   );
 };
