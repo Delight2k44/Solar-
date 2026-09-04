@@ -1,3 +1,4 @@
+import { validateFullName, validateEmail, validatePhone, validateLocation } from '../../utils/validation';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { sendCommercialAuditEmail } from '../../services/emailService';
@@ -41,10 +42,18 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!companyName || !contactName || !email || !phone) {
-      setErrorMessage('Please complete all required enterprise contact details.');
+    if (!companyName || companyName.trim().length < 2) {
+      setErrorMessage('Please enter a valid Company / Enterprise name.');
       return;
     }
+    const nameCheck = validateFullName(contactName);
+    if (!nameCheck.isValid) { setErrorMessage(nameCheck.error || 'Invalid contact name'); return; }
+
+    const emailCheck = validateEmail(email);
+    if (!emailCheck.isValid) { setErrorMessage(emailCheck.error || 'Invalid corporate email'); return; }
+
+    const phoneCheck = validatePhone(phone);
+    if (!phoneCheck.isValid) { setErrorMessage(phoneCheck.error || 'Invalid contact phone'); return; }
 
     setIsSubmitting(true);
     setErrorMessage('');

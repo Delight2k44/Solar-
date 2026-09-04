@@ -1,3 +1,4 @@
+import { validateFullName, validateEmail, validatePhone, validateLocation } from '../../utils/validation';
 import { useData } from '../../context/DataContext';
 import { sendSolarQuoteEmail } from '../../services/emailService';
 import React, { useState } from 'react';
@@ -151,10 +152,17 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contactName || !contactEmail || !contactPhone) {
-      setErrorMessage('Please fill in all required contact fields.');
-      return;
-    }
+    const nameCheck = validateFullName(contactName);
+    if (!nameCheck.isValid) { setErrorMessage(nameCheck.error || 'Invalid name'); return; }
+
+    const emailCheck = validateEmail(contactEmail);
+    if (!emailCheck.isValid) { setErrorMessage(emailCheck.error || 'Invalid email'); return; }
+
+    const phoneCheck = validatePhone(contactPhone);
+    if (!phoneCheck.isValid) { setErrorMessage(phoneCheck.error || 'Invalid phone'); return; }
+
+    const cityCheck = validateLocation(propertyCity, 'City / Suburb');
+    if (!cityCheck.isValid) { setErrorMessage(cityCheck.error || 'Invalid city'); return; }
 
     setIsSubmitting(true);
     setErrorMessage('');

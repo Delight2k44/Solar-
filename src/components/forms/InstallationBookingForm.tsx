@@ -1,3 +1,4 @@
+import { validateFullName, validateEmail, validatePhone, validateAddress } from '../../utils/validation';
 import { sendInstallationBookingEmail } from '../../services/emailService';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
@@ -43,10 +44,17 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName || !email || !phone || !address) {
-      setErrorMessage('Please fill in all required site inspection fields.');
-      return;
-    }
+    const nameCheck = validateFullName(clientName);
+    if (!nameCheck.isValid) { setErrorMessage(nameCheck.error || 'Invalid name'); return; }
+
+    const emailCheck = validateEmail(email);
+    if (!emailCheck.isValid) { setErrorMessage(emailCheck.error || 'Invalid email'); return; }
+
+    const phoneCheck = validatePhone(phone);
+    if (!phoneCheck.isValid) { setErrorMessage(phoneCheck.error || 'Invalid phone'); return; }
+
+    const addrCheck = validateAddress(address);
+    if (!addrCheck.isValid) { setErrorMessage(addrCheck.error || 'Invalid address'); return; }
 
     setIsSubmitting(true);
     setErrorMessage('');

@@ -1,3 +1,4 @@
+import { validateFullName, validateEmail, validatePhone, validateAddress } from '../../utils/validation';
 import { sendMaintenanceTicketEmail } from '../../services/emailService';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
@@ -48,9 +49,18 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName || !clientEmail || !clientPhone) {
-      setErrorMessage('Please fill in all required maintenance ticket fields.');
-      return;
+    const nameCheck = validateFullName(clientName);
+    if (!nameCheck.isValid) { setErrorMessage(nameCheck.error || 'Invalid name'); return; }
+
+    const emailCheck = validateEmail(clientEmail);
+    if (!emailCheck.isValid) { setErrorMessage(emailCheck.error || 'Invalid email'); return; }
+
+    const phoneCheck = validatePhone(clientPhone);
+    if (!phoneCheck.isValid) { setErrorMessage(phoneCheck.error || 'Invalid phone'); return; }
+
+    if (siteAddress) {
+      const addrCheck = validateAddress(siteAddress);
+      if (!addrCheck.isValid) { setErrorMessage(addrCheck.error || 'Invalid address'); return; }
     }
 
     setIsSubmitting(true);
