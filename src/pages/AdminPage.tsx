@@ -300,31 +300,19 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setCurrentRoute }) => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={handleOpenAddProduct}
-            className="px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-black font-mono font-bold text-xs uppercase rounded-xl flex items-center gap-1.5 shadow-lg transition-all"
+            className="px-4 py-2 bg-[#10B981] hover:bg-[#059669] text-black font-sans font-bold text-xs uppercase rounded-xl flex items-center gap-1.5 shadow-lg transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Product</span>
           </button>
 
           <button
-            onClick={() => {
-              if (confirm('Reset entire platform database to factory defaults? All custom changes will be wiped.')) {
-                resetToDefaults();
-                showToast('Platform reset to default factory data.');
-              }
-            }}
-            className="px-3 py-2 bg-[#141A17] hover:bg-red-950/40 border border-[#24302A] hover:border-red-800 text-red-400 font-mono text-xs rounded-xl flex items-center gap-1.5 transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Defaults</span>
-          </button>
-
-          <button
             onClick={() => { logout(); setCurrentRoute('home'); }}
-            className="p-2 bg-[#141A17] hover:bg-red-950/40 border border-[#24302A] hover:border-red-800 text-[#9EADA5] hover:text-red-300 rounded-xl transition-colors"
+            className="px-3.5 py-2 bg-[#141A17] hover:bg-red-950/40 border border-[#24302A] hover:border-red-800 text-[#9EADA5] hover:text-red-300 font-sans text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5"
             title="Sign Out Admin"
           >
             <LogOut className="w-4 h-4" />
+            <span>Sign Out</span>
           </button>
         </div>
       </div>
