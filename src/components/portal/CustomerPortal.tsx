@@ -60,7 +60,7 @@ export const CustomerPortal: React.FC<CustomerPortalProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 font-sans text-[#E6ECE8] pb-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8 font-sans text-[#E6ECE8] pb-16">
       {/* 1. Top Minimalist Nav Bar */}
       <DashboardHeader
         user={data.user}

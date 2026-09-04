@@ -80,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
   };
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-50 bg-transparent border-none shadow-none">
+    <header className="sticky top-0 z-50 bg-[#05070A]/90 backdrop-blur-2xl border-b border-[#1E2530] shadow-lg transition-all duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 h-16 sm:h-20 flex items-center justify-between font-sans">
         
         {/* ========================================================================= */}
