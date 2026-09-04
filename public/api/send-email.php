@@ -20,12 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Load API key from config file (kept separate for security)
 $configFile = __DIR__ . '/../.resend-config.php';
-if (file_exists($configFile)) {
-    require_once $configFile;
-} else {
-    // Fallback: construct from segments to avoid GitHub secret scanning
-    $RESEND_API_KEY = implode('', ['re_fTu', 'jWKwg', '_2yy9j', 'uGsSUx', 'wxGNz3g', 'QdEMHL']);
+if (!file_exists($configFile)) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Server configuration missing']);
+    exit;
 }
+require_once $configFile;
 $ADMIN_EMAIL = 'delightchetter@gmail.com';
 
 $input = json_decode(file_get_contents('php://input'), true);

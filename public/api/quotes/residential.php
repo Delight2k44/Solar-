@@ -44,11 +44,12 @@ $ADMIN_EMAIL = 'delightchetter@gmail.com';
 $FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
 
 $configFile = __DIR__ . '/../../.resend-config.php';
-if (file_exists($configFile)) {
-    require_once $configFile;
-} else {
-    $RESEND_API_KEY = implode('', ['re_fTu', 'jWKwg', '_2yy9j', 'uGsSUx', 'wxGNz3g', 'QdEMHL']);
+if (!file_exists($configFile)) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Server configuration missing']);
+    exit;
 }
+require_once $configFile;
 
 $recipients = [$ADMIN_EMAIL];
 if (!empty($email) && $email !== $ADMIN_EMAIL) {
