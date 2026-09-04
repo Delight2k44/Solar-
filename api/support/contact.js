@@ -41,7 +41,7 @@ export default async function handler(req, res) {
   const safeMessage = escapeHtml(message.trim());
 
   const inquiryId = `KX-ENQ-${Math.floor(1000 + Math.random() * 9000)}`;
-  const ADMIN_EMAIL = 'form@kinetixes.com';
+  const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
   const FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -72,8 +72,8 @@ export default async function handler(req, res) {
     </div>
   `;
 
-  const recipients = [ADMIN_EMAIL];
-  if (safeEmail && safeEmail.includes('@') && safeEmail !== ADMIN_EMAIL) {
+  const recipients = [...ADMIN_EMAILS];
+  if (safeEmail && safeEmail.includes('@') && !ADMIN_EMAILS.includes(safeEmail)) {
     recipients.push(safeEmail);
   }
 

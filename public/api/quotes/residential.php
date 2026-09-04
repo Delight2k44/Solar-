@@ -40,7 +40,7 @@ if (!empty($errors)) {
 }
 
 $quoteId = 'KX-QT-' . rand(1000, 9999);
-$ADMIN_EMAIL = 'form@kinetixes.com';
+$ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
 $FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
 
 $configFile = __DIR__ . '/../../.resend-config.php';
@@ -51,8 +51,8 @@ if (!file_exists($configFile)) {
 }
 require_once $configFile;
 
-$recipients = [$ADMIN_EMAIL];
-if (!empty($email) && $email !== $ADMIN_EMAIL) {
+$recipients = $ADMIN_EMAILS;
+if (!empty($email) && !in_array($email, $ADMIN_EMAILS)) {
     $recipients[] = $email;
 }
 

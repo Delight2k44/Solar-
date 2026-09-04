@@ -24,7 +24,7 @@ if (!empty($errors)) {
 }
 
 $ticketId = 'KX-SRV-' . rand(1000, 9999);
-$ADMIN_EMAIL = 'form@kinetixes.com';
+$ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
 $FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
 $tier = trim($input['tier'] ?? 'Standard SLA');
 $inverterBrand = trim($input['inverterBrand'] ?? 'Solar System');
@@ -37,8 +37,8 @@ $mailerResult = ['status' => 'logged'];
 if (file_exists($configFile)) {
     require_once $configFile;
     if (!empty($RESEND_API_KEY)) {
-        $recipients = [$ADMIN_EMAIL];
-        if (!empty($clientEmail) && $clientEmail !== $ADMIN_EMAIL) {
+        $recipients = $ADMIN_EMAILS;
+        if (!empty($clientEmail) && !in_array($clientEmail, $ADMIN_EMAILS)) {
             $recipients[] = $clientEmail;
         }
 

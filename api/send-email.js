@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const ADMIN_EMAIL = 'form@kinetixes.com';
+  const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
   const { from, to, reply_to, subject, html } = req.body || {};
 
   if (!subject || !html) {
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: from || 'Kinetix Energy <form@kinetixes.com>',
-        to: to || [ADMIN_EMAIL],
+        to: to || ADMIN_EMAILS,
         reply_to: reply_to || undefined,
         subject,
         html,

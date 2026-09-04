@@ -6,6 +6,7 @@
 import { db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
+export const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
 export const ADMIN_EMAIL = 'form@kinetixes.com';
 const FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
 
@@ -18,7 +19,7 @@ interface SendEmailParams {
 }
 
 export async function sendEmail({ 
-  to = ADMIN_EMAIL, 
+  to = ADMIN_EMAILS, 
   subject, 
   html, 
   replyTo,
@@ -130,9 +131,9 @@ export async function sendOrderConfirmationEmail(data: {
     </tr>`
   ).join('');
 
-  // Recipients: Admin + Customer
-  const recipients = [ADMIN_EMAIL];
-  if (data.customerEmail && data.customerEmail.includes('@')) {
+  // Recipients: Both Admin Accounts + Customer
+  const recipients = [...ADMIN_EMAILS];
+  if (data.customerEmail && data.customerEmail.includes('@') && !ADMIN_EMAILS.includes(data.customerEmail)) {
     recipients.push(data.customerEmail);
   }
 
@@ -214,9 +215,9 @@ export async function sendSolarQuoteEmail(data: {
 }) {
   const ref = data.quoteId || `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
 
-  // Recipients: Admin + Customer
-  const recipients = [ADMIN_EMAIL];
-  if (data.email && data.email.includes('@')) {
+  // Recipients: Both Admin Accounts + Customer
+  const recipients = [...ADMIN_EMAILS];
+  if (data.email && data.email.includes('@') && !ADMIN_EMAILS.includes(data.email)) {
     recipients.push(data.email);
   }
 
@@ -304,9 +305,9 @@ export async function sendCommercialAuditEmail(data: {
   peakDemand?: string;
   dieselSpend?: string;
 }) {
-  // Recipients: Admin + Customer
-  const recipients = [ADMIN_EMAIL];
-  if (data.email && data.email.includes('@')) {
+  // Recipients: Both Admin Accounts + Customer
+  const recipients = [...ADMIN_EMAILS];
+  if (data.email && data.email.includes('@') && !ADMIN_EMAILS.includes(data.email)) {
     recipients.push(data.email);
   }
 
@@ -368,9 +369,9 @@ export async function sendContactInquiryEmail(data: {
   subject: string;
   message: string;
 }) {
-  // Recipients: Admin + Customer
-  const recipients = [ADMIN_EMAIL];
-  if (data.email && data.email.includes('@')) {
+  // Recipients: Both Admin Accounts + Customer
+  const recipients = [...ADMIN_EMAILS];
+  if (data.email && data.email.includes('@') && !ADMIN_EMAILS.includes(data.email)) {
     recipients.push(data.email);
   }
 
@@ -432,8 +433,9 @@ export async function sendInstallationBookingEmail(data: {
   phaseConnection?: string;
   dbLocation?: string;
 }) {
-  const recipients = [ADMIN_EMAIL];
-  if (data.email && data.email.includes('@')) {
+  // Recipients: Both Admin Accounts + Customer
+  const recipients = [...ADMIN_EMAILS];
+  if (data.email && data.email.includes('@') && !ADMIN_EMAILS.includes(data.email)) {
     recipients.push(data.email);
   }
 
@@ -497,8 +499,9 @@ export async function sendMaintenanceTicketEmail(data: {
   primaryReason: string;
   issueDetails?: string;
 }) {
-  const recipients = [ADMIN_EMAIL];
-  if (data.clientEmail && data.clientEmail.includes('@')) {
+  // Recipients: Both Admin Accounts + Customer
+  const recipients = [...ADMIN_EMAILS];
+  if (data.clientEmail && data.clientEmail.includes('@') && !ADMIN_EMAILS.includes(data.clientEmail)) {
     recipients.push(data.clientEmail);
   }
 

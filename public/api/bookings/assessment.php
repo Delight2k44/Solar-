@@ -26,7 +26,7 @@ if (!empty($errors)) {
 }
 
 $bookingId = 'KX-BKG-' . rand(1000, 9999);
-$ADMIN_EMAIL = 'form@kinetixes.com';
+$ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
 $FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
 $city = trim($input['city'] ?? 'Johannesburg');
 $targetDate = trim($input['targetDate'] ?? 'Flexible');
@@ -37,8 +37,8 @@ $mailerResult = ['status' => 'logged'];
 if (file_exists($configFile)) {
     require_once $configFile;
     if (!empty($RESEND_API_KEY)) {
-        $recipients = [$ADMIN_EMAIL];
-        if (!empty($email) && $email !== $ADMIN_EMAIL) {
+        $recipients = $ADMIN_EMAILS;
+        if (!empty($email) && !in_array($email, $ADMIN_EMAILS)) {
             $recipients[] = $email;
         }
 

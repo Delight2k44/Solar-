@@ -28,7 +28,7 @@ if (!empty($errors)) {
 $randNum = rand(100000, 999999);
 $orderId = 'KX-ORD-' . $randNum;
 $waybillNumber = 'TCG-ZA-' . $randNum;
-$ADMIN_EMAIL = 'form@kinetixes.com';
+$ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
 $FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
 $city = trim($input['city'] ?? 'Johannesburg');
 $total = number_format(floatval($input['totalCartZAR'] ?? 0), 2);
@@ -39,8 +39,8 @@ $mailerResult = ['status' => 'logged'];
 if (file_exists($configFile)) {
     require_once $configFile;
     if (!empty($RESEND_API_KEY)) {
-        $recipients = [$ADMIN_EMAIL];
-        if (!empty($customerEmail) && $customerEmail !== $ADMIN_EMAIL) {
+        $recipients = $ADMIN_EMAILS;
+        if (!empty($customerEmail) && !in_array($customerEmail, $ADMIN_EMAILS)) {
             $recipients[] = $customerEmail;
         }
 

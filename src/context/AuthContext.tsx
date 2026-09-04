@@ -39,7 +39,6 @@ interface AuthContextType {
 }
 
 const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
-const ADMIN_EMAIL = 'form@kinetixes.com';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

@@ -26,7 +26,7 @@ if (!file_exists($configFile)) {
     exit;
 }
 require_once $configFile;
-$ADMIN_EMAIL = 'form@kinetixes.com';
+$ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
 
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -37,7 +37,7 @@ if (!$input || empty($input['subject']) || empty($input['html'])) {
 
 $payload = json_encode([
     'from'     => $input['from']     ?? 'Kinetix Energy <form@kinetixes.com>',
-    'to'       => $input['to']       ?? [$ADMIN_EMAIL],
+    'to'       => $input['to']       ?? $ADMIN_EMAILS,
     'reply_to' => $input['reply_to'] ?? null,
     'subject'  => $input['subject'],
     'html'     => $input['html'],
