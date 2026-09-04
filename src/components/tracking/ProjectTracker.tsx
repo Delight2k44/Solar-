@@ -5,19 +5,13 @@ import {
   CheckCircle2, 
   Clock, 
   Search, 
-  FileText, 
-  MapPin, 
-  Calendar, 
   AlertCircle, 
-  Download, 
-  ShieldCheck, 
   Truck, 
   ExternalLink, 
   Copy, 
   Check, 
   PackageCheck,
-  Box,
-  ArrowRight
+  Box
 } from 'lucide-react';
 
 interface ProjectTrackerProps {
@@ -26,7 +20,7 @@ interface ProjectTrackerProps {
 
 export const ProjectTracker: React.FC<ProjectTrackerProps> = ({ initialOrderId = '' }) => {
   const { orders } = useData();
-  const { currentUser, isAuthenticated } = useAuth();
+  const { currentUser } = useAuth();
   
   const [searchQuery, setSearchQuery] = useState(initialOrderId);
   const [searchedId, setSearchedId] = useState(initialOrderId);
@@ -95,6 +89,7 @@ export const ProjectTracker: React.FC<ProjectTrackerProps> = ({ initialOrderId =
             <Search className="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
+              aria-label="Order Reference or TCG Waybill Number"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Enter your Order Reference (e.g. KX-PAY-...) or TCG Waybill..."
@@ -143,6 +138,7 @@ export const ProjectTracker: React.FC<ProjectTrackerProps> = ({ initialOrderId =
                     <strong className="text-[#00D2FF] font-bold">{waybill}</strong>
                     <button
                       onClick={() => handleCopy(waybill)}
+                      aria-label="Copy Waybill Number"
                       className="text-[#64748B] hover:text-white p-1"
                       title="Copy Waybill"
                     >

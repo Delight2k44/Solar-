@@ -12,31 +12,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
   const { addToCart } = useCart();
 
   return (
-    <div className="bg-[#141A17] border border-[#24302A] rounded-lg overflow-hidden flex flex-col justify-between group hover:border-[#31423A] transition-all">
+    <div className="bg-[#0D1117] border border-[#1E2530] hover:border-[#00D2FF]/40 rounded-2xl overflow-hidden flex flex-col justify-between group transition-all shadow-lg font-sans">
       {/* Product Image Container */}
-      <div className="relative aspect-4/3 bg-[#0E1311] overflow-hidden border-b border-[#24302A]">
+      <div className="relative aspect-4/3 bg-[#161B22] overflow-hidden border-b border-[#1E2530]">
         <img
           src={product.image || '/hero-solar-home.jpg'}
           alt={product.name}
-          className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-300 opacity-90 group-hover:opacity-100"
+          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300 opacity-90 group-hover:opacity-100"
           loading="lazy"
           onError={(e) => {
             (e.target as HTMLImageElement).src = '/hero-solar-home.jpg';
           }}
         />
 
-        {/* Brand & Stock Badges */}
+        {/* Brand & Technical Badges */}
         <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-          <span className="px-2 py-0.5 bg-[#0E1311]/90 backdrop-blur-none border border-[#24302A] text-[10px] font-mono text-[#E6ECE8] uppercase font-semibold rounded">
+          <span className="px-2.5 py-0.5 bg-[#0D1117]/90 backdrop-blur-md border border-[#1E2530] text-[10px] font-mono text-[#E6ECE8] uppercase font-bold rounded-lg shadow-sm">
             {product.brand}
           </span>
           {product.ratingKw && (
-            <span className="px-2 py-0.5 bg-[#1B4D3E]/90 border border-[#286D58] text-[10px] font-mono text-white font-bold rounded">
+            <span className="px-2 py-0.5 bg-[#00D2FF]/15 border border-[#00D2FF]/30 text-[10px] font-mono text-[#00D2FF] font-bold rounded-lg backdrop-blur-md">
               {product.ratingKw} kW
             </span>
           )}
           {product.capacityKwh && (
-            <span className="px-2 py-0.5 bg-[#1B4D3E]/90 border border-[#286D58] text-[10px] font-mono text-white font-bold rounded">
+            <span className="px-2 py-0.5 bg-[#00D2FF]/15 border border-[#00D2FF]/30 text-[10px] font-mono text-[#00D2FF] font-bold rounded-lg backdrop-blur-md">
               {product.capacityKwh} kWh
             </span>
           )}
@@ -44,11 +44,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
 
         <div className="absolute top-2.5 right-2.5">
           {product.inStock ? (
-            <span className="px-2 py-0.5 bg-[#10B981]/15 border border-[#10B981]/40 text-[#10B981] text-[10px] font-mono font-medium rounded">
+            <span className="px-2.5 py-0.5 bg-[#10B981]/15 border border-[#10B981]/40 text-[#10B981] text-[10px] font-mono font-bold rounded-lg backdrop-blur-md">
               In Stock ({product.stockCount})
             </span>
           ) : (
-            <span className="px-2 py-0.5 bg-red-950/60 border border-red-800 text-red-300 text-[10px] font-mono rounded">
+            <span className="px-2.5 py-0.5 bg-red-950/70 border border-red-500/40 text-red-300 text-[10px] font-mono font-semibold rounded-lg backdrop-blur-md">
               Backorder
             </span>
           )}
@@ -56,28 +56,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
       </div>
 
       {/* Card Content */}
-      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
+      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
         <div>
-          <div className="text-[10px] font-mono uppercase text-[#6B7B73] mb-1">
-            SKU: {product.sku} • {product.warrantyYears} Year Warranty
+          <div className="text-[10px] font-mono uppercase text-[#64748B] mb-1.5 flex items-center justify-between">
+            <span>SKU: {product.sku}</span>
+            <span className="text-[#10B981] font-semibold">{product.warrantyYears}-Year Warranty</span>
           </div>
           <h3 
             onClick={() => onSelectProduct(product)}
-            className="text-sm font-semibold text-white group-hover:text-[#286D58] transition-colors line-clamp-2 cursor-pointer leading-snug"
+            className="text-sm font-bold text-white group-hover:text-[#00D2FF] transition-colors line-clamp-2 cursor-pointer leading-snug"
           >
             {product.name}
           </h3>
-          <p className="text-xs text-[#9EADA5] line-clamp-2 mt-1.5 leading-relaxed">
+          <p className="text-xs text-[#94A3B8] line-clamp-2 mt-1.5 leading-relaxed">
             {product.summary}
           </p>
         </div>
 
         {/* Specs Highlights */}
-        <div className="grid grid-cols-2 gap-1.5 py-2 border-y border-[#1B2420] text-[11px] font-mono">
+        <div className="grid grid-cols-2 gap-2 py-2.5 border-y border-[#1E2530] text-xs">
           {product.specs.slice(0, 2).map((spec, idx) => (
             <div key={idx} className="truncate">
-              <span className="text-[#6B7B73] text-[9px] uppercase block">{spec.label}</span>
-              <span className="text-[#E6ECE8] font-medium truncate block">{spec.value}</span>
+              <span className="text-[#64748B] text-[10px] uppercase block font-semibold">{spec.label}</span>
+              <span className="text-[#E6ECE8] font-medium truncate block mt-0.5">{spec.value}</span>
             </div>
           ))}
         </div>
@@ -85,8 +86,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
         {/* Pricing and CTAs */}
         <div className="space-y-3 pt-1">
           <div className="flex items-baseline justify-between">
-            <span className="text-xs font-mono text-[#9EADA5]">ZAR (Excl. VAT):</span>
-            <span className="text-base font-mono font-bold text-white">
+            <span className="text-xs text-[#94A3B8]">ZAR (Excl. VAT):</span>
+            <span className="text-base font-mono font-extrabold text-[#10B981]">
               R {product.priceZAR.toLocaleString()}
             </span>
           </div>
@@ -94,15 +95,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => onSelectProduct(product)}
-              className="py-2 px-3 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] text-[#9EADA5] hover:text-white text-xs font-mono font-medium rounded flex items-center justify-center gap-1.5 transition-colors uppercase"
+              className="py-2.5 px-3 bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] hover:border-[#00D2FF] text-[#94A3B8] hover:text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all"
             >
-              <Eye className="w-3.5 h-3.5" />
+              <Eye className="w-3.5 h-3.5 text-[#00D2FF]" />
               <span>Details</span>
             </button>
 
             <button
               onClick={() => addToCart(product, 1, false)}
-              className="py-2 px-3 bg-[#1B4D3E] hover:bg-[#286D58] text-white text-xs font-mono font-bold rounded flex items-center justify-center gap-1.5 transition-colors uppercase"
+              className="py-2.5 px-3 bg-[#00D2FF] hover:bg-[#38BDF8] text-black text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>Add to Cart</span>

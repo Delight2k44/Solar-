@@ -13,9 +13,7 @@ import {
   EyeOff, 
   Phone, 
   MapPin, 
-  ShoppingBag,
-  Zap,
-  Award
+  ShoppingBag
 } from 'lucide-react';
 
 interface LoginPageProps {
@@ -72,8 +70,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     try {
       const res = await login(email, password);
       if (res.success) {
-        const emailLower = email.trim().toLowerCase();
-        if (emailLower === 'delightchetter@gmail.com' || emailLower.includes('admin')) {
+        if (isAdmin) {
           setCurrentRoute('admin');
         } else if (cartItems.length > 0) {
           setCurrentRoute('shop');
@@ -175,28 +172,28 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
   if (isAuthenticated && currentUser) {
     return (
-      <div className="max-w-md mx-auto my-16 p-8 bg-[#141A17] border border-[#24302A] rounded-2xl text-center space-y-5 shadow-2xl">
+      <div className="max-w-md mx-auto my-16 p-8 bg-[#0D1117] border border-[#1E2530] rounded-2xl text-center space-y-5 shadow-2xl">
         <div className="w-16 h-16 rounded-full bg-[#10B981]/20 border border-[#10B981] flex items-center justify-center mx-auto text-[#10B981]">
           <CheckCircle2 className="w-9 h-9" />
         </div>
         <div className="space-y-1">
-          <span className="text-[10px] font-mono uppercase text-[#286D58] font-bold">Currently Signed In</span>
+          <span className="text-[10px] font-mono uppercase text-[#00D2FF] font-bold">Currently Signed In</span>
           <h3 className="text-xl font-bold text-white uppercase">{currentUser.name}</h3>
-          <p className="text-xs text-[#9EADA5] font-mono">{currentUser.email}</p>
+          <p className="text-xs text-[#94A3B8] font-mono">{currentUser.email}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 pt-2">
           {isAdmin ? (
             <button
               onClick={() => setCurrentRoute('admin')}
-              className="py-2.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase rounded transition-colors"
+              className="py-2.5 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-mono font-bold text-xs uppercase rounded transition-colors"
             >
               Admin Dashboard
             </button>
           ) : (
             <button
               onClick={() => setCurrentRoute('portal')}
-              className="py-2.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase rounded transition-colors"
+              className="py-2.5 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-mono font-bold text-xs uppercase rounded transition-colors"
             >
               My Energy Portal
             </button>
@@ -204,7 +201,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
           <button
             onClick={() => setCurrentRoute('home')}
-            className="py-2.5 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] text-white font-mono text-xs uppercase rounded transition-colors"
+            className="py-2.5 bg-[#0D1117] hover:bg-[#161B22] border border-[#1E2530] text-white font-mono text-xs uppercase rounded transition-colors"
           >
             Return to Store
           </button>
@@ -223,7 +220,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
           <div>
             <span className="text-sm font-bold text-white block">You have {cartItems.length} item{cartItems.length > 1 ? 's' : ''} in your cart</span>
-            <span className="text-xs text-[#9EADA5]">Sign in or create an account to complete your purchase. Your cart is saved.</span>
+            <span className="text-xs text-[#94A3B8]">Sign in or create an account to complete your purchase. Your cart is saved.</span>
           </div>
         </div>
       )}
@@ -231,14 +228,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Left Column: Brand & Security Overview */}
-        <div className="lg:col-span-5 bg-[#141A17] border border-[#24302A] rounded-2xl p-8 flex flex-col justify-between space-y-8 relative overflow-hidden">
+        <div className="lg:col-span-5 bg-[#0D1117] border border-[#1E2530] rounded-2xl p-8 flex flex-col justify-between space-y-8 relative overflow-hidden">
           <div className="space-y-6">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded bg-[#1B4D3E] border border-[#286D58] flex items-center justify-center text-white font-bold">
+              <div className="w-8 h-8 rounded bg-[#00D2FF] border border-[#00D2FF] flex items-center justify-center text-white font-bold">
                 <Sun className="w-4 h-4" />
               </div>
               <span className="text-lg font-extrabold tracking-tight text-white uppercase">
-                KINETIX <span className="font-light text-[#9EADA5]">ENERGY</span>
+                KINETIX <span className="font-light text-[#94A3B8]">ENERGY</span>
               </span>
             </div>
 
@@ -246,13 +243,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <h2 className="text-2xl font-extrabold text-white uppercase tracking-tight">
                 Customer Energy Portal & Order Dispatch
               </h2>
-              <p className="text-xs text-[#9EADA5] leading-relaxed">
+              <p className="text-xs text-[#94A3B8] leading-relaxed">
                 Log in to your private account to track turnkey installation milestones, view live inverter telemetry, download electrical CoCs, and manage warranty coverage.
               </p>
             </div>
 
             {/* Feature List */}
-            <div className="space-y-3.5 pt-2 text-xs font-mono text-[#9EADA5]">
+            <div className="space-y-3.5 pt-2 text-xs font-mono text-[#94A3B8]">
               <div className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0" />
                 <span>Live Project Milestone & Dispatch Tracking</span>
@@ -273,29 +270,29 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
 
           {/* Compliance & Security Guarantee Box */}
-          <div className="p-4 bg-[#0E1311] border border-[#24302A] rounded-xl space-y-2">
+          <div className="p-4 bg-[#0D1117] border border-[#1E2530] rounded-xl space-y-2">
             <div className="flex items-center gap-2 text-xs font-mono text-[#10B981] font-bold uppercase">
               <ShieldCheck className="w-4 h-4 text-[#10B981]" />
               <span>Enterprise Grade Security</span>
             </div>
-            <p className="text-[11px] text-[#9EADA5] leading-relaxed">
+            <p className="text-[11px] text-[#94A3B8] leading-relaxed">
               Protected by 256-Bit SSL Secured Enterprise Authentication, encrypted with 256-bit SSL protocols, and compliant with POPIA regulations.
             </p>
           </div>
         </div>
 
         {/* Right Column: Authentication Card */}
-        <div className="lg:col-span-7 bg-[#141A17] border border-[#24302A] rounded-2xl p-6 sm:p-10 shadow-2xl flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-[#0D1117] border border-[#1E2530] rounded-2xl p-6 sm:p-10 shadow-2xl flex flex-col justify-between">
           <div>
             {/* Tabs */}
-            <div className="flex border-b border-[#24302A] mb-8">
+            <div className="flex border-b border-[#1E2530] mb-8">
               <button
                 type="button"
                 onClick={() => { setTab('login'); setErrorMsg(''); }}
                 className={`flex-1 py-3 text-xs font-mono font-bold uppercase tracking-wider transition-colors border-b-2 ${
                   tab === 'login'
-                    ? 'border-[#286D58] text-white bg-[#0E1311]/50'
-                    : 'border-transparent text-[#6B7B73] hover:text-[#9EADA5]'
+                    ? 'border-[#00D2FF] text-white bg-[#0D1117]/50'
+                    : 'border-transparent text-[#64748B] hover:text-[#94A3B8]'
                 }`}
               >
                 Customer Sign In
@@ -306,8 +303,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 onClick={() => { setTab('register'); setErrorMsg(''); }}
                 className={`flex-1 py-3 text-xs font-mono font-bold uppercase tracking-wider transition-colors border-b-2 ${
                   tab === 'register'
-                    ? 'border-[#286D58] text-white bg-[#0E1311]/50'
-                    : 'border-transparent text-[#6B7B73] hover:text-[#9EADA5]'
+                    ? 'border-[#00D2FF] text-white bg-[#0D1117]/50'
+                    : 'border-transparent text-[#64748B] hover:text-[#94A3B8]'
                 }`}
               >
                 Create Account
@@ -326,7 +323,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 type="button"
                 onClick={handleGoogleAuth}
                 disabled={socialLoading !== null}
-                className="w-full py-2.5 px-4 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] hover:border-[#3A4D43] text-white rounded-xl text-xs font-mono font-semibold transition-colors flex items-center justify-center gap-3 shadow-sm"
+                className="w-full py-2.5 px-4 bg-[#0D1117] hover:bg-[#161B22] border border-[#1E2530] hover:border-[#30363D] text-white rounded-xl text-xs font-mono font-semibold transition-colors flex items-center justify-center gap-3 shadow-sm"
               >
                 {socialLoading === 'google' ? (
                   <span className="w-4 h-4 rounded-full border-2 border-[#10B981] border-t-transparent animate-spin" />
@@ -346,7 +343,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   type="button"
                   onClick={handleAppleAuth}
                   disabled={socialLoading !== null}
-                  className="py-2.5 px-3 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] hover:border-[#3A4D43] text-white rounded-xl text-xs font-mono font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm"
+                  className="py-2.5 px-3 bg-[#0D1117] hover:bg-[#161B22] border border-[#1E2530] hover:border-[#30363D] text-white rounded-xl text-xs font-mono font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   {socialLoading === 'apple' ? (
                     <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
@@ -362,7 +359,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   type="button"
                   onClick={handleFacebookAuth}
                   disabled={socialLoading !== null}
-                  className="py-2.5 px-3 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] hover:border-[#3A4D43] text-white rounded-xl text-xs font-mono font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm"
+                  className="py-2.5 px-3 bg-[#0D1117] hover:bg-[#161B22] border border-[#1E2530] hover:border-[#30363D] text-white rounded-xl text-xs font-mono font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   {socialLoading === 'facebook' ? (
                     <span className="w-4 h-4 rounded-full border-2 border-[#1877F2] border-t-transparent animate-spin" />
@@ -379,10 +376,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             {/* Visual Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#24302A]"></div>
+                <div className="w-full border-t border-[#1E2530]"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#141A17] px-3 font-mono text-[#6B7B73] text-[10px]">
+                <span className="bg-[#0D1117] px-3 font-mono text-[#64748B] text-[10px]">
                   Or continue with email
                 </span>
               </div>
@@ -392,40 +389,40 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             {tab === 'login' && (
               <form onSubmit={handleLoginSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">
+                  <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">
                     Email Address *
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-[#6B7B73] absolute left-3.5 top-3" />
+                    <Mail className="w-4 h-4 text-[#64748B] absolute left-3.5 top-3" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                       placeholder="e.g. client@domain.co.za"
-                      className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                      className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">
+                  <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">
                     Password *
                   </label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-[#6B7B73] absolute left-3.5 top-3" />
+                    <Lock className="w-4 h-4 text-[#64748B] absolute left-3.5 top-3" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg pl-10 pr-10 py-2.5 text-xs text-white focus:border-[#286D58]"
+                      className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg pl-10 pr-10 py-2.5 text-xs text-white focus:border-[#00D2FF]"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-3 text-[#6B7B73] hover:text-white"
+                      className="absolute right-3.5 top-3 text-[#64748B] hover:text-white"
                       aria-label="Toggle password visibility"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -437,7 +434,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3.5 rounded-lg font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 bg-[#1B4D3E] hover:bg-[#286D58] text-white"
+                    className="w-full py-3.5 rounded-lg font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 bg-[#00D2FF] hover:bg-[#38BDF8] text-black"
                   >
                     <span>{loading ? 'Signing In...' : 'Sign In to Portal'}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -450,47 +447,47 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             {tab === 'register' && (
               <form onSubmit={handleRegisterSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Full Name & Surname *</label>
+                  <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Full Name & Surname *</label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-[#6B7B73] absolute left-3.5 top-3" />
+                    <User className="w-4 h-4 text-[#64748B] absolute left-3.5 top-3" />
                     <input
                       type="text"
                       required
                       value={regName}
                       onChange={e => setRegName(e.target.value)}
                       placeholder="e.g. Johan Van Wyk"
-                      className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                      className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Email Address *</label>
+                    <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Email Address *</label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-[#6B7B73] absolute left-3.5 top-3" />
+                      <Mail className="w-4 h-4 text-[#64748B] absolute left-3.5 top-3" />
                       <input
                         type="email"
                         required
                         value={regEmail}
                         onChange={e => setRegEmail(e.target.value)}
                         placeholder="johan@domain.co.za"
-                        className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                        className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Phone / WhatsApp *</label>
+                    <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Phone / WhatsApp *</label>
                     <div className="relative">
-                      <Phone className="w-4 h-4 text-[#6B7B73] absolute left-3.5 top-3" />
+                      <Phone className="w-4 h-4 text-[#64748B] absolute left-3.5 top-3" />
                       <input
                         type="tel"
                         required
                         value={regPhone}
                         onChange={e => setRegPhone(e.target.value)}
                         placeholder="+27 82 000 0000"
-                        className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                        className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
                       />
                     </div>
                   </div>
@@ -498,31 +495,31 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">City / Region *</label>
+                    <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">City / Region *</label>
                     <div className="relative">
-                      <MapPin className="w-4 h-4 text-[#6B7B73] absolute left-3.5 top-3" />
+                      <MapPin className="w-4 h-4 text-[#64748B] absolute left-3.5 top-3" />
                       <input
                         type="text"
                         required
                         value={regCity}
                         onChange={e => setRegCity(e.target.value)}
                         placeholder="e.g. Johannesburg / Pretoria"
-                        className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                        className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Create Password *</label>
+                    <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Create Password *</label>
                     <div className="relative">
-                      <Lock className="w-4 h-4 text-[#6B7B73] absolute left-3.5 top-3" />
+                      <Lock className="w-4 h-4 text-[#64748B] absolute left-3.5 top-3" />
                       <input
                         type="password"
                         required
                         value={regPassword}
                         onChange={e => setRegPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                        className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
                       />
                     </div>
                   </div>
@@ -532,7 +529,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white rounded-lg font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3.5 bg-[#00D2FF] hover:bg-[#38BDF8] text-black rounded-lg font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
                   >
                     <span>{loading ? 'Creating Account...' : 'Complete Customer Registration'}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -542,8 +539,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             )}
           </div>
 
-          <div className="mt-8 pt-4 border-t border-[#1B2420] text-center">
-            <span className="text-[11px] font-mono text-[#6B7B73]">
+          <div className="mt-8 pt-4 border-t border-[#161B22] text-center">
+            <span className="text-[11px] font-mono text-[#64748B]">
               Secured by 256-Bit SSL Encryption • SABS & POPIA Data Compliance
             </span>
           </div>

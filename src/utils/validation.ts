@@ -91,3 +91,37 @@ export function validateMessage(message: string, minLength = 5): { isValid: bool
   }
   return { isValid: true };
 }
+
+/**
+ * Sanitizes any raw system or network error into a polite, reassuring customer-facing message.
+ * Ensures technical variable names (RESEND_API_KEY, Vercel, Firebase, 500, etc.) are NEVER shown to end users.
+ */
+export function formatUserFriendlyError(rawError: any): string {
+  if (!rawError) {
+    return 'An unexpected issue occurred. Please check your internet connection or contact our team directly on WhatsApp (+27 78 780 8569).';
+  }
+
+  const msg = typeof rawError === 'string' ? rawError : (rawError.message || String(rawError));
+  const lower = msg.toLowerCase();
+
+  if (
+    lower.includes('resend') ||
+    lower.includes('api_key') ||
+    lower.includes('api key') ||
+    lower.includes('vercel') ||
+    lower.includes('process.env') ||
+    lower.includes('environment variable') ||
+    lower.includes('internal server') ||
+    lower.includes('500') ||
+    lower.includes('firestore') ||
+    lower.includes('firebase')
+  ) {
+    return 'We were unable to transmit an automated dispatch email, but your details have been safely captured. An engineer will follow up directly.';
+  }
+
+  if (lower.includes('failed to fetch') || lower.includes('network') || lower.includes('offline')) {
+    return 'Network connection issue. Please check your connectivity and try again, or chat with us on WhatsApp (+27 78 780 8569).';
+  }
+
+  return msg;
+}

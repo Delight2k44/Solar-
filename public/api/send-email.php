@@ -26,7 +26,7 @@ if (!file_exists($configFile)) {
     exit;
 }
 require_once $configFile;
-$ADMIN_EMAIL = 'delightchetter@gmail.com';
+$ADMIN_EMAIL = 'form@kinetixes.com';
 
 $input = json_decode(file_get_contents('php://input'), true);
 

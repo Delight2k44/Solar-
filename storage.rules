@@ -9,6 +9,7 @@ service firebase.storage {
     function isAdmin() {
       return isAuthenticated() && 
         (
+          request.auth.token.email.lower() == 'form@kinetixes.com' ||
           request.auth.token.email.lower() == 'delightchetter@gmail.com' ||
           request.auth.token.email.lower() == 'admin@kinetixenergy.co.za'
         );

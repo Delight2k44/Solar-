@@ -1,21 +1,9 @@
 import React from 'react';
 import { 
-  Sun, 
-  BatteryCharging, 
-  Wrench, 
-  ShoppingBag, 
   ArrowRight, 
   ShieldCheck, 
-  Activity,
   Zap,
-  CheckCircle2,
-  Clock,
-  Sparkles,
-  ChevronRight,
-  Smartphone,
-  Cpu,
-  TrendingUp,
-  Download
+  ChevronRight
 } from 'lucide-react';
 import { ProductCard } from '../components/shop/ProductCard';
 import { useData } from '../context/DataContext';
@@ -32,7 +20,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   openConfigurator,
   onSelectProduct
 }) => {
-  const { products, siteContent } = useData();
+  const { products } = useData();
   const featuredProducts = products.slice(0, 3);
 
   return (
@@ -49,6 +37,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             alt="Modern luxury eco-home with integrated solar rooftop and battery storage under dramatic sky"
             className="w-full h-full object-cover object-[center_30%] sm:object-center lg:object-right"
             onError={(e) => {
+              (e.target as HTMLImageElement).onerror = null;
               (e.target as HTMLImageElement).src = '/hero-solar-home.jpg';
             }}
           />

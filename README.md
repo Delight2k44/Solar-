@@ -37,7 +37,7 @@ Featuring a Starlink-grade cinematic dark interface, certified SANS 10142-1-2 Co
 * **6-Stage Turnkey Installation Pipeline**: From warehouse allocation and 1000V DC bench testing to DoL Master Electrician SANS CoC commissioning.
 
 ### 3. 📧 Real-Time Email Notifications & Templates (Resend API)
-* **Automated Lead Alerts**: Every quote, commercial audit, and contact message dispatches instant rich HTML notifications directly to `delightchetter@gmail.com`.
+* **Automated Lead Alerts**: Every quote, commercial audit, and contact message dispatches instant rich HTML notifications directly to `form@kinetixes.com`.
 * **Published Resend Templates**:
   * `order-confirmation` — Official tax invoice with itemized hardware and tracking link.
   * `solar-quote-proposal` — Residential system recommendation (kW Inverter, kWh LiFePO4, kWp Solar panels) and savings calculation.

@@ -38,9 +38,12 @@ export const InstallationPipeline: React.FC<InstallationPipelineProps> = ({
   const currentIdx = project?.currentStageIndex ?? 1;
 
   const handleCopy = (wb: string) => {
-    navigator.clipboard.writeText(wb);
-    setCopiedWaybill(true);
-    setTimeout(() => setCopiedWaybill(false), 2000);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(wb).then(() => {
+        setCopiedWaybill(true);
+        setTimeout(() => setCopiedWaybill(false), 2000);
+      }).catch(() => {});
+    }
   };
 
   return (
@@ -69,6 +72,7 @@ export const InstallationPipeline: React.FC<InstallationPipelineProps> = ({
               <strong className="text-white font-mono">{shipment.waybillNumber}</strong>
               <button
                 onClick={() => handleCopy(shipment.waybillNumber)}
+                aria-label="Copy Waybill Number"
                 className="text-[#94A3B8] hover:text-white transition-colors"
                 title="Copy Waybill"
               >
@@ -79,6 +83,7 @@ export const InstallationPipeline: React.FC<InstallationPipelineProps> = ({
               href={`https://thecourierguy.co.za/tracking?waybill=${shipment.waybillNumber}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Track parcel on The Courier Guy portal"
               className="p-2 bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] text-[#00D2FF] rounded-xl transition-colors"
               title="Track on The Courier Guy"
             >
@@ -89,7 +94,7 @@ export const InstallationPipeline: React.FC<InstallationPipelineProps> = ({
           onNavigateToShop && (
             <button
               onClick={onNavigateToShop}
-              className="px-4 py-2 bg-[#1B4D3E] hover:bg-[#286D58] text-white rounded-xl text-xs font-bold uppercase transition-colors flex items-center gap-2 shadow-sm"
+              className="px-4 py-2 bg-[#00D2FF] hover:bg-[#38BDF8] text-black rounded-xl text-xs font-bold uppercase transition-colors flex items-center gap-2 shadow-sm"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>Browse Solar Hardware</span>

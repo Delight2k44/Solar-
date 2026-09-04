@@ -1,21 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
-  Activity, 
-  Wrench, 
-  ShieldCheck, 
-  CheckCircle2, 
-  Clock, 
-  Cpu, 
   ArrowRight, 
   Phone, 
-  Calendar,
-  Check,
-  Zap,
-  Sparkles
+  Check
 } from 'lucide-react';
 
 export const MaintenancePage: React.FC = () => {
-  const [ticketModalOpen, setTicketModalOpen] = useState(false);
 
   const plans = [
     {
@@ -157,7 +147,14 @@ export const MaintenancePage: React.FC = () => {
               </div>
 
               <button
-                onClick={() => alert(`Enrolling in ${plan.name} SLA... A technical account manager will connect with you.`)}
+                onClick={() => {
+                  const btn = document.activeElement as HTMLButtonElement;
+                  if (btn) {
+                    btn.textContent = '✓ Enrollment Submitted — Account Manager Will Connect';
+                    btn.disabled = true;
+                    btn.classList.add('opacity-60');
+                  }
+                }}
                 className={`w-full py-3.5 rounded-xl font-mono text-xs font-bold uppercase transition-all flex items-center justify-center gap-2 ${
                   plan.recommended
                     ? 'bg-[#00D2FF] hover:bg-[#38BDF8] text-black shadow-lg'

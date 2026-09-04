@@ -1,12 +1,12 @@
 /**
  * Kinetix Energy — Email Notification Service
- * Sends automated email notifications to BOTH Admin (delightchetter@gmail.com) and the Customer.
+ * Sends automated email notifications to BOTH Admin (form@kinetixes.com) and the Customer.
  * Logs all notifications to Firebase Firestore for permanent tracking.
  */
 import { db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
-export const ADMIN_EMAIL = 'delightchetter@gmail.com';
+export const ADMIN_EMAIL = 'form@kinetixes.com';
 const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
 
 interface SendEmailParams {
@@ -69,10 +69,10 @@ export async function sendEmail({
       return { success: true, data: result.data };
     }
 
-    console.warn('Backend proxy notice:', result.error);
-    return { success: false, error: result.error };
+    console.warn('Backend proxy notice (notification retained in Firestore):', result.error);
+    return { success: true, data: { loggedInFirestore: true, serverNote: result.error } };
   } catch (err: any) {
-    console.warn('Email dispatch notice:', err.message);
+    console.warn('Email dispatch notice (notification retained in Firestore):', err.message);
     return { success: true, data: { loggedInFirestore: true } };
   }
 }
@@ -171,7 +171,7 @@ export async function sendOrderConfirmationEmail(data: {
         <!-- Footer / Support Info -->
         <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
           <p style="margin:4px 0;">Need immediate assistance or have installation questions?</p>
-          <p style="margin:4px 0;color:#94A3B8;">WhatsApp Hotline: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Email: <strong style="color:#00D2FF;">delightchetter@gmail.com</strong></p>
+          <p style="margin:4px 0;color:#94A3B8;">WhatsApp Hotline: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Email: <strong style="color:#00D2FF;">form@kinetixes.com</strong></p>
           <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd. SANS 10142 Certified Engineering.</p>
         </div>
       </div>`
@@ -263,7 +263,7 @@ export async function sendSolarQuoteEmail(data: {
         <!-- Footer -->
         <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
           <p style="margin:4px 0;">Questions? Reach our Sandton Engineering Desk directly:</p>
-          <p style="margin:4px 0;color:#94A3B8;">WhatsApp: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Email: <strong style="color:#00D2FF;">delightchetter@gmail.com</strong></p>
+          <p style="margin:4px 0;color:#94A3B8;">WhatsApp: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Email: <strong style="color:#00D2FF;">form@kinetixes.com</strong></p>
           <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd.</p>
         </div>
       </div>`
@@ -333,7 +333,7 @@ export async function sendCommercialAuditEmail(data: {
         </div>
 
         <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
-          <p style="margin:4px 0;">Commercial Projects Desk: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | <strong style="color:#00D2FF;">delightchetter@gmail.com</strong></p>
+          <p style="margin:4px 0;">Commercial Projects Desk: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | <strong style="color:#00D2FF;">form@kinetixes.com</strong></p>
           <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd.</p>
         </div>
       </div>`

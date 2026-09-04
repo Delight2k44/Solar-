@@ -7,6 +7,7 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null && 
         (
+          request.auth.token.email.lower() == 'form@kinetixes.com' ||
           request.auth.token.email.lower() == 'delightchetter@gmail.com' ||
           request.auth.token.email.lower() == 'admin@kinetixenergy.co.za'
         );

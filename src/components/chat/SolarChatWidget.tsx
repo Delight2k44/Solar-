@@ -225,64 +225,64 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
     }
   };
 
-
   return (
-    <div className="fixed bottom-6 left-6 z-50">
+    <div className="fixed bottom-6 left-4 sm:left-6 z-40 font-sans">
       {/* Floating Launcher Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="p-4 bg-[#1B4D3E] hover:bg-[#286D58] text-white rounded-full shadow-2xl flex items-center gap-2.5 transition-all hover:scale-105 border border-[#286D58] ring-4 ring-[#1B4D3E]/20"
+          className="p-3.5 sm:px-4 sm:py-3.5 bg-[#0D1117] hover:bg-[#161B22] text-white rounded-full shadow-2xl flex items-center gap-2.5 transition-all duration-300 hover:scale-105 border border-[#00D2FF]/40 ring-4 ring-[#00D2FF]/10 active:scale-95"
           aria-label="Open Solar Engineering Chat"
         >
-          <div className="relative">
-            <MessageSquare className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#10B981] rounded-full border-2 border-[#1B4D3E]" />
+          <div className="relative flex items-center justify-center">
+            <Bot className="w-5 h-5 text-[#00D2FF]" />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#00D2FF] rounded-full animate-ping opacity-75" />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#00D2FF] rounded-full" />
           </div>
-          <span className="text-xs font-mono font-bold uppercase tracking-wider hidden sm:inline">
-            Live Solar Chat
+          <span className="text-xs font-semibold uppercase tracking-wider hidden sm:inline text-white">
+            AI Solar Assistant
           </span>
         </button>
       )}
 
       {/* Chat Window Dialog */}
       {isOpen && (
-        <div className="w-[360px] sm:w-[420px] h-[580px] bg-[#0E1311] border border-[#24302A] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[580px] max-h-[calc(100vh-6rem)] bg-[#0D1117]/95 backdrop-blur-2xl border border-[#1E2530] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
           {/* Header */}
-          <div className="p-4 bg-[#141A17] border-b border-[#24302A] flex items-center justify-between">
+          <div className="p-4 bg-[#161B22] border-b border-[#1E2530] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#1B4D3E] border border-[#286D58] flex items-center justify-center text-white">
-                <Bot className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-[#00D2FF]/15 border border-[#00D2FF]/30 flex items-center justify-center text-[#00D2FF]">
+                <Bot className="w-5 h-5" />
               </div>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-xs font-bold text-white uppercase">Kinetix Solar Assistant</h3>
-                  <span className="px-1.5 py-0.2 bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981] text-[8px] font-bold rounded">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white uppercase tracking-tight">Kinetix Solar Assistant</h3>
+                  <span className="px-2 py-0.5 bg-[#10B981]/15 border border-[#10B981]/30 text-[#10B981] text-[10px] font-mono font-bold rounded-full">
                     Online
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-[#9EADA5]">Live Engineering & Sizing Dispatch</span>
+                <span className="text-[11px] text-[#94A3B8]">Live Engineering & Sizing Intelligence</span>
               </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 text-[#9EADA5] hover:text-white rounded-lg hover:bg-[#0E1311] transition-colors"
+              className="p-1.5 text-[#94A3B8] hover:text-white rounded-xl hover:bg-[#21262D] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs font-mono">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs font-sans">
             {messages.map(msg => (
               <div
                 key={msg.id}
                 className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'bot' && (
-                  <div className="w-6 h-6 rounded-full bg-[#141A17] border border-[#24302A] flex items-center justify-center text-[#286D58] shrink-0 mt-0.5">
-                    <Zap className="w-3 h-3" />
+                  <div className="w-7 h-7 rounded-lg bg-[#161B22] border border-[#21262D] flex items-center justify-center text-[#00D2FF] shrink-0 mt-0.5">
+                    <Zap className="w-3.5 h-3.5" />
                   </div>
                 )}
 
@@ -290,8 +290,8 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
                   <div
                     className={`p-3.5 rounded-2xl leading-relaxed whitespace-pre-line text-xs ${
                       msg.sender === 'user'
-                        ? 'bg-[#1B4D3E] text-white rounded-tr-none'
-                        : 'bg-[#141A17] border border-[#24302A] text-[#E6ECE8] rounded-tl-none'
+                        ? 'bg-[#00D2FF] text-black font-medium rounded-tr-none'
+                        : 'bg-[#161B22] border border-[#21262D] text-[#E6ECE8] rounded-tl-none shadow-sm'
                     }`}
                   >
                     {msg.text}
@@ -299,71 +299,97 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
 
                   {/* Optional Interactive Checkout Card in Chat */}
                   {msg.checkoutCard && (
-                    <div className="p-3.5 bg-[#0E1311] border border-[#286D58] rounded-xl space-y-2.5 text-left shadow-md">
-                      <span className="text-[10px] uppercase text-[#10B981] font-bold block">
-                        Verified Hardware Package
+                    <div className="p-4 bg-[#161B22] border border-[#00D2FF]/40 rounded-xl space-y-3 text-left shadow-lg">
+                      <span className="text-[10px] uppercase text-[#00D2FF] font-mono font-bold block">
+                        Verified Hardware Solution
                       </span>
-                      <strong className="text-white text-xs block">{msg.checkoutCard.title}</strong>
-                      <p className="text-[10px] text-[#9EADA5]">{msg.checkoutCard.specs}</p>
+                      <strong className="text-white text-xs block font-semibold">{msg.checkoutCard.title}</strong>
+                      <p className="text-[11px] text-[#94A3B8]">{msg.checkoutCard.specs}</p>
                       
-                      <div className="flex items-center justify-between pt-1 border-t border-[#1B2420]">
-                        <span className="text-sm font-bold text-[#D97706]">
+                      <div className="flex items-center justify-between pt-2 border-t border-[#21262D]">
+                        <span className="text-sm font-bold text-[#10B981] font-mono">
                           R {msg.checkoutCard.priceZAR.toLocaleString()}
                         </span>
                         <button
                           onClick={() => handleInstantChatPay(msg.checkoutCard!)}
-                          className="px-3 py-1.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-bold text-[10px] uppercase rounded flex items-center gap-1 transition-colors"
+                          className="px-3.5 py-1.5 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-bold text-xs uppercase rounded-xl flex items-center gap-1.5 transition-all shadow-md"
                         >
-                          <CreditCard className="w-3 h-3" />
+                          <CreditCard className="w-3.5 h-3.5" />
                           <span>Pay in Chat</span>
                         </button>
                       </div>
                     </div>
                   )}
 
-                  {/* Optional Quick Action Buttons */}
+                  {/* Optional Quick Action Buttons (Dropdown on Mobile, Chips on Desktop) */}
                   {msg.options && (
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {msg.options.map((opt, idx) => (
-                        <button
-                          key={idx}
-                          onClick={opt.action}
-                          className="px-2.5 py-1 bg-[#0E1311] hover:bg-[#1B2420] border border-[#24302A] hover:border-[#286D58] text-white text-[10px] rounded-lg transition-colors text-left"
+                    <div className="pt-1">
+                      {/* Mobile Dropdown Selector */}
+                      <div className="block sm:hidden">
+                        <select
+                          defaultValue=""
+                          onChange={(e) => {
+                            const selected = msg.options?.find((_, i) => i.toString() === e.target.value);
+                            if (selected) {
+                              selected.action();
+                              e.target.value = '';
+                            }
+                          }}
+                          className="w-full bg-[#161B22] border border-[#30363D] text-[#00D2FF] text-xs font-medium rounded-xl px-3 py-2 outline-none"
                         >
-                          {opt.label}
-                        </button>
-                      ))}
+                          <option value="" disabled>⚡ Choose an action or question...</option>
+                          {msg.options.map((opt, idx) => (
+                            <option key={idx} value={idx.toString()} className="bg-[#0D1117] text-white">
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Desktop Chips */}
+                      <div className="hidden sm:flex flex-wrap gap-1.5">
+                        {msg.options.map((opt, idx) => (
+                          <button
+                            key={idx}
+                            onClick={opt.action}
+                            className="px-3 py-1.5 bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] hover:border-[#00D2FF] text-white text-[11px] font-medium rounded-xl transition-all text-left shadow-sm"
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
 
-                  <span className="text-[9px] text-[#6B7B73] block px-1">{msg.timestamp}</span>
+                  <span className="text-[10px] font-mono text-[#64748B] block px-1">{msg.timestamp}</span>
                 </div>
               </div>
             ))}
 
             {isTyping && (
-              <div className="flex items-center gap-2 text-[11px] text-[#9EADA5] font-mono pl-8">
-                <span className="w-1.5 h-1.5 bg-[#286D58] rounded-full animate-bounce" />
-                <span className="w-1.5 h-1.5 bg-[#286D58] rounded-full animate-bounce [animation-delay:0.2s]" />
-                <span className="w-1.5 h-1.5 bg-[#286D58] rounded-full animate-bounce [animation-delay:0.4s]" />
-                <span>Kinetix assistant is typing...</span>
+              <div className="flex items-center gap-2 text-xs text-[#94A3B8] pl-9">
+                <span className="w-2 h-2 bg-[#00D2FF] rounded-full animate-bounce" />
+                <span className="w-2 h-2 bg-[#00D2FF] rounded-full animate-bounce [animation-delay:0.2s]" />
+                <span className="w-2 h-2 bg-[#00D2FF] rounded-full animate-bounce [animation-delay:0.4s]" />
+                <span className="text-[11px]">Kinetix assistant is thinking...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Chat Input */}
-          <form onSubmit={handleSendMessage} className="p-3 bg-[#141A17] border-t border-[#24302A] flex items-center gap-2">
+          <form onSubmit={handleSendMessage} className="p-3 bg-[#161B22] border-t border-[#1E2530] flex items-center gap-2">
             <input
               type="text"
               value={inputMessage}
               onChange={e => setInputMessage(e.target.value)}
-              placeholder="Ask a question or request payment..."
-              className="flex-1 bg-[#0E1311] border border-[#24302A] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-[#6B7B73] focus:border-[#286D58]"
+              placeholder="Ask a question or request sizing..."
+              className="flex-1 bg-[#0D1117] border border-[#30363D] focus:border-[#00D2FF] focus:ring-1 focus:ring-[#00D2FF] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-[#64748B] outline-none transition-all"
             />
             <button
               type="submit"
-              className="p-2.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white rounded-xl transition-colors shrink-0"
+              className="p-2.5 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-bold rounded-xl transition-all shrink-0 shadow-md"
+              title="Send Message"
             >
               <Send className="w-4 h-4" />
             </button>

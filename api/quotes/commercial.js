@@ -62,7 +62,7 @@ export default async function handler(req, res) {
   const isSection12b = Boolean(taxSection12b);
 
   const referenceId = `KX-COMM-${Math.floor(1000 + Math.random() * 9000)}`;
-  const ADMIN_EMAIL = 'delightchetter@gmail.com';
+  const ADMIN_EMAIL = 'form@kinetixes.com';
   const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -92,7 +92,7 @@ export default async function handler(req, res) {
         <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>SARS Section 12B Depreciation:</strong> <span style="color:#10B981;font-weight:bold;">${isSection12b ? 'Enabled (125% Year-1 Write-Off)' : 'Standard'}</span></p>
       </div>
       <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
-        <p style="margin:4px 0;">Commercial Projects Hotline: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Admin: <strong style="color:#00D2FF;">delightchetter@gmail.com</strong></p>
+        <p style="margin:4px 0;">Commercial Projects Hotline: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Admin: <strong style="color:#00D2FF;">form@kinetixes.com</strong></p>
         <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd. Commercial 3-Phase SANS Engineering.</p>
       </div>
     </div>

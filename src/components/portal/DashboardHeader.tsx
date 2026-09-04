@@ -1,13 +1,11 @@
 import React from 'react';
 import { 
-  Sun, 
   MapPin, 
   ShieldCheck, 
   Wrench, 
   LogOut, 
   SlidersHorizontal, 
-  ArrowRight,
-  UserCheck
+  ArrowRight
 } from 'lucide-react';
 import { CustomerSite, UserProfile, SupportInfo } from '../../types/dashboard';
 import { getInitials } from '../../utils/formatters';
@@ -35,7 +33,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onNavigateToAdmin,
   onLogout
 }) => {
-  const initials = getInitials(user.name);
+  const initials = getInitials(user?.name || 'Customer');
 
   return (
     <div className="space-y-4 font-sans">

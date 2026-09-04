@@ -42,7 +42,7 @@ if (!empty($errors)) {
 }
 
 $inquiryId = 'KX-ENQ-' . rand(1000, 9999);
-$ADMIN_EMAIL = 'delightchetter@gmail.com';
+$ADMIN_EMAIL = 'form@kinetixes.com';
 $FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
 
 $recipients = [$ADMIN_EMAIL];

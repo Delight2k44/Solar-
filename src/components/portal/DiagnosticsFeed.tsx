@@ -18,30 +18,39 @@ export const DiagnosticsFeed: React.FC<DiagnosticsFeedProps> = ({
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="bg-[#141A17]/90 backdrop-blur-xl border border-[#24302A] rounded-2xl p-5 sm:p-6 space-y-5 shadow-xl font-mono">
+    <div className="bg-[#0D1117] border border-[#1E2530] rounded-2xl p-5 sm:p-6 space-y-5 shadow-xl font-sans">
       {/* Feed Header */}
-      <div className="flex items-center justify-between border-b border-[#24302A] pb-4">
-        <div className="flex items-center gap-2">
-          <Bell className="w-4 h-4 text-[#10B981]" />
-          <h3 className="text-sm font-bold text-white uppercase tracking-tight">Engineering & Diagnostics Feed</h3>
+      <div className="flex items-center justify-between border-b border-[#1E2530] pb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[#00D2FF]/10 border border-[#00D2FF]/20 flex items-center justify-center text-[#00D2FF]">
+            <Bell className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white uppercase tracking-tight">
+              Diagnostics & Telemetry Feed
+            </h3>
+            <p className="text-[11px] text-[#94A3B8]">
+              Automated hardware logs, QA certifications & status alerts
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {unreadCount > 0 && (
             <button
               onClick={onMarkAllRead}
-              className="text-[10px] text-[#10B981] hover:underline"
+              className="text-xs text-[#00D2FF] hover:underline font-semibold"
             >
               Mark All Read
             </button>
           )}
-          <span className="px-2 py-0.5 bg-[#0E1311] border border-[#24302A] text-[#9EADA5] rounded text-[10px] font-bold">
+          <span className="px-2.5 py-0.5 bg-[#00D2FF]/10 border border-[#00D2FF]/30 text-[#00D2FF] rounded-full text-[10px] font-mono font-bold">
             {unreadCount} NEW
           </span>
         </div>
       </div>
 
-      {/* Notifications Drawer */}
-      <div className="space-y-3 text-xs">
+      {/* Notifications List */}
+      <div className="space-y-3">
         {notifications.length > 0 ? (
           notifications.map(notif => {
             const isSuccess = notif.type === 'success';
@@ -51,37 +60,37 @@ export const DiagnosticsFeed: React.FC<DiagnosticsFeedProps> = ({
             return (
               <div
                 key={notif.id}
-                className={`p-3.5 rounded-xl border flex items-start justify-between gap-3 transition-all ${
+                className={`p-4 rounded-xl border flex items-start justify-between gap-3.5 transition-all ${
                   notif.read
-                    ? 'bg-[#0E1311]/70 border-[#24302A] text-[#9EADA5]'
-                    : 'bg-[#0E1311] border-[#10B981]/60 text-white shadow-md'
+                    ? 'bg-[#161B22]/50 border-[#21262D] text-[#94A3B8]'
+                    : 'bg-[#161B22] border-[#00D2FF]/40 text-white shadow-md ring-1 ring-[#00D2FF]/20'
                 }`}
               >
-                <div className="space-y-1">
+                <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className={`px-1.5 py-0.2 text-[9px] font-bold uppercase rounded border ${
+                    <span className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-md border ${
                       isSuccess
                         ? 'bg-[#10B981]/15 border-[#10B981]/40 text-[#10B981]'
                         : isWarning
-                        ? 'bg-[#D97706]/15 border-[#D97706]/40 text-[#D97706]'
+                        ? 'bg-[#F59E0B]/15 border-[#F59E0B]/40 text-[#F59E0B]'
                         : isTransit
-                        ? 'bg-[#1B4D3E]/40 border-[#286D58] text-[#10B981]'
-                        : 'bg-[#141A17] border-[#24302A] text-[#9EADA5]'
+                        ? 'bg-[#00D2FF]/15 border-[#00D2FF]/40 text-[#00D2FF]'
+                        : 'bg-[#1E2530] border-[#30363D] text-[#94A3B8]'
                     }`}>
-                      {notif.type}
+                      {notif.type.replace('_', ' ')}
                     </span>
-                    <strong className="text-white text-xs">{notif.title}</strong>
+                    <strong className="text-xs font-semibold text-white truncate block">{notif.title}</strong>
                   </div>
-                  <p className="text-[11px] text-[#9EADA5] leading-relaxed">{notif.description}</p>
-                  <span className="text-[9px] text-[#6B7B73] block">{notif.createdAt}</span>
+                  <p className="text-xs text-[#94A3B8] leading-relaxed">{notif.description}</p>
+                  <span className="text-[10px] font-mono text-[#64748B] block">{notif.createdAt}</span>
                 </div>
 
                 {!notif.read && (
                   <button
                     onClick={() => onMarkRead(notif.id)}
-                    className="px-2 py-1 bg-[#141A17] hover:bg-[#1B2420] border border-[#24302A] hover:border-[#10B981] text-[9px] text-[#10B981] font-bold rounded shrink-0 transition-colors"
+                    className="px-2.5 py-1 bg-[#0D1117] hover:bg-[#21262D] border border-[#30363D] hover:border-[#00D2FF] text-[10px] font-mono text-[#00D2FF] font-bold rounded-lg shrink-0 transition-colors"
                   >
-                    Read
+                    Dismiss
                   </button>
                 )}
               </div>
@@ -89,28 +98,30 @@ export const DiagnosticsFeed: React.FC<DiagnosticsFeedProps> = ({
           })
         ) : (
           <div className="space-y-2.5">
-            <div className="p-3 bg-[#0E1311] border border-[#24302A] rounded-xl flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-[#10B981]"></div>
+            <div className="p-3.5 bg-[#161B22] border border-[#21262D] rounded-xl flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
                 <div>
-                  <span className="text-white font-bold block text-[11px]">Bench-Testing Passed (1000V DC)</span>
-                  <span className="text-[10px] text-[#9EADA5]">Sandton Hub QA Certification</span>
+                  <span className="text-white font-semibold block text-xs">Bench-Testing Passed (1000V DC)</span>
+                  <span className="text-[11px] text-[#94A3B8]">Sandton Hub QA Verification Active</span>
                 </div>
               </div>
-              <span className="text-[9px] text-[#10B981] font-bold">VERIFIED</span>
+              <span className="px-2 py-0.5 bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 text-[10px] font-mono font-bold rounded">
+                VERIFIED
+              </span>
             </div>
 
-            <div className="p-3 bg-[#0E1311] border border-[#24302A] rounded-xl flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2.5">
-                <div className="w-2 h-2 rounded-full bg-[#D97706]"></div>
+            <div className="p-3.5 bg-[#161B22] border border-[#21262D] rounded-xl flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
                 <div>
-                  <span className="text-white font-bold block text-[11px]">Spring Solar Yield Diagnostic Ready</span>
-                  <span className="text-[10px] text-[#9EADA5]">High UV Solar Irradiance Window</span>
+                  <span className="text-white font-semibold block text-xs">Preventative Health Audit Recommended</span>
+                  <span className="text-[11px] text-[#94A3B8]">Maximize summer PV yield production</span>
                 </div>
               </div>
               <button
                 onClick={onRequestService}
-                className="px-2 py-1 bg-[#141A17] hover:bg-[#1B2420] border border-[#24302A] text-[9px] text-white font-bold rounded"
+                className="px-2.5 py-1 bg-[#0D1117] hover:bg-[#21262D] border border-[#30363D] hover:border-[#F59E0B] text-[10px] text-white font-semibold rounded-lg transition-colors"
               >
                 Schedule
               </button>
@@ -120,13 +131,13 @@ export const DiagnosticsFeed: React.FC<DiagnosticsFeedProps> = ({
       </div>
 
       {/* Quick Service Dispatch Trigger */}
-      <div className="pt-2 border-t border-[#24302A] flex items-center justify-between text-xs">
-        <span className="text-[11px] text-[#6B7B73]">Need certified technician support?</span>
+      <div className="pt-3 border-t border-[#1E2530] flex items-center justify-between text-xs">
+        <span className="text-xs text-[#94A3B8]">Need certified technician assistance?</span>
         <button
           onClick={onRequestService}
-          className="text-[#10B981] hover:text-white font-bold flex items-center gap-1 transition-colors text-[11px]"
+          className="text-[#00D2FF] hover:text-[#38BDF8] font-semibold flex items-center gap-1.5 transition-colors text-xs"
         >
-          <span>Dispatch Ticket</span>
+          <span>Dispatch SLA Ticket</span>
           <ArrowUpRight className="w-3.5 h-3.5" />
         </button>
       </div>

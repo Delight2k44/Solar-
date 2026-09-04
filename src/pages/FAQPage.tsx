@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HelpCircle, ChevronDown, ChevronUp, Search, Calculator, Phone, ArrowRight } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, ArrowRight } from 'lucide-react';
 
 interface FAQItem {
   question: string;
@@ -35,18 +35,18 @@ const SOLAR_FAQS: FAQItem[] = [
   },
   {
     question: 'Does the system feed back into the municipal grid?',
-    answer: 'Yes, provided your property is registered under your municipality’s Small-Scale Embedded Generation (SSEG) scheme (e.g. City Power in Johannesburg or City of Cape Town). Our turnkey installation includes complete municipal application support and bi-directional meter documentation.',
+    answer: 'Yes, provided your property is registered under your municipality\'s Small-Scale Embedded Generation (SSEG) scheme (e.g. City Power in Johannesburg or City of Cape Town). Our turnkey installation includes complete municipal application support and bi-directional meter documentation.',
     category: 'Grid-Tie'
   }
 ];
 
 interface FAQPageProps {
   openConfigurator: () => void;
-  setCurrentRoute: (route: string) => void;
+  setCurrentRoute?: (route: string) => void;
 }
 
-export const FAQPage: React.FC<FAQPageProps> = ({ openConfigurator, setCurrentRoute }) => {
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
+export const FAQPage: React.FC<FAQPageProps> = ({ openConfigurator }) => {
+  const [openQuestion, setOpenQuestion] = useState<string | null>(SOLAR_FAQS[0]?.question ?? null);
   const [search, setSearch] = useState('');
 
   const filteredFaqs = SOLAR_FAQS.filter(f => 
@@ -82,17 +82,18 @@ export const FAQPage: React.FC<FAQPageProps> = ({ openConfigurator, setCurrentRo
 
       {/* FAQ Accordion List */}
       <div className="space-y-3 font-mono">
-        {filteredFaqs.map((faq, idx) => {
-          const isOpen = openIdx === idx;
+        {filteredFaqs.map((faq) => {
+          const isOpen = openQuestion === faq.question;
           return (
             <div
-              key={idx}
+              key={faq.question}
               className={`rounded-2xl border transition-all overflow-hidden ${
                 isOpen ? 'bg-[#0D1117] border-[#00D2FF]/40 shadow-lg' : 'bg-[#0D1117]/60 border-[#1E2530] hover:border-white/20'
               }`}
             >
               <button
-                onClick={() => setOpenIdx(isOpen ? null : idx)}
+                onClick={() => setOpenQuestion(isOpen ? null : faq.question)}
+                aria-expanded={isOpen}
                 className="w-full p-5 text-left flex items-center justify-between gap-4"
               >
                 <strong className="text-sm font-bold text-white">{faq.question}</strong>

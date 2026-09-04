@@ -1,12 +1,12 @@
 import React from 'react';
-import { ShieldCheck, Zap, Wrench, Users, Activity, Award, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Wrench, Activity } from 'lucide-react';
 
 interface AboutPageProps {
   setCurrentRoute?: (route: string) => void;
   openConfigurator?: () => void;
 }
 
-export const AboutPage: React.FC<AboutPageProps> = ({ setCurrentRoute }) => {
+export const AboutPage: React.FC<AboutPageProps> = () => {
   return (
     <div className="space-y-24 text-white font-sans selection:bg-[#00D2FF] selection:text-black pb-24">
       

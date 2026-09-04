@@ -1,28 +1,18 @@
 import React, { useState } from 'react';
 import { 
   Building2, 
-  TrendingUp, 
   ShieldCheck, 
   Zap, 
-  Calculator, 
   ArrowRight, 
-  CheckCircle2, 
-  FileSpreadsheet, 
   X, 
   Phone, 
-  Layers, 
-  Activity, 
-  Download,
-  Check,
-  Cpu,
-  Sparkles,
-  BarChart3
+  Check
 } from 'lucide-react';
 import { CommercialAssessmentForm } from '../components/forms/CommercialAssessmentForm';
 
 interface BusinessPageProps {
-  openConfigurator: () => void;
-  setCurrentRoute: (route: string) => void;
+  openConfigurator?: () => void;
+  setCurrentRoute?: (route: string) => void;
 }
 
 export const BusinessPage: React.FC<BusinessPageProps> = ({ openConfigurator, setCurrentRoute }) => {
@@ -176,6 +166,7 @@ export const BusinessPage: React.FC<BusinessPageProps> = ({ openConfigurator, se
                 </div>
                 <input
                   type="range"
+                  aria-label="Monthly Electricity Bill in ZAR"
                   min="20000"
                   max="500000"
                   step="5000"
@@ -309,6 +300,7 @@ export const BusinessPage: React.FC<BusinessPageProps> = ({ openConfigurator, se
           <div className="relative w-full max-w-3xl my-8">
             <button
               onClick={() => setShowAssessmentModal(false)}
+              aria-label="Close commercial assessment modal"
               className="absolute top-4 right-4 z-10 p-2 text-[#94A3B8] hover:text-white bg-[#131822] border border-[#1E2530] rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />

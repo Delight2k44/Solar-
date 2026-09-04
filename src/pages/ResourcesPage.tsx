@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RESOURCE_ARTICLES } from '../data/mockData';
 import { ResourceArticle } from '../types';
-import { BookOpen, Clock, Tag, ArrowRight, Search, FileText, CheckCircle2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 export const ResourcesPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -18,6 +18,18 @@ export const ResourcesPage: React.FC = () => {
       art.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCat && matchesSearch;
   });
+
+  // Keep active article in sync with filtered list
+  useEffect(() => {
+    if (filteredArticles.length > 0) {
+      const stillInList = filteredArticles.some(a => a.id === activeArticle?.id);
+      if (!stillInList) {
+        setActiveArticle(filteredArticles[0]);
+      }
+    } else {
+      setActiveArticle(null);
+    }
+  }, [selectedCategory, searchQuery]);
 
   return (
     <div className="max-w-7xl mx-auto px-6 sm:px-12 pt-28 sm:pt-36 pb-24 space-y-12 text-white font-sans selection:bg-[#00D2FF] selection:text-black">
@@ -60,6 +72,7 @@ export const ResourcesPage: React.FC = () => {
             <Search className="w-4 h-4 text-[#64748B] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
+              aria-label="Search guides, glossary, or regulations"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search guides, glossary, or regulations..."
@@ -68,31 +81,38 @@ export const ResourcesPage: React.FC = () => {
           </div>
 
           <div className="space-y-3 font-mono">
-            {filteredArticles.map(article => {
-              const isSelected = activeArticle?.id === article.id;
-              return (
-                <div
-                  key={article.id}
-                  onClick={() => setActiveArticle(article)}
-                  className={`p-5 rounded-2xl border text-left cursor-pointer transition-all ${
-                    isSelected
-                      ? 'bg-[#0D1117] border-[#00D2FF] ring-1 ring-[#00D2FF]/50'
-                      : 'bg-[#0D1117]/60 border-[#1E2530] hover:border-white/20'
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-[10px] text-[#64748B] mb-2">
-                    <span className="text-[#00D2FF] uppercase font-bold">{article.category}</span>
-                    <span>{article.readTime}</span>
-                  </div>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-tight leading-snug">
-                    {article.title}
-                  </h3>
-                  <p className="text-xs text-[#94A3B8] mt-1.5 line-clamp-2 leading-relaxed">
-                    {article.excerpt}
-                  </p>
-                </div>
-              );
-            })}
+            {filteredArticles.length === 0 ? (
+              <div className="p-8 text-center bg-[#0D1117]/60 border border-[#1E2530] rounded-2xl text-xs text-[#94A3B8]">
+                No technical articles match &ldquo;{searchQuery}&rdquo;. Try another term.
+              </div>
+            ) : (
+              filteredArticles.map(article => {
+                const isSelected = activeArticle?.id === article.id;
+                return (
+                  <button
+                    type="button"
+                    key={article.id}
+                    onClick={() => setActiveArticle(article)}
+                    className={`w-full p-5 rounded-2xl border text-left cursor-pointer transition-all block ${
+                      isSelected
+                        ? 'bg-[#0D1117] border-[#00D2FF] ring-1 ring-[#00D2FF]/50'
+                        : 'bg-[#0D1117]/60 border-[#1E2530] hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-[10px] text-[#64748B] mb-2">
+                      <span className="text-[#00D2FF] uppercase font-bold">{article.category}</span>
+                      <span>{article.readTime}</span>
+                    </div>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-tight leading-snug">
+                      {article.title}
+                    </h3>
+                    <p className="text-xs text-[#94A3B8] mt-1.5 line-clamp-2 leading-relaxed">
+                      {article.excerpt}
+                    </p>
+                  </button>
+                );
+              })
+            )}
           </div>
         </div>
 

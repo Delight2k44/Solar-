@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Clock, Send, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { sendContactInquiryEmail } from '../services/emailService';
 
@@ -13,27 +13,36 @@ export const ContactPage: React.FC = () => {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
+    setIsSubmitting(true);
 
-    createContactEnquiry({
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      subject: formData.subject,
-      message: formData.message
-    });
+    try {
+      createContactEnquiry({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.subject,
+        message: formData.message
+      });
 
-    setIsSubmitted(true);
-    sendContactInquiryEmail({
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      subject: formData.subject,
-      message: formData.message
-    }).catch(e => console.log('Email notice:', e));
+      setIsSubmitted(true);
+      sendContactInquiryEmail({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.subject,
+        message: formData.message
+      }).catch(e => console.log('Email notice:', e));
+    } catch (err) {
+      console.warn('Contact enquiry notice:', err);
+      setIsSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -102,46 +111,51 @@ export const ContactPage: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4 text-xs font-mono">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[#94A3B8] uppercase text-[10px] mb-1">Your Full Name *</label>
+                    <label htmlFor="contact-name" className="block text-[#94A3B8] uppercase text-[10px] mb-1">Your Full Name *</label>
                     <input
+                      id="contact-name"
                       type="text"
                       required
                       value={formData.name}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Johan Van Wyk"
-                      className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white"
+                      className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#00D2FF] transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-[#94A3B8] uppercase text-[10px] mb-1">Email Address *</label>
+                    <label htmlFor="contact-email" className="block text-[#94A3B8] uppercase text-[10px] mb-1">Email Address *</label>
                     <input
+                      id="contact-email"
                       type="email"
                       required
                       value={formData.email}
                       onChange={e => setFormData({ ...formData, email: e.target.value })}
                       placeholder="e.g. johan@example.co.za"
-                      className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white"
+                      className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#00D2FF] transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[#94A3B8] uppercase text-[10px] mb-1">Contact Phone *</label>
+                    <label htmlFor="contact-phone" className="block text-[#94A3B8] uppercase text-[10px] mb-1">Contact Phone *</label>
                     <input
+                      id="contact-phone"
                       type="tel"
+                      required
                       value={formData.phone}
                       onChange={e => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="+27 82 000 0000"
-                      className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white"
+                      className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#00D2FF] transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-[#94A3B8] uppercase text-[10px] mb-1">Inquiry Subject *</label>
+                    <label htmlFor="contact-subject" className="block text-[#94A3B8] uppercase text-[10px] mb-1">Inquiry Subject *</label>
                     <select
+                      id="contact-subject"
                       value={formData.subject}
                       onChange={e => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white"
+                      className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#00D2FF] transition-colors"
                     >
                       <option>General Technical Inquiry</option>
                       <option>Commercial 50kW+ Microgrid Sizing</option>
@@ -153,23 +167,25 @@ export const ContactPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-[#94A3B8] uppercase text-[10px] mb-1">Message / Site Details *</label>
+                  <label htmlFor="contact-message" className="block text-[#94A3B8] uppercase text-[10px] mb-1">Message / Site Details *</label>
                   <textarea
+                    id="contact-message"
                     required
                     rows={4}
                     value={formData.message}
                     onChange={e => setFormData({ ...formData, message: e.target.value })}
                     placeholder="Describe your site location, current load shedding challenges or requirements..."
-                    className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white"
+                    className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#00D2FF] transition-colors"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-bold uppercase rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-[#00D2FF] hover:bg-[#38BDF8] disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold uppercase rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
                 >
                   <Send className="w-4 h-4" />
-                  <span>Transmit Technical Message</span>
+                  <span>{isSubmitting ? 'Transmitting...' : 'Transmit Technical Message'}</span>
                 </button>
               </form>
             )}

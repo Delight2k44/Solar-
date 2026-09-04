@@ -1,17 +1,10 @@
-import { validateFullName, validateEmail, validatePhone, validateLocation } from '../../utils/validation';
+import { validateFullName, validateEmail, validatePhone, formatUserFriendlyError } from '../../utils/validation';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
-import { sendCommercialAuditEmail } from '../../services/emailService';
 import { 
   Building2, 
-  Zap, 
-  DollarSign, 
-  TrendingUp, 
-  ShieldCheck, 
   CheckCircle2, 
-  ArrowRight,
-  FileSpreadsheet,
-  Clock
+  FileSpreadsheet
 } from 'lucide-react';
 
 interface CommercialAssessmentFormProps {
@@ -73,39 +66,44 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
         locationCity
       };
 
-      const res = await fetch('/api/quotes/commercial', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      let generatedRef = `KX-COMM-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      // 1. Guaranteed persistent lead creation in Firestore
+      createCommercialLead({
+        companyName,
+        industrySector: facilityType,
+        monthlySpend,
+        peakKva,
+        dieselMonthly,
+        taxSection12b,
+        contactName,
+        designation,
+        email,
+        phone,
+        locationCity
       });
 
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        const generatedRef = data.referenceId || `KX-COMM-${Math.floor(1000 + Math.random() * 9000)}`;
-        setReferenceId(generatedRef);
-
-        createCommercialLead({
-          companyName,
-          industrySector: facilityType,
-          monthlySpend,
-          peakKva,
-          dieselMonthly,
-          taxSection12b,
-          contactName,
-          designation,
-          email,
-          phone,
-          locationCity
+      // 2. Automated notification dispatch (graceful fallback)
+      try {
+        const res = await fetch('/api/quotes/commercial', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
 
-        setSubmitted(true);
-        if (onSuccess) onSuccess();
-      } else {
-        setErrorMessage(data.error || 'Failed to register commercial audit. Please verify your inputs.');
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.referenceId) generatedRef = data.referenceId;
+        }
+      } catch {
+        // Backend offline fallback - lead is already saved in Firestore
       }
+
+      setReferenceId(generatedRef);
+      setSubmitted(true);
+      if (onSuccess) onSuccess();
     } catch (err: any) {
-      setErrorMessage(err.message || 'Network error connecting to commercial engineering desk.');
+      setErrorMessage(formatUserFriendlyError(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -113,34 +111,34 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
 
   if (submitted) {
     return (
-      <div className="bg-[#141A17] border border-[#24302A] rounded-2xl p-8 sm:p-10 text-center space-y-5 shadow-2xl max-w-2xl mx-auto">
+      <div className="bg-[#0D1117] border border-[#1E2530] rounded-2xl p-8 sm:p-10 text-center space-y-5 shadow-2xl max-w-2xl mx-auto">
         <div className="w-16 h-16 rounded-full bg-[#10B981]/20 border border-[#10B981] flex items-center justify-center mx-auto text-[#10B981]">
           <CheckCircle2 className="w-9 h-9" />
         </div>
 
         <div className="space-y-2">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#286D58] font-bold">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold">
             Commercial Energy Audit Registered
           </span>
           <h3 className="text-2xl font-extrabold text-white uppercase">
             Audit Reference: <span className="font-mono text-[#D97706]">{referenceId}</span>
           </h3>
-          <p className="text-xs sm:text-sm text-[#9EADA5] max-w-md mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#94A3B8] max-w-md mx-auto leading-relaxed">
             Our Principal Electrical Engineer has received the commercial load profiling inquiry for <strong className="text-white">{companyName}</strong>. We will reach out to <strong className="text-white">{contactName}</strong> within 4 business hours to arrange interval data / bill analysis.
           </p>
         </div>
 
-        <div className="p-4 bg-[#0E1311] border border-[#24302A] rounded-xl text-left text-xs font-mono text-[#9EADA5] space-y-2">
+        <div className="p-4 bg-[#0D1117] border border-[#1E2530] rounded-xl text-left text-xs font-mono text-[#94A3B8] space-y-2">
           <div className="flex justify-between">
-            <span className="text-[#6B7B73]">Facility Classification:</span>
+            <span className="text-[#64748B]">Facility Classification:</span>
             <span className="text-white font-bold">{facilityType}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#6B7B73]">Estimated Monthly Spend:</span>
+            <span className="text-[#64748B]">Estimated Monthly Spend:</span>
             <span className="text-white font-bold">{monthlySpend}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#6B7B73]">SARS Section 12B Modeling:</span>
+            <span className="text-[#64748B]">SARS Section 12B Modeling:</span>
             <span className="text-[#10B981] font-bold">{taxSection12b ? 'Included in Feasibility' : 'Standard ROI'}</span>
           </div>
         </div>
@@ -148,7 +146,7 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
         <div className="pt-2">
           <button
             onClick={() => setSubmitted(false)}
-            className="px-6 py-2.5 bg-[#0E1311] hover:bg-[#1A221E] border border-[#24302A] text-white font-mono text-xs uppercase tracking-wider rounded transition-colors"
+            className="px-6 py-2.5 bg-[#0D1117] hover:bg-[#161B22] border border-[#1E2530] text-white font-mono text-xs uppercase tracking-wider rounded transition-colors"
           >
             Submit Another Commercial Property
           </button>
@@ -158,19 +156,19 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
   }
 
   return (
-    <div className="bg-[#141A17] border border-[#24302A] rounded-2xl overflow-hidden shadow-2xl max-w-3xl mx-auto">
+    <div className="bg-[#0D1117] border border-[#1E2530] rounded-2xl overflow-hidden shadow-2xl max-w-3xl mx-auto">
       {/* Header */}
-      <div className="p-6 sm:p-8 bg-[#0E1311] border-b border-[#24302A] space-y-2">
+      <div className="p-6 sm:p-8 bg-[#0D1117] border-b border-[#1E2530] space-y-2">
         <div className="flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-[#286D58]" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#286D58] font-bold">
+          <Building2 className="w-5 h-5 text-[#00D2FF]" />
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold">
             Commercial & Industrial Feasibility
           </span>
         </div>
         <h3 className="text-xl sm:text-2xl font-extrabold text-white uppercase tracking-tight">
           Commercial 3-Phase Energy Assessment
         </h3>
-        <p className="text-xs text-[#9EADA5]">
+        <p className="text-xs text-[#94A3B8]">
           Request a full single-line diagram (SLD), peak-demand shaving analysis, and SARS Section 12B cash flow model for your enterprise.
         </p>
       </div>
@@ -178,29 +176,29 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
         {/* Company & Facility Information */}
         <div className="space-y-4">
-          <h4 className="text-xs font-mono font-bold uppercase text-white tracking-wider border-b border-[#24302A] pb-2">
+          <h4 className="text-xs font-mono font-bold uppercase text-white tracking-wider border-b border-[#1E2530] pb-2">
             01. Enterprise & Operational Profile
           </h4>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Company / Enterprise Name *</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Company / Enterprise Name *</label>
               <input
                 type="text"
                 required
                 value={companyName}
                 onChange={e => setCompanyName(e.target.value)}
                 placeholder="e.g. Apex Logistics (Pty) Ltd"
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Facility Classification</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Facility Classification</label>
               <select
                 value={facilityType}
                 onChange={e => setFacilityType(e.target.value)}
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               >
                 <option>Commercial Office Park</option>
                 <option>Industrial Warehouse / Logistics</option>
@@ -214,11 +212,11 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Monthly Electricity Spend</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Monthly Electricity Spend</label>
               <select
                 value={monthlySpend}
                 onChange={e => setMonthlySpend(e.target.value)}
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               >
                 <option>R 15,000 – R 35,000 / mo</option>
                 <option>R 35,000 – R 75,000 / mo</option>
@@ -229,11 +227,11 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Estimated Peak Demand</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Estimated Peak Demand</label>
               <select
                 value={peakKva}
                 onChange={e => setPeakKva(e.target.value)}
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               >
                 <option>Under 100 kVA</option>
                 <option>100 kVA – 250 kVA</option>
@@ -244,11 +242,11 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Diesel Generator Spend</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Diesel Generator Spend</label>
               <select
                 value={dieselMonthly}
                 onChange={e => setDieselMonthly(e.target.value)}
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               >
                 <option>None / Infrequent</option>
                 <option>R 10,000 – R 30,000 / mo</option>
@@ -258,13 +256,13 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
             </div>
           </div>
 
-          <div className="p-3.5 bg-[#0E1311] border border-[#24302A] rounded-lg">
+          <div className="p-3.5 bg-[#0D1117] border border-[#1E2530] rounded-lg">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={taxSection12b}
                 onChange={e => setTaxSection12b(e.target.checked)}
-                className="w-4 h-4 rounded bg-[#141A17] border-[#24302A] text-[#286D58] focus:ring-0"
+                className="w-4 h-4 rounded bg-[#0D1117] border-[#1E2530] text-[#00D2FF] focus:ring-0"
               />
               <span className="text-xs text-white">
                 Include <strong>SARS Section 12B Accelerated Depreciation</strong> tax write-off cash flow modeling in report.
@@ -275,70 +273,76 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
 
         {/* Contact Coordinates */}
         <div className="space-y-4 pt-2">
-          <h4 className="text-xs font-mono font-bold uppercase text-white tracking-wider border-b border-[#24302A] pb-2">
+          <h4 className="text-xs font-mono font-bold uppercase text-white tracking-wider border-b border-[#1E2530] pb-2">
             02. Key Account Contact
           </h4>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Contact Person & Title *</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Contact Person & Title *</label>
               <input
                 type="text"
                 required
                 value={contactName}
                 onChange={e => setContactName(e.target.value)}
                 placeholder="e.g. David Nkosi (Operations Director)"
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Corporate Email Address *</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Corporate Email Address *</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="david.n@apexlogistics.co.za"
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Direct Phone / Mobile *</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Direct Phone / Mobile *</label>
               <input
                 type="tel"
                 required
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 placeholder="+27 11 000 0000 / +27 83 000 0000"
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1">Facility Suburb & Metro *</label>
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1">Facility Suburb & Metro *</label>
               <input
                 type="text"
                 required
                 value={locationCity}
                 onChange={e => setLocationCity(e.target.value)}
                 placeholder="e.g. Midrand, Gauteng / Montague Gardens, Cape Town"
-                className="w-full bg-[#0E1311] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               />
             </div>
           </div>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2 space-y-3">
+          {errorMessage && (
+            <div className="p-3 bg-red-950/40 border border-red-500/50 rounded-lg text-red-300 text-xs font-mono">
+              {errorMessage}
+            </div>
+          )}
           <button
             type="submit"
-            className="w-full py-4 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
+            disabled={isSubmitting}
+            className="w-full py-4 bg-[#00D2FF] hover:bg-[#38BDF8] disabled:opacity-50 disabled:cursor-not-allowed text-black font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             <FileSpreadsheet className="w-4 h-4" />
-            <span>Request Commercial Engineering Feasibility Study</span>
+            <span>{isSubmitting ? 'Submitting...' : 'Request Commercial Engineering Feasibility Study'}</span>
           </button>
         </div>
       </form>

@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Wrench, 
-  ShieldCheck, 
-  CheckCircle2, 
-  Clock, 
-  FileText, 
-  Activity, 
-  ArrowRight, 
-  Cpu, 
-  Calendar,
-  X,
-  Check
-} from 'lucide-react';
+import { ShieldCheck, ArrowRight, X } from 'lucide-react';
 import { InstallationBookingForm } from '../components/forms/InstallationBookingForm';
 
 export const InstallationPage: React.FC = () => {
@@ -125,6 +113,7 @@ export const InstallationPage: React.FC = () => {
           <div className="relative w-full max-w-3xl my-8">
             <button
               onClick={() => setShowBookingForm(false)}
+              aria-label="Close installation booking dialog"
               className="absolute top-4 right-4 z-10 p-2 text-[#94A3B8] hover:text-white bg-[#131822] border border-[#1E2530] rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />

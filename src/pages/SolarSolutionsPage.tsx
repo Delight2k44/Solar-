@@ -1,19 +1,8 @@
 import React, { useState } from 'react';
 import { 
-  Home, 
-  Building2, 
-  BatteryCharging, 
-  RefreshCw, 
   ArrowRight, 
-  ShieldCheck, 
-  Zap, 
-  Layers,
-  CheckCircle2,
-  FileSpreadsheet,
   X,
-  Cpu,
-  Check,
-  Sparkles
+  Check
 } from 'lucide-react';
 import { CommercialAssessmentForm } from '../components/forms/CommercialAssessmentForm';
 import { SolarQuoteForm } from '../components/forms/SolarQuoteForm';
@@ -247,6 +236,7 @@ export const SolarSolutionsPage: React.FC<SolarSolutionsPageProps> = ({
           <div className="relative w-full max-w-3xl my-8">
             <button
               onClick={() => setShowCommercialForm(false)}
+              aria-label="Close commercial feasibility form"
               className="absolute top-4 right-4 z-10 p-2 text-[#94A3B8] hover:text-white bg-[#131822] border border-[#1E2530] rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
@@ -261,6 +251,7 @@ export const SolarSolutionsPage: React.FC<SolarSolutionsPageProps> = ({
           <div className="relative w-full max-w-3xl my-8">
             <button
               onClick={() => setShowResidentialForm(false)}
+              aria-label="Close residential quote form"
               className="absolute top-4 right-4 z-10 p-2 text-[#94A3B8] hover:text-white bg-[#131822] border border-[#1E2530] rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />

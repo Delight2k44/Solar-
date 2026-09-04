@@ -39,7 +39,7 @@ export default async function handler(req, res) {
   const safeAccess = escapeHtml((specialAccess || 'None').trim());
 
   const bookingId = `KX-BKG-${Math.floor(1000 + Math.random() * 9000)}`;
-  const ADMIN_EMAIL = 'delightchetter@gmail.com';
+  const ADMIN_EMAIL = 'form@kinetixes.com';
   const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
         <p style="margin:4px 0;font-size:13px;color:#94A3B8;"><strong>Access Notes:</strong> <span style="color:#FFF;">${safeAccess}</span></p>
       </div>
       <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
-        <p style="margin:4px 0;">Installation Desk: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Admin: <strong style="color:#00D2FF;">delightchetter@gmail.com</strong></p>
+        <p style="margin:4px 0;">Installation Desk: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Admin: <strong style="color:#00D2FF;">form@kinetixes.com</strong></p>
         <p style="margin-top:12px;font-size:11px;">© 2026 Kinetix Energy Technologies (Pty) Ltd. SANS 10142-1 Certified Master Electricians.</p>
       </div>
     </div>

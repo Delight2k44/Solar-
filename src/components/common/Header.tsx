@@ -10,17 +10,14 @@ import {
   User, 
   SlidersHorizontal,
   Wrench,
-  Layers,
   FileText,
   Calculator,
   Activity,
   HelpCircle,
   ShieldCheck,
-  Zap,
   Building2,
   Home,
   LogOut,
-  PhoneCall,
   MessageCircle
 } from 'lucide-react';
 
@@ -36,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [segmentMode, setSegmentMode] = useState<'personal' | 'business'>('personal');
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [showRegionNotice, setShowRegionNotice] = useState(false);
   
   const { totalItemsCount, setIsCartOpen } = useCart();
   const { currentUser, isAuthenticated, isAdmin, logout } = useAuth();
@@ -60,6 +58,18 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   const handleNav = (route: string) => {
     setCurrentRoute(route);
@@ -293,13 +303,25 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
           </div>
 
           {/* South Africa Region Globe Icon (Desktop only) */}
-          <button
-            onClick={() => alert('Region: South Africa (Eskom / SSEG Tariffs • ZAR currency)')}
-            title="Region: South Africa (ZAR)"
-            className="hidden md:flex w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-[#E2E8F0] hover:text-white items-center justify-center transition-colors shadow-sm"
-          >
-            <Globe className="w-4 h-4" />
-          </button>
+          <div className="relative hidden md:block">
+            <button
+              onClick={() => setShowRegionNotice(!showRegionNotice)}
+              title="Region: South Africa (ZAR)"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-[#E2E8F0] hover:text-white flex items-center justify-center transition-colors shadow-sm"
+            >
+              <Globe className="w-4 h-4" />
+            </button>
+            {showRegionNotice && (
+              <div className="absolute right-0 mt-2 w-64 p-3 bg-[#0D1117] border border-[#1E2530] rounded-xl shadow-2xl text-xs font-mono text-[#CBD5E1] space-y-1 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="flex items-center gap-1.5 text-[#00D2FF] font-bold uppercase text-[10px]">
+                  <span>🇿🇦 Active Market Region</span>
+                </div>
+                <p className="text-[11px] text-[#94A3B8] leading-tight">
+                  South Africa (Eskom / SSEG Tariffs • ZAR currency • SANS 10142-1-2 standards)
+                </p>
+              </div>
+            )}
+          </div>
 
           {/* User Profile / Customer Portal Button (Desktop only) */}
           <div className="relative hidden md:block" ref={profileRef}>
@@ -404,6 +426,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute, setCurrentRoute, o
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 text-white flex items-center justify-center transition-colors shrink-0"
             aria-label="Open Navigation Menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>

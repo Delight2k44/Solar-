@@ -57,7 +57,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0E1311] text-[#E6ECE8]">
+    <div className="min-h-screen flex flex-col bg-[#05070A] text-[#E6ECE8]">
       {/* Global Header */}
       <Header 
         currentRoute={currentRoute}
@@ -184,7 +184,7 @@ export function App() {
           <div className="relative w-full max-w-4xl my-8">
             <button
               onClick={() => setIsConfiguratorModalOpen(false)}
-              className="absolute top-4 right-4 z-10 p-2 text-[#9EADA5] hover:text-white bg-[#141A17] border border-[#24302A] rounded-md transition-colors"
+              className="absolute top-4 right-4 z-10 p-2 text-[#94A3B8] hover:text-white bg-[#0D1117] border border-[#1E2530] rounded-md transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

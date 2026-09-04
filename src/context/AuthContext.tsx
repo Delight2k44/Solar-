@@ -38,7 +38,8 @@ interface AuthContextType {
   updateProfile: (data: Partial<User>) => void;
 }
 
-const ADMIN_EMAIL = 'delightchetter@gmail.com';
+const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
+const ADMIN_EMAIL = 'form@kinetixes.com';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -66,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const emailLower = firebaseUser.email?.toLowerCase() || '';
-        const isAdminUser = emailLower === ADMIN_EMAIL;
+        const isAdminUser = ADMIN_EMAILS.includes(emailLower);
         const userObj: User = {
           id: firebaseUser.uid,
           name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Valued Client',
@@ -95,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
       const fbUser = userCredential.user;
       const emailLower = fbUser.email?.toLowerCase() || '';
-      const isAdminUser = emailLower === ADMIN_EMAIL;
+      const isAdminUser = ADMIN_EMAILS.includes(emailLower);
 
       const userObj: User = {
         id: fbUser.uid,
@@ -130,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const fbUser = userCredential.user;
       await updateFirebaseProfile(fbUser, { displayName: userData.name });
 
-      const isAdminUser = cleanEmail === ADMIN_EMAIL;
+      const isAdminUser = ADMIN_EMAILS.includes(cleanEmail);
 
       const newUser: User = {
         id: fbUser.uid,
@@ -159,7 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       const emailLower = user.email?.toLowerCase() || '';
-      const isAdminUser = emailLower === ADMIN_EMAIL;
+      const isAdminUser = ADMIN_EMAILS.includes(emailLower);
 
       const userObj: User = {
         id: user.uid,
@@ -188,7 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: user.uid,
         name: user.displayName || user.email?.split('@')[0] || 'Apple User',
         email: user.email || '',
-        role: user.email?.toLowerCase() === ADMIN_EMAIL ? 'admin' : 'customer',
+        role: ADMIN_EMAILS.includes(user.email?.toLowerCase() || '') ? 'admin' : 'customer',
         city: 'Johannesburg',
         province: 'Gauteng'
       };
@@ -210,7 +211,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: user.uid,
         name: user.displayName || user.email?.split('@')[0] || 'Facebook User',
         email: user.email || '',
-        role: user.email?.toLowerCase() === ADMIN_EMAIL ? 'admin' : 'customer',
+        role: ADMIN_EMAILS.includes(user.email?.toLowerCase() || '') ? 'admin' : 'customer',
         avatarUrl: user.photoURL || undefined,
         city: 'Johannesburg',
         province: 'Gauteng'
@@ -244,7 +245,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         currentUser,
         isAuthenticated: !!currentUser,
-        isAdmin: currentUser?.role === 'admin' && currentUser?.email?.toLowerCase() === ADMIN_EMAIL,
+        isAdmin: currentUser?.role === 'admin' && ADMIN_EMAILS.includes(currentUser?.email?.toLowerCase() || ''),
         login,
         loginWithGoogle,
         loginWithApple,

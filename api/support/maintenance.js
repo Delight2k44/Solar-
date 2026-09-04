@@ -37,7 +37,7 @@ export default async function handler(req, res) {
   const safeDetails = escapeHtml((issueDetails || 'None provided').trim());
 
   const ticketId = `KX-SRV-${Math.floor(1000 + Math.random() * 9000)}`;
-  const ADMIN_EMAIL = 'delightchetter@gmail.com';
+  const ADMIN_EMAIL = 'form@kinetixes.com';
   const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -63,7 +63,7 @@ export default async function handler(req, res) {
         <p style="margin:0;font-size:13px;color:#E2E8F0;">${safeDetails}</p>
       </div>
       <div style="text-align:center;border-top:1px solid #1E2530;padding-top:20px;color:#64748B;font-size:12px;">
-        <p style="margin:4px 0;">SLA Dispatch: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Admin: <strong style="color:#00D2FF;">delightchetter@gmail.com</strong></p>
+        <p style="margin:4px 0;">SLA Dispatch: <strong style="color:#00D2FF;">+27 78 780 8569</strong> | Admin: <strong style="color:#00D2FF;">form@kinetixes.com</strong></p>
       </div>
     </div>
   `;

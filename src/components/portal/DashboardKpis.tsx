@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Activity, Calendar, Zap, ArrowUpRight } from 'lucide-react';
+import { Cpu, Activity, Calendar, Zap } from 'lucide-react';
 import { SystemSpecs, ProjectInfo } from '../../types/dashboard';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 
@@ -42,7 +42,7 @@ export const DashboardKpis: React.FC<DashboardKpisProps> = ({ system, project, o
         <div>
           <div className="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse" />
-            <span>{project ? `Stage 0${project.currentStageIndex + 1}: ${project.currentStageLabel}` : 'Account Active'}</span>
+            <span>{project ? `Stage ${String(project.currentStageIndex + 1).padStart(2, '0')}: ${project.currentStageLabel}` : 'Account Active'}</span>
           </div>
           <p className="text-xs text-[#94A3B8] mt-1 truncate">
             {project?.statusDescription || 'SANS 10142 Single Line Diagram Ready'}

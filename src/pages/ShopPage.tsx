@@ -106,21 +106,39 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
           </div>
         </div>
 
-        {/* Category Pills */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-[#1E2530]">
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all uppercase ${
-                selectedCategory === cat.id
-                  ? 'bg-white text-black font-bold shadow-md'
-                  : 'bg-[#05070A] text-[#94A3B8] border border-[#1E2530] hover:text-white'
-              }`}
+        {/* Category Selector (Mobile Dropdown & Desktop Pills) */}
+        <div className="pt-2 border-t border-[#1E2530]">
+          {/* Mobile Category Dropdown */}
+          <div className="block sm:hidden">
+            <select
+              value={selectedCategory}
+              onChange={e => setSelectedCategory(e.target.value)}
+              className="w-full bg-[#05070A] border border-[#1E2530] rounded-xl px-3.5 py-2.5 text-[#00D2FF] text-xs font-semibold focus:border-[#00D2FF] outline-none"
             >
-              {cat.label}
-            </button>
-          ))}
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id} className="bg-[#0D1117] text-white">
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Desktop Category Pills */}
+          <div className="hidden sm:flex flex-wrap gap-2">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                  selectedCategory === cat.id
+                    ? 'bg-[#00D2FF] text-black shadow-md'
+                    : 'bg-[#05070A] text-[#94A3B8] border border-[#1E2530] hover:text-white hover:bg-[#161B22]'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -136,9 +154,11 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
           ))}
         </div>
       ) : (
-        <div className="p-16 text-center bg-[#0D1117] border border-[#1E2530] rounded-2xl space-y-4 font-mono">
-          <ShoppingBag className="w-10 h-10 text-[#64748B] mx-auto" />
-          <h3 className="text-base font-bold text-white uppercase">No hardware found matching filters</h3>
+        <div className="p-16 text-center bg-[#0D1117] border border-[#1E2530] rounded-2xl space-y-4 font-sans">
+          <div className="w-16 h-16 rounded-2xl bg-[#161B22] border border-[#1E2530] flex items-center justify-center mx-auto text-[#64748B]">
+            <ShoppingBag className="w-8 h-8" />
+          </div>
+          <h3 className="text-base font-bold text-white uppercase tracking-tight">No hardware found matching filters</h3>
           <p className="text-xs text-[#94A3B8]">Try adjusting your search keywords or switching category filters.</p>
           <button
             onClick={() => {
@@ -146,7 +166,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({ onSelectProduct }) => {
               setSelectedBrand('all');
               setSearchQuery('');
             }}
-            className="px-4 py-2 bg-white text-black font-bold uppercase text-xs rounded-xl"
+            className="px-5 py-2.5 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-bold uppercase text-xs rounded-xl transition-all shadow-md"
           >
             Clear Filters
           </button>

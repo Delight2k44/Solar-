@@ -29,7 +29,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
   const [monthlyBillZAR, setMonthlyBillZAR] = useState<number>(4500);
   const [roofOrientation, setRoofOrientation] = useState<'north' | 'northeast_northwest' | 'east_west' | 'flat'>('north');
   const [backupHours, setBackupHours] = useState<number>(4);
-  const [financingTermMonths, setFinancingTermMonths] = useState<number>(60);
+  const financingTermMonths = 60;
 
   const provinceInfo = PROVINCES_DATA[selectedProvince] || PROVINCES_DATA['Gauteng (Johannesburg / Pretoria)'];
 
@@ -79,7 +79,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
   // Monthly Savings & Payback
   const estimatedMonthlySavingsZAR = Math.round(monthlyBillZAR * 0.76);
   const estimatedAnnualSavingsZAR = estimatedMonthlySavingsZAR * 12;
-  const paybackYears = Number((estimatedSystemCostZAR / estimatedAnnualSavingsZAR).toFixed(1));
+  const paybackYears = estimatedAnnualSavingsZAR > 0 ? Number((estimatedSystemCostZAR / estimatedAnnualSavingsZAR).toFixed(1)) : 0;
   const annualGenerationKwh = Math.round(requiredSolarKwp * effectivePeakSunHours * 365 * systemEfficiency);
   const co2TonnesPerYear = Number(((annualGenerationKwh * 0.95) / 1000).toFixed(1));
 
@@ -94,18 +94,18 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
   return (
     <div className="space-y-10 max-w-6xl mx-auto">
       {/* Visual Header with Real Engineering Background */}
-      <div className="relative rounded-2xl overflow-hidden border border-[#24302A] bg-[#141A17] p-8 sm:p-12 shadow-2xl">
+      <div className="relative rounded-2xl overflow-hidden border border-[#1E2530] bg-[#0D1117] p-8 sm:p-12 shadow-2xl">
         <div className="absolute inset-0 opacity-20 pointer-events-none">
           <img
             src="/cad-solar-audit.jpg"
             alt="Solar CAD Engineering Design"
             className="w-full h-full object-cover object-right"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#141A17] via-[#141A17]/90 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/90 to-transparent" />
         </div>
 
         <div className="relative z-10 max-w-2xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0E1311]/90 border border-[#286D58] rounded text-[11px] font-mono tracking-widest text-[#286D58] font-bold uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0D1117]/90 border border-[#00D2FF] rounded text-[11px] font-mono tracking-widest text-[#00D2FF] font-bold uppercase">
             <Calculator className="w-3.5 h-3.5" />
             <span>South African Solar ROI & Financial Sizing Engine</span>
           </div>
@@ -114,7 +114,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
             Energy Sizing & Payback Calculator
           </h1>
 
-          <p className="text-xs sm:text-sm text-[#9EADA5] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
             Model your property's solar PV generation, lithium storage capacity, monthly Eskom bill savings, and asset financing terms based on verified regional irradiation data across South Africa.
           </p>
         </div>
@@ -122,82 +122,82 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
 
       {/* Visual 3-Card Interactive Sizing Showcase */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all shadow-md">
-          <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
+        <div className="bg-[#0D1117] border border-[#1E2530] rounded-xl overflow-hidden group hover:border-[#30363D] transition-all shadow-md">
+          <div className="aspect-16/9 overflow-hidden relative bg-[#0D1117]">
             <img
               src="/solar-installer-roof.jpg"
               alt="Solar panel roof array installation"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <span className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
+            <span className="absolute top-2.5 left-2.5 bg-[#0D1117]/90 border border-[#1E2530] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
               01 • Solar PV Array
             </span>
           </div>
           <div className="p-4 space-y-1">
             <h4 className="text-sm font-bold text-white uppercase">Calculated PV Capacity</h4>
-            <p className="text-xs text-[#286D58] font-mono font-bold">{requiredSolarKwp} kWp ({panelCount}x 550W Panels)</p>
-            <p className="text-[11px] text-[#9EADA5]">Daily Solar Yield: ~{Math.round(requiredSolarKwp * effectivePeakSunHours * systemEfficiency)} kWh/day</p>
+            <p className="text-xs text-[#00D2FF] font-mono font-bold">{requiredSolarKwp} kWp ({panelCount}x 550W Panels)</p>
+            <p className="text-[11px] text-[#94A3B8]">Daily Solar Yield: ~{Math.round(requiredSolarKwp * effectivePeakSunHours * systemEfficiency)} kWh/day</p>
           </div>
         </div>
 
-        <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all shadow-md">
-          <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
+        <div className="bg-[#0D1117] border border-[#1E2530] rounded-xl overflow-hidden group hover:border-[#30363D] transition-all shadow-md">
+          <div className="aspect-16/9 overflow-hidden relative bg-[#0D1117]">
             <img
               src="/battery-inverter-room.jpg"
               alt="Lithium battery power room"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <span className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
+            <span className="absolute top-2.5 left-2.5 bg-[#0D1117]/90 border border-[#1E2530] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
               02 • Hybrid Power Room
             </span>
           </div>
           <div className="p-4 space-y-1">
             <h4 className="text-sm font-bold text-white uppercase">Inverter & Storage</h4>
             <p className="text-xs text-[#D97706] font-mono font-bold">{inverterKva}kW Hybrid Inverter + {recommendedBatteryKwh}kWh Storage</p>
-            <p className="text-[11px] text-[#9EADA5]">Provides {backupHours} Hours Outage Autonomy</p>
+            <p className="text-[11px] text-[#94A3B8]">Provides {backupHours} Hours Outage Autonomy</p>
           </div>
         </div>
 
-        <div className="bg-[#141A17] border border-[#24302A] rounded-xl overflow-hidden group hover:border-[#31423A] transition-all shadow-md">
-          <div className="aspect-16/9 overflow-hidden relative bg-[#0E1311]">
+        <div className="bg-[#0D1117] border border-[#1E2530] rounded-xl overflow-hidden group hover:border-[#30363D] transition-all shadow-md">
+          <div className="aspect-16/9 overflow-hidden relative bg-[#0D1117]">
             <img
               src="/homeowner-app-dashboard.jpg"
               alt="Homeowner energy savings tracking"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <span className="absolute top-2.5 left-2.5 bg-[#0E1311]/90 border border-[#24302A] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
+            <span className="absolute top-2.5 left-2.5 bg-[#0D1117]/90 border border-[#1E2530] px-2 py-0.5 rounded text-[10px] font-mono text-white uppercase font-bold">
               03 • Financial Return
             </span>
           </div>
           <div className="p-4 space-y-1">
             <h4 className="text-sm font-bold text-white uppercase">Payback & Monthly Savings</h4>
             <p className="text-xs text-[#10B981] font-mono font-bold">R {estimatedMonthlySavingsZAR.toLocaleString()} / mo Savings</p>
-            <p className="text-[11px] text-[#9EADA5]">Estimated Break-Even: {paybackYears} Years</p>
+            <p className="text-[11px] text-[#94A3B8]">Estimated Break-Even: {paybackYears} Years</p>
           </div>
         </div>
       </div>
 
       {/* Main Interactive Calculator Engine */}
-      <div className="bg-[#0E1311] border border-[#24302A] rounded-2xl p-6 sm:p-10 shadow-2xl space-y-8">
+      <div className="bg-[#0D1117] border border-[#1E2530] rounded-2xl p-6 sm:p-10 shadow-2xl space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Column: Interactive Sliders & Inputs */}
           <div className="lg:col-span-6 space-y-6">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#1B2420] pb-2 flex items-center gap-2">
-              <Compass className="w-4 h-4 text-[#286D58]" />
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#161B22] pb-2 flex items-center gap-2">
+              <Compass className="w-4 h-4 text-[#00D2FF]" />
               <span>01. Property & Consumption Inputs</span>
             </h3>
 
             {/* Province Selector */}
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-1.5 flex items-center justify-between">
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-1.5 flex items-center justify-between">
                 <span>Province / Metro Region</span>
-                <span className="text-[#286D58] font-bold">{provinceInfo.peakSunHoursPerDay} Peak Sun Hrs/Day</span>
+                <span className="text-[#00D2FF] font-bold">{provinceInfo.peakSunHoursPerDay} Peak Sun Hrs/Day</span>
               </label>
               <select
                 value={selectedProvince}
                 onChange={e => setSelectedProvince(e.target.value)}
-                className="w-full bg-[#141A17] border border-[#24302A] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#286D58]"
+                className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF]"
               >
                 {Object.keys(PROVINCES_DATA).map(p => (
                   <option key={p} value={p}>{p}</option>
@@ -208,7 +208,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
             {/* Monthly Spend Slider */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-xs font-mono uppercase text-[#9EADA5]">
+                <label className="text-xs font-mono uppercase text-[#94A3B8]">
                   Average Monthly Electricity Bill (ZAR)
                 </label>
                 <span className="text-base font-mono font-extrabold text-[#D97706]">
@@ -217,14 +217,15 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
               </div>
               <input
                 type="range"
+                aria-label="Average Monthly Electricity Bill in ZAR"
                 min="1500"
                 max="30000"
                 step="500"
                 value={monthlyBillZAR}
                 onChange={e => setMonthlyBillZAR(Number(e.target.value))}
-                className="w-full h-2 bg-[#141A17] rounded-lg appearance-none cursor-pointer accent-[#286D58]"
+                className="w-full h-2 bg-[#0D1117] rounded-lg appearance-none cursor-pointer accent-[#00D2FF]"
               />
-              <div className="flex justify-between text-[10px] font-mono text-[#6B7B73] mt-1">
+              <div className="flex justify-between text-[10px] font-mono text-[#64748B] mt-1">
                 <span>R 1,500</span>
                 <span>Est: {Math.round(estimatedMonthlyKwh)} kWh/month</span>
                 <span>R 30,000+</span>
@@ -233,7 +234,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
 
             {/* Roof Orientation */}
             <div>
-              <label className="block text-xs font-mono uppercase text-[#9EADA5] mb-2">
+              <label className="block text-xs font-mono uppercase text-[#94A3B8] mb-2">
                 Roof Orientation & Solar Pitch
               </label>
               <div className="grid grid-cols-2 gap-2 text-xs font-mono">
@@ -246,11 +247,12 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
                   <button
                     key={item.id}
                     type="button"
+                    aria-pressed={roofOrientation === item.id}
                     onClick={() => setRoofOrientation(item.id as any)}
                     className={`p-2.5 rounded-lg border text-left transition-all ${
                       roofOrientation === item.id
-                        ? 'bg-[#1B4D3E] border-[#286D58] text-white font-bold'
-                        : 'bg-[#141A17] border-[#24302A] text-[#9EADA5] hover:border-[#31423A]'
+                        ? 'bg-[#00D2FF] border-[#00D2FF] text-black font-bold'
+                        : 'bg-[#0D1117] border-[#1E2530] text-[#94A3B8] hover:border-[#30363D]'
                     }`}
                   >
                     {item.label}
@@ -262,7 +264,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
             {/* Outage Backup Hours Slider */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-xs font-mono uppercase text-[#9EADA5]">
+                <label className="text-xs font-mono uppercase text-[#94A3B8]">
                   Desired Night & Loadshedding Backup Duration
                 </label>
                 <span className="text-sm font-mono font-bold text-white">
@@ -271,14 +273,15 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
               </div>
               <input
                 type="range"
+                aria-label="Desired Night and Loadshedding Backup Duration in Hours"
                 min="2"
                 max="12"
                 step="1"
                 value={backupHours}
                 onChange={e => setBackupHours(Number(e.target.value))}
-                className="w-full h-2 bg-[#141A17] rounded-lg appearance-none cursor-pointer accent-[#286D58]"
+                className="w-full h-2 bg-[#0D1117] rounded-lg appearance-none cursor-pointer accent-[#00D2FF]"
               />
-              <div className="flex justify-between text-[10px] font-mono text-[#6B7B73] mt-1">
+              <div className="flex justify-between text-[10px] font-mono text-[#64748B] mt-1">
                 <span>2 hrs (Essential Loads)</span>
                 <span>6 hrs (Overnight)</span>
                 <span>12 hrs (Off-Grid)</span>
@@ -288,42 +291,42 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
 
           {/* Right Column: Calculated Sizing & Payback Matrix */}
           <div className="lg:col-span-6 space-y-6">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#1B2420] pb-2 flex items-center gap-2">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-white border-b border-[#161B22] pb-2 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#D97706]" />
               <span>02. Recommended Hardware Sizing & ROI</span>
             </h3>
 
             {/* Hardware Specification Grid */}
             <div className="grid grid-cols-2 gap-3 font-mono text-xs">
-              <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl space-y-1">
-                <span className="text-[10px] text-[#6B7B73] uppercase block">Inverter Sizing</span>
+              <div className="p-4 bg-[#0D1117] border border-[#1E2530] rounded-xl space-y-1">
+                <span className="text-[10px] text-[#64748B] uppercase block">Inverter Sizing</span>
                 <span className="text-lg font-bold text-white">{inverterKva}.0 kW</span>
-                <span className="text-[10px] text-[#286D58] block">Hybrid Low-Voltage</span>
+                <span className="text-[10px] text-[#00D2FF] block">Hybrid Low-Voltage</span>
               </div>
 
-              <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl space-y-1">
-                <span className="text-[10px] text-[#6B7B73] uppercase block">LiFePO4 Storage</span>
+              <div className="p-4 bg-[#0D1117] border border-[#1E2530] rounded-xl space-y-1">
+                <span className="text-[10px] text-[#64748B] uppercase block">LiFePO4 Storage</span>
                 <span className="text-lg font-bold text-white">{recommendedBatteryKwh} kWh</span>
-                <span className="text-[10px] text-[#286D58] block">85% Depth of Discharge</span>
+                <span className="text-[10px] text-[#00D2FF] block">85% Depth of Discharge</span>
               </div>
 
-              <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl space-y-1">
-                <span className="text-[10px] text-[#6B7B73] uppercase block">Solar Array Size</span>
+              <div className="p-4 bg-[#0D1117] border border-[#1E2530] rounded-xl space-y-1">
+                <span className="text-[10px] text-[#64748B] uppercase block">Solar Array Size</span>
                 <span className="text-lg font-bold text-white">{requiredSolarKwp} kWp</span>
-                <span className="text-[10px] text-[#286D58] block">{panelCount}x 550W Mono PERC</span>
+                <span className="text-[10px] text-[#00D2FF] block">{panelCount}x 550W Mono PERC</span>
               </div>
 
-              <div className="p-4 bg-[#141A17] border border-[#24302A] rounded-xl space-y-1">
-                <span className="text-[10px] text-[#6B7B73] uppercase block">Annual Generation</span>
+              <div className="p-4 bg-[#0D1117] border border-[#1E2530] rounded-xl space-y-1">
+                <span className="text-[10px] text-[#64748B] uppercase block">Annual Generation</span>
                 <span className="text-lg font-bold text-white">{annualGenerationKwh.toLocaleString()}</span>
                 <span className="text-[10px] text-[#10B981] block">kWh / Year Yield</span>
               </div>
             </div>
 
             {/* Financial Summary Box */}
-            <div className="p-5 bg-[#141A17] border border-[#24302A] rounded-xl space-y-4 font-mono text-xs">
-              <div className="flex justify-between items-center border-b border-[#24302A] pb-3">
-                <span className="text-[#9EADA5]">Estimated Turnkey Installation:</span>
+            <div className="p-5 bg-[#0D1117] border border-[#1E2530] rounded-xl space-y-4 font-mono text-xs">
+              <div className="flex justify-between items-center border-b border-[#1E2530] pb-3">
+                <span className="text-[#94A3B8]">Estimated Turnkey Installation:</span>
                 <span className="text-base font-extrabold text-white">R {estimatedSystemCostZAR.toLocaleString()}</span>
               </div>
 
@@ -337,7 +340,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
                 <span className="font-bold text-[#D97706]">{paybackYears} Years</span>
               </div>
 
-              <div className="flex justify-between items-center text-[#9EADA5] pt-2 border-t border-[#24302A]">
+              <div className="flex justify-between items-center text-[#94A3B8] pt-2 border-t border-[#1E2530]">
                 <span>5-Year Asset Finance Repayment:</span>
                 <span className="text-white font-bold">~R {monthlyFinancingZAR.toLocaleString()} / mo</span>
               </div>
@@ -348,7 +351,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
               <button
                 type="button"
                 onClick={onQuoteTrigger}
-                className="w-full py-4 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
+                className="w-full py-4 bg-[#00D2FF] hover:bg-[#38BDF8] text-black font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
               >
                 <span>Request Formal Proposal for this Sizing</span>
                 <ArrowRight className="w-4 h-4" />
@@ -358,7 +361,7 @@ export const EnergyCalculator: React.FC<EnergyCalculatorProps> = ({ onQuoteTrigg
         </div>
 
         {/* Mandatory Engineering Disclaimers */}
-        <div className="pt-6 border-t border-[#1B2420]">
+        <div className="pt-6 border-t border-[#161B22]">
           <EstimateDisclaimer />
           <div className="mt-4">
             <IncentiveDisclaimer />

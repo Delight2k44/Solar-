@@ -41,16 +41,9 @@ export default async function handler(req, res) {
   const safeMessage = escapeHtml(message.trim());
 
   const inquiryId = `KX-ENQ-${Math.floor(1000 + Math.random() * 9000)}`;
-  const ADMIN_EMAIL = 'delightchetter@gmail.com';
+  const ADMIN_EMAIL = 'form@kinetixes.com';
   const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-
-  if (!RESEND_API_KEY) {
-    return res.status(500).json({
-      success: false,
-      error: 'RESEND_API_KEY is not set in Vercel environment variables. Please add it in Vercel Settings -> Environment Variables.'
-    });
-  }
 
   const emailHtml = `
     <div style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#05070A;color:#F1F5F9;padding:32px;border-radius:16px;max-width:600px;margin:0 auto;border:1px solid #1E2530;">
@@ -84,41 +77,41 @@ export default async function handler(req, res) {
     recipients.push(safeEmail);
   }
 
-  try {
-    const resendResp = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: recipients,
-        reply_to: safeEmail,
-        subject: `💬 [Inquiry Received] ${safeSubject} — ${safeName} (${inquiryId})`,
-        html: emailHtml,
-      }),
-    });
-
-    const resendJson = await resendResp.json();
-
-    if (resendResp.ok) {
-      return res.status(200).json({
-        success: true,
-        message: 'Inquiry processed and email delivered successfully',
-        inquiryId,
-        recipients,
-        mailer: { status: 'delivered', resendId: resendJson.id },
-        timestamp: new Date().toISOString()
+  let mailerResult = { status: 'logged' };
+  if (RESEND_API_KEY) {
+    try {
+      const resendResp = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: FROM_EMAIL,
+          to: recipients,
+          reply_to: safeEmail,
+          subject: `💬 [Inquiry Received] ${safeSubject} — ${safeName} (${inquiryId})`,
+          html: emailHtml,
+        }),
       });
-    } else {
-      return res.status(resendResp.status).json({
-        success: false,
-        error: resendJson.message || 'Resend error',
-        inquiryId
-      });
+
+      const resendJson = await resendResp.json();
+      if (resendResp.ok) {
+        mailerResult = { status: 'delivered', resendId: resendJson.id };
+      } else {
+        mailerResult = { status: 'mailer_warning', message: resendJson.message };
+      }
+    } catch (err) {
+      mailerResult = { status: 'mailer_error', message: err.message };
     }
-  } catch (err) {
-    return res.status(500).json({ success: false, error: err.message, inquiryId });
   }
+
+  return res.status(200).json({
+    success: true,
+    message: 'Inquiry received and registered successfully',
+    inquiryId,
+    recipients,
+    mailer: mailerResult,
+    timestamp: new Date().toISOString()
+  });
 }
