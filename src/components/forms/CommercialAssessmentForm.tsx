@@ -21,6 +21,8 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
   const { createCommercialLead } = useData();
   const [submitted, setSubmitted] = useState(false);
   const [referenceId, setReferenceId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Form State
   const [companyName, setCompanyName] = useState('');
@@ -37,35 +39,67 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
   const [phone, setPhone] = useState('');
   const [locationCity, setLocationCity] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const generatedRef = createCommercialLead({
-      companyName: companyName || 'Commercial Client',
-      industrySector: facilityType,
-      monthlySpend: monthlySpend,
-      peakKva: peakKva,
-      dieselMonthly: dieselMonthly,
-      taxSection12b: taxSection12b,
-      contactName: contactName || 'Authorized Contact',
-      designation: designation || 'Executive',
-      email: email || 'commercial@client.co.za',
-      phone: phone || '+27 11 000 0000',
-      locationCity: locationCity || 'Gauteng'
-    });
-    setReferenceId(generatedRef);
-    setSubmitted(true);
-    sendCommercialAuditEmail({
-      referenceId: generatedRef,
-      companyName,
-      contactName,
-      email,
-      phone,
-      locationCity,
-      facilityType,
-      monthlySpend,
-      taxSection12b
-    }).catch(e => console.log('Email notice:', e));
-    if (onSuccess) onSuccess();
+    if (!companyName || !contactName || !email || !phone) {
+      setErrorMessage('Please complete all required enterprise contact details.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const payload = {
+        companyName,
+        facilityType,
+        monthlySpend,
+        peakKva,
+        dieselMonthly,
+        taxSection12b,
+        contactName,
+        designation,
+        email,
+        phone,
+        locationCity
+      };
+
+      const res = await fetch('/api/quotes/commercial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        const generatedRef = data.referenceId || `KX-COMM-${Math.floor(1000 + Math.random() * 9000)}`;
+        setReferenceId(generatedRef);
+
+        createCommercialLead({
+          companyName,
+          industrySector: facilityType,
+          monthlySpend,
+          peakKva,
+          dieselMonthly,
+          taxSection12b,
+          contactName,
+          designation,
+          email,
+          phone,
+          locationCity
+        });
+
+        setSubmitted(true);
+        if (onSuccess) onSuccess();
+      } else {
+        setErrorMessage(data.error || 'Failed to register commercial audit. Please verify your inputs.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Network error connecting to commercial engineering desk.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {

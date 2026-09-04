@@ -28,6 +28,8 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
   const { addLeadQuote } = useData();
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [quoteId, setQuoteId] = useState('');
 
   // Form State
@@ -57,36 +59,65 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
   const recommendedBatteryKwh = monthlyBill > 8000 ? 15.36 : (monthlyBill > 4000 ? 10.24 : 5.12);
   const estimatedMonthlySavingsZAR = Math.round(monthlyBill * 0.75);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newQuoteId = addLeadQuote({
-      fullName,
-      email,
-      phone,
-      suburb,
-      province,
-      propertyType,
-      monthlyBillZAR: monthlyBill,
-      recommendedInverterKw,
-      recommendedBatteryKwh,
-      recommendedSolarKwp,
-    });
+    if (!fullName || !email || !phone) {
+      setErrorMessage('Please fill in all required fields.');
+      return;
+    }
 
-    setQuoteId(newQuoteId);
-    setSubmitted(true);
-    sendSolarQuoteEmail({
-      quoteId: newQuoteId,
-      fullName,
-      email,
-      phone,
-      suburb,
-      province,
-      monthlyBillZAR: monthlyBill,
-      recommendedInverterKw,
-      recommendedBatteryKwh,
-      recommendedSolarKwp
-    }).catch(e => console.log('Email notice:', e));
-    if (onSuccess) onSuccess();
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const payload = {
+        fullName,
+        email,
+        phone,
+        suburb,
+        province,
+        propertyType,
+        monthlyBillZAR: monthlyBill,
+        recommendedInverterKw,
+        recommendedBatteryKwh,
+        recommendedSolarKwp
+      };
+
+      const res = await fetch('/api/quotes/residential', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        const generatedId = data.quoteId || `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
+        setQuoteId(generatedId);
+
+        addLeadQuote({
+          fullName,
+          email,
+          phone,
+          suburb,
+          province,
+          propertyType,
+          monthlyBillZAR: monthlyBill,
+          recommendedInverterKw,
+          recommendedBatteryKwh,
+          recommendedSolarKwp
+        });
+
+        setSubmitted(true);
+        if (onSuccess) onSuccess();
+      } else {
+        setErrorMessage(data.error || 'Failed to submit quote request. Please check your inputs.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Network error connecting to quote engine.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {

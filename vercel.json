@@ -3,6 +3,7 @@
     { "source": "/api/health", "destination": "/api/health" },
     { "source": "/api/support/contact", "destination": "/api/support/contact" },
     { "source": "/api/quotes/residential", "destination": "/api/quotes/residential" },
+    { "source": "/api/quotes/commercial", "destination": "/api/quotes/commercial" },
     { "source": "/api/send-email", "destination": "/api/send-email" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api|assets|favicon|api-docs).*)", "destination": "/index.html" }
