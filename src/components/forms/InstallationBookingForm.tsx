@@ -26,6 +26,8 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
   const { createInstallationBooking } = useData();
   const [submitted, setSubmitted] = useState(false);
   const [bookingRef, setBookingRef] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Form State
   const [clientName, setClientName] = useState('');
@@ -39,35 +41,65 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
   const [dbLocation, setDbLocation] = useState('Garage');
   const [specialAccess, setSpecialAccess] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const generatedRef = createInstallationBooking({
-      clientName: clientName || 'Valued Client',
-      email: email || 'client@domain.co.za',
-      phone: phone || '+27 82 000 0000',
-      address: address || 'Site Address',
-      city: city || 'Johannesburg',
-      targetDate: targetDate || new Date().toISOString().split('T')[0],
-      roofType: roofType,
-      phaseConnection: phaseConnection,
-      dbLocation: dbLocation,
-      specialAccess: specialAccess
-    });
-    setBookingRef(generatedRef);
-    setSubmitted(true);
-    sendInstallationBookingEmail({
-      bookingId: generatedRef,
-      clientName: clientName || 'Valued Client',
-      email: email || 'client@domain.co.za',
-      phone: phone || '+27 82 000 0000',
-      address: address || 'Site Address',
-      city: city || 'Johannesburg',
-      targetDate: targetDate || new Date().toISOString().split('T')[0],
-      roofType: roofType,
-      phaseConnection: phaseConnection,
-      dbLocation: dbLocation
-    }).catch(e => console.log('Booking email notice:', e));
-    if (onSuccess) onSuccess();
+    if (!clientName || !email || !phone || !address) {
+      setErrorMessage('Please fill in all required site inspection fields.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const payload = {
+        clientName,
+        email,
+        phone,
+        address,
+        city,
+        targetDate: targetDate || new Date().toISOString().split('T')[0],
+        roofType,
+        phaseConnection,
+        dbLocation,
+        specialAccess
+      };
+
+      const res = await fetch('/api/bookings/assessment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        const generatedRef = data.bookingId || `KX-BKG-${Math.floor(1000 + Math.random() * 9000)}`;
+        setBookingRef(generatedRef);
+
+        createInstallationBooking({
+          clientName,
+          email,
+          phone,
+          address,
+          city,
+          targetDate: targetDate || new Date().toISOString().split('T')[0],
+          roofType,
+          phaseConnection,
+          dbLocation,
+          specialAccess
+        });
+
+        setSubmitted(true);
+        if (onSuccess) onSuccess();
+      } else {
+        setErrorMessage(data.error || 'Failed to book site inspection. Please check your inputs.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Network error connecting to booking desk.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {

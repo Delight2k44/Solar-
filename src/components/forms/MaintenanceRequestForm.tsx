@@ -31,6 +31,8 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
   const { createMaintenanceTicket } = useData();
   const [submitted, setSubmitted] = useState(false);
   const [ticketRef, setTicketRef] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Form State
   const [packageTier, setPackageTier] = useState(initialTier);
@@ -44,36 +46,65 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
   const [city, setCity] = useState('Johannesburg');
   const [issueDetails, setIssueDetails] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ref = createMaintenanceTicket({
-      clientName,
-      clientEmail,
-      clientPhone,
-      siteAddress,
-      city,
-      tier: packageTier,
-      inverterBrand,
-      systemAge,
-      primaryReason,
-      issueDetails
-    });
+    if (!clientName || !clientEmail || !clientPhone) {
+      setErrorMessage('Please fill in all required maintenance ticket fields.');
+      return;
+    }
 
-    setTicketRef(ref);
-    setSubmitted(true);
-    sendMaintenanceTicketEmail({
-      ticketId: ref,
-      clientName: clientName || 'Valued Client',
-      clientEmail: clientEmail || 'client@domain.co.za',
-      clientPhone: clientPhone || '+27 82 000 0000',
-      siteAddress: siteAddress || 'Site Address',
-      city: city || 'Johannesburg',
-      tier: packageTier,
-      inverterBrand: inverterBrand,
-      primaryReason: primaryReason,
-      issueDetails: issueDetails
-    }).catch(e => console.log('Maintenance email notice:', e));
-    if (onSuccess) onSuccess();
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const payload = {
+        clientName,
+        clientEmail,
+        clientPhone,
+        siteAddress,
+        city,
+        tier: packageTier,
+        inverterBrand,
+        systemAge,
+        primaryReason,
+        issueDetails
+      };
+
+      const res = await fetch('/api/support/maintenance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        const generatedRef = data.ticketId || `KX-SRV-${Math.floor(1000 + Math.random() * 9000)}`;
+        setTicketRef(generatedRef);
+
+        createMaintenanceTicket({
+          clientName,
+          clientEmail,
+          clientPhone,
+          siteAddress,
+          city,
+          tier: packageTier,
+          inverterBrand,
+          systemAge,
+          primaryReason,
+          issueDetails
+        });
+
+        setSubmitted(true);
+        if (onSuccess) onSuccess();
+      } else {
+        setErrorMessage(data.error || 'Failed to submit maintenance ticket. Please verify your inputs.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Network error connecting to service desk.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
