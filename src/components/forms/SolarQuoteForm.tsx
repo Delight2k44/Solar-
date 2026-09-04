@@ -104,11 +104,20 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
 
       // 2. Automated notification dispatch (graceful fallback)
       try {
-        const res = await fetch('/api/quotes/residential', {
+        let res = await fetch('/api/quotes/residential', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+
+        const cType = res.headers.get('content-type') || '';
+        if (!res.ok || cType.includes('text/html')) {
+          res = await fetch('/api/quotes/residential.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
 
         if (res.ok) {
           const data = await res.json();

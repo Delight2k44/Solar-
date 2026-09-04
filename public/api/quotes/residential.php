@@ -41,7 +41,7 @@ if (!empty($errors)) {
 
 $quoteId = 'KX-QT-' . rand(1000, 9999);
 $ADMIN_EMAIL = 'form@kinetixes.com';
-$FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
+$FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
 
 $configFile = __DIR__ . '/../../.resend-config.php';
 if (!file_exists($configFile)) {

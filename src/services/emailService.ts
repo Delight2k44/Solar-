@@ -7,7 +7,7 @@ import { db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
 export const ADMIN_EMAIL = 'form@kinetixes.com';
-const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
+const FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
 
 interface SendEmailParams {
   to?: string | string[];
@@ -48,9 +48,9 @@ export async function sendEmail({
     console.log('Firestore log error:', e);
   }
 
-  // 2. Dispatch via serverless / PHP endpoint
+  // 2. Dispatch via serverless endpoint with automatic PHP fallback
   try {
-    const response = await fetch('/api/send-email', {
+    let response = await fetch('/api/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -61,6 +61,25 @@ export async function sendEmail({
         html
       })
     });
+
+    const cType = response.headers.get('content-type') || '';
+    if (!response.ok || cType.includes('text/html')) {
+      try {
+        response = await fetch('/api/send-email.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: FROM_EMAIL,
+            to: recipients,
+            reply_to: replyTo || undefined,
+            subject,
+            html
+          })
+        });
+      } catch (phpErr) {
+        console.warn('PHP fallback notice:', phpErr);
+      }
+    }
 
     const result = await response.json();
 

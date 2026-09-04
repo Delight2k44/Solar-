@@ -35,7 +35,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: from || 'Kinetix Energy <onboarding@resend.dev>',
+        from: from || 'Kinetix Energy <form@kinetixes.com>',
         to: to || [ADMIN_EMAIL],
         reply_to: reply_to || undefined,
         subject,

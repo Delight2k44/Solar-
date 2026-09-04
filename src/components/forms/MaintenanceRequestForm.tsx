@@ -88,11 +88,20 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
 
       // 2. Automated notification dispatch (graceful fallback)
       try {
-        const res = await fetch('/api/support/maintenance', {
+        let res = await fetch('/api/support/maintenance', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+
+        const cType = res.headers.get('content-type') || '';
+        if (!res.ok || cType.includes('text/html')) {
+          res = await fetch('/api/support/maintenance.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
 
         if (res.ok) {
           const data = await res.json();

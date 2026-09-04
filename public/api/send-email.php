@@ -36,7 +36,7 @@ if (!$input || empty($input['subject']) || empty($input['html'])) {
 }
 
 $payload = json_encode([
-    'from'     => $input['from']     ?? 'Kinetix Energy <onboarding@resend.dev>',
+    'from'     => $input['from']     ?? 'Kinetix Energy <form@kinetixes.com>',
     'to'       => $input['to']       ?? [$ADMIN_EMAIL],
     'reply_to' => $input['reply_to'] ?? null,
     'subject'  => $input['subject'],

@@ -194,11 +194,20 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
       let quoteId = `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
 
       try {
-        const res = await fetch('/api/quotes/residential', {
+        let res = await fetch('/api/quotes/residential', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+
+        const cType = res.headers.get('content-type') || '';
+        if (!res.ok || cType.includes('text/html')) {
+          res = await fetch('/api/quotes/residential.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
 
         if (res.ok) {
           const data = await res.json();

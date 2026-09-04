@@ -50,7 +50,7 @@ export default async function handler(req, res) {
   const waybillNumber = `TCG-ZA-${randNum}`;
 
   const ADMIN_EMAIL = 'form@kinetixes.com';
-  const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
+  const FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
   const itemRowsHtml = items.map(item => `

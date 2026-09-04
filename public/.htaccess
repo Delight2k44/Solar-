@@ -5,6 +5,10 @@
   RewriteEngine On
   RewriteBase /
 
+  # Route extensionless /api/ requests to matching .php files if present (Hostinger)
+  RewriteCond %{DOCUMENT_ROOT}/api/$1.php -f
+  RewriteRule ^api/(.*)$ /api/$1.php [L]
+
   # If the request is for a real file (JS, CSS, images, PHP), serve it directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d

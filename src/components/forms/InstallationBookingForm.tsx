@@ -83,11 +83,20 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
 
       // 2. Automated notification dispatch (graceful fallback)
       try {
-        const res = await fetch('/api/bookings/assessment', {
+        let res = await fetch('/api/bookings/assessment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+
+        const cType = res.headers.get('content-type') || '';
+        if (!res.ok || cType.includes('text/html')) {
+          res = await fetch('/api/bookings/assessment.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
 
         if (res.ok) {
           const data = await res.json();

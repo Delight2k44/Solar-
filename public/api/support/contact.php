@@ -43,7 +43,7 @@ if (!empty($errors)) {
 
 $inquiryId = 'KX-ENQ-' . rand(1000, 9999);
 $ADMIN_EMAIL = 'form@kinetixes.com';
-$FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
+$FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
 
 $recipients = [$ADMIN_EMAIL];
 if (!empty($email) && $email !== $ADMIN_EMAIL) {
