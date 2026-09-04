@@ -3,6 +3,8 @@ import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { Product, OrderRecord, InstallationBooking, CommercialLead, ContactEnquiry, UserNotification } from '../types';
 import { 
+  Lock,
+  ArrowRight,
   SlidersHorizontal, 
   Package, 
   Truck, 
@@ -238,6 +240,34 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setCurrentRoute }) => {
   // Compute Total Revenue
   const totalRevenueZAR = orders.reduce((sum, o) => sum + (o.totalCartZAR || 0), 0);
   const pendingOrdersCount = orders.filter(o => !o.adminApproved || o.currentStageIndex === 0).length;
+
+  const isAdmin = currentUser?.role === 'admin' && currentUser?.email?.toLowerCase() === 'delightchetter@gmail.com';
+
+  if (!isAdmin) {
+    return (
+      <div className="max-w-md mx-auto my-20 p-8 bg-[#141A17] border border-red-500/30 rounded-2xl text-center space-y-6 shadow-2xl">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/40 flex items-center justify-center mx-auto text-red-400">
+          <Lock className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold block">
+            Access Restricted • Secured Portal
+          </span>
+          <h3 className="text-xl font-bold text-white uppercase">Operations Dashboard</h3>
+          <p className="text-xs text-[#9EADA5] leading-relaxed">
+            This administration portal is restricted to authorized operations personnel (<strong>delightchetter@gmail.com</strong>). Please sign in to authenticate.
+          </p>
+        </div>
+        <button
+          onClick={() => setCurrentRoute('login')}
+          className="w-full py-3.5 bg-[#1B4D3E] hover:bg-[#286D58] text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg"
+        >
+          <span>Authenticate as Administrator</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8 font-sans text-[#E6ECE8]">

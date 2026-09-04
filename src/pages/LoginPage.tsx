@@ -101,6 +101,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         name: regName,
         email: regEmail,
         phone: regPhone,
+        password: regPassword,
         city: regCity
       });
 
@@ -278,7 +279,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <span>Enterprise Grade Security</span>
             </div>
             <p className="text-[11px] text-[#9EADA5] leading-relaxed">
-              Protected by Firebase enterprise authentication, encrypted with 256-bit SSL protocols, and compliant with POPIA regulations.
+              Protected by 256-Bit SSL Secured Enterprise Authentication, encrypted with 256-bit SSL protocols, and compliant with POPIA regulations.
             </p>
           </div>
         </div>
@@ -543,7 +544,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
           <div className="mt-8 pt-4 border-t border-[#1B2420] text-center">
             <span className="text-[11px] font-mono text-[#6B7B73]">
-              Protected by Firebase Authentication • SABS & POPIA Data Compliance
+              Secured by 256-Bit SSL Encryption • SABS & POPIA Data Compliance
             </span>
           </div>
         </div>
