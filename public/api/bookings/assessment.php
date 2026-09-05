@@ -77,9 +77,38 @@ if (file_exists($configFile)) {
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($httpCode === 200) {
+        if ($httpCode >= 200 && $httpCode < 300) {
             $resData = json_decode($resp, true);
             $mailerResult = ['status' => 'delivered', 'resendId' => $resData['id'] ?? null];
+        } else {
+            $resJson = json_decode($resp, true);
+            $errMsg = $resJson['message'] ?? '';
+            if (strpos($errMsg, 'not verified') !== false || strpos($errMsg, 'validation_error') !== false) {
+                $fbCh = curl_init('https://api.resend.com/emails');
+                curl_setopt_array($fbCh, [
+                    CURLOPT_POST           => true,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_HTTPHEADER     => [
+                        'Authorization: Bearer ' . $RESEND_API_KEY,
+                        'Content-Type: application/json',
+                    ],
+                    CURLOPT_POSTFIELDS     => json_encode([
+                        'from'     => 'Kinetix Energy <onboarding@resend.dev>',
+                        'to'       => ['delightchetter@gmail.com'],
+                        'reply_to' => $safeEmail,
+                        'subject'  => "📅 [Site Assessment] #{$bookingId} — {$safeName} ({$safeCity})",
+                        'html'     => $html,
+                    ]),
+                    CURLOPT_TIMEOUT        => 8,
+                ]);
+                $fbResp = curl_exec($fbCh);
+                $fbCode = curl_getinfo($fbCh, CURLINFO_HTTP_CODE);
+                curl_close($fbCh);
+                if ($fbCode >= 200 && $fbCode < 300) {
+                    $fbData = json_decode($fbResp, true);
+                    $mailerResult = ['status' => 'delivered_fallback', 'resendId' => $fbData['id'] ?? null];
+                }
+            }
         }
     }
 }

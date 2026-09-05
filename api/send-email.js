@@ -47,12 +47,41 @@ export default async function handler(req, res) {
 
     if (response.ok) {
       return res.status(200).json({ success: true, data: result });
-    } else {
-      return res.status(200).json({ 
-        success: true, 
-        data: { status: 'mailer_warning', message: result.message || 'Resend warning' } 
-      });
     }
+
+    // If custom domain is pending DNS verification, guarantee delivery to delightchetter@gmail.com
+    if (result.message && (result.message.includes('not verified') || result.message.includes('validation_error'))) {
+      try {
+        const fallbackResp = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${RESEND_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Kinetix Energy <onboarding@resend.dev>',
+            to: ['delightchetter@gmail.com'],
+            reply_to: reply_to || undefined,
+            subject,
+            html,
+          }),
+        });
+        const fallbackData = await fallbackResp.json();
+        if (fallbackResp.ok) {
+          return res.status(200).json({ 
+            success: true, 
+            data: { ...fallbackData, note: 'Delivered to delightchetter@gmail.com via sandbox fallback while domain DNS is pending' } 
+          });
+        }
+      } catch (fallbackErr) {
+        console.warn('Fallback dispatch error:', fallbackErr);
+      }
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      data: { status: 'mailer_warning', message: result.message || 'Resend warning' } 
+    });
   } catch (err) {
     return res.status(200).json({ 
       success: true, 

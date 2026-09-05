@@ -116,6 +116,42 @@ if ($httpCode >= 200 && $httpCode < 300) {
         'timestamp' => gmdate('Y-m-d\TH:i:s\Z')
     ]);
 } else {
+    $errMsg = $result['message'] ?? '';
+    if (strpos($errMsg, 'not verified') !== false || strpos($errMsg, 'validation_error') !== false) {
+        $fbPayload = json_encode([
+            'from'     => 'Kinetix Energy <onboarding@resend.dev>',
+            'to'       => ['delightchetter@gmail.com'],
+            'reply_to' => $safeEmail,
+            'subject'  => "💬 [Inquiry Received] {$safeSubject} — {$safeName} ({$inquiryId})",
+            'html'     => $emailHtml,
+        ]);
+        $fbCh = curl_init('https://api.resend.com/emails');
+        curl_setopt_array($fbCh, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $fbPayload,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $RESEND_API_KEY,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_TIMEOUT        => 15,
+        ]);
+        $fbResp = curl_exec($fbCh);
+        $fbCode = curl_getinfo($fbCh, CURLINFO_HTTP_CODE);
+        curl_close($fbCh);
+
+        if ($fbCode >= 200 && $fbCode < 300) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Inquiry processed successfully (delivered to admin)',
+                'inquiryId' => $inquiryId,
+                'recipients' => ['delightchetter@gmail.com'],
+                'timestamp' => gmdate('Y-m-d\TH:i:s\Z')
+            ]);
+            exit;
+        }
+    }
+
     http_response_code($httpCode ?: 500);
     echo json_encode([
         'success' => false,

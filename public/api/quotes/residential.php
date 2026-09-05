@@ -118,6 +118,34 @@ $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
+if ($httpCode < 200 || $httpCode >= 300) {
+    $resJson = json_decode($response, true);
+    $errMsg = $resJson['message'] ?? '';
+    if (strpos($errMsg, 'not verified') !== false || strpos($errMsg, 'validation_error') !== false) {
+        $fbPayload = json_encode([
+            'from' => 'Kinetix Energy <onboarding@resend.dev>',
+            'to' => ['delightchetter@gmail.com'],
+            'reply_to' => $safeEmail,
+            'subject' => "⚡ [System Proposal] Solar Quote {$quoteId} — {$safeName} ({$invKw}kW / {$batKwh}kWh)",
+            'html' => $emailHtml
+        ]);
+        $fbCh = curl_init('https://api.resend.com/emails');
+        curl_setopt_array($fbCh, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $fbPayload,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $RESEND_API_KEY,
+                'Content-Type: application/json'
+            ],
+            CURLOPT_TIMEOUT => 15
+        ]);
+        $fbResp = curl_exec($fbCh);
+        $httpCode = curl_getinfo($fbCh, CURLINFO_HTTP_CODE);
+        curl_close($fbCh);
+    }
+}
+
 echo json_encode([
     'success' => true,
     'quoteId' => $quoteId,

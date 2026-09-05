@@ -70,5 +70,37 @@ $result = json_decode($response, true);
 if ($httpCode >= 200 && $httpCode < 300) {
     echo json_encode(['success' => true, 'data' => $result]);
 } else {
+    // If domain is unverified, fallback to onboarding@resend.dev for delightchetter@gmail.com
+    $errMsg = $result['message'] ?? '';
+    if (strpos($errMsg, 'not verified') !== false || strpos($errMsg, 'validation_error') !== false) {
+        $fbPayload = json_encode([
+            'from'     => 'Kinetix Energy <onboarding@resend.dev>',
+            'to'       => ['delightchetter@gmail.com'],
+            'reply_to' => $input['reply_to'] ?? null,
+            'subject'  => $input['subject'],
+            'html'     => $input['html'],
+        ]);
+        $fbCh = curl_init('https://api.resend.com/emails');
+        curl_setopt_array($fbCh, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $fbPayload,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $RESEND_API_KEY,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_TIMEOUT        => 15,
+        ]);
+        $fbResp = curl_exec($fbCh);
+        $fbCode = curl_getinfo($fbCh, CURLINFO_HTTP_CODE);
+        curl_close($fbCh);
+
+        if ($fbCode >= 200 && $fbCode < 300) {
+            $fbResult = json_decode($fbResp, true);
+            echo json_encode(['success' => true, 'data' => $fbResult, 'note' => 'Delivered via sandbox fallback']);
+            exit;
+        }
+    }
+
     echo json_encode(['success' => false, 'error' => $result['message'] ?? 'Resend error', 'code' => $httpCode]);
 }
