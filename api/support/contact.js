@@ -72,6 +72,11 @@ export default async function handler(req, res) {
     </div>
   `;
 
+  const recipients = [...ADMIN_EMAILS];
+  if (safeEmail && safeEmail.includes('@') && !ADMIN_EMAILS.includes(safeEmail)) {
+    recipients.push(safeEmail);
+  }
+
   let mailerResult = { status: 'logged' };
   if (RESEND_API_KEY) {
     try {
