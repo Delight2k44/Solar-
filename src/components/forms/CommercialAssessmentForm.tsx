@@ -1,6 +1,7 @@
 import { validateFullName, validateEmail, validatePhone, formatUserFriendlyError } from '../../utils/validation';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import { sendCommercialAuditEmail } from '../../services/emailService';
 import { 
   Building2, 
   CheckCircle2, 
@@ -83,7 +84,22 @@ export const CommercialAssessmentForm: React.FC<CommercialAssessmentFormProps> =
         locationCity
       });
 
-      // 2. Automated notification dispatch (graceful fallback)
+      // 2. Direct email dispatch via emailService
+      sendCommercialAuditEmail({
+        referenceId: generatedRef,
+        companyName,
+        contactName,
+        email,
+        phone,
+        locationCity,
+        facilityType,
+        monthlySpend,
+        taxSection12b,
+        peakDemand: peakKva,
+        dieselSpend: dieselMonthly
+      }).catch(err => console.log('Commercial audit email notice:', err));
+
+      // 3. Automated notification dispatch (serverless endpoint)
       try {
         let res = await fetch('/api/quotes/commercial', {
           method: 'POST',

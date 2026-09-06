@@ -1,6 +1,7 @@
 import { validateFullName, validateEmail, validatePhone, validateAddress, formatUserFriendlyError } from '../../utils/validation';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import { sendMaintenanceTicketEmail } from '../../services/emailService';
 import { 
   ShieldCheck,
   CheckCircle2, 
@@ -86,7 +87,21 @@ export const MaintenanceRequestForm: React.FC<MaintenanceRequestFormProps> = ({
         issueDetails
       });
 
-      // 2. Automated notification dispatch (graceful fallback)
+      // 2. Direct email dispatch via emailService
+      sendMaintenanceTicketEmail({
+        ticketId: generatedRef,
+        clientName,
+        clientEmail,
+        clientPhone,
+        siteAddress,
+        city,
+        tier: packageTier,
+        inverterBrand,
+        primaryReason,
+        issueDetails
+      }).catch(err => console.log('Maintenance email notice:', err));
+
+      // 3. Automated notification dispatch (serverless endpoint)
       try {
         let res = await fetch('/api/support/maintenance', {
           method: 'POST',

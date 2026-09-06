@@ -1,6 +1,7 @@
 import { validateFullName, validateEmail, validatePhone, validateAddress, formatUserFriendlyError } from '../../utils/validation';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import { sendInstallationBookingEmail } from '../../services/emailService';
 import { 
   Wrench,
   Calendar, 
@@ -81,7 +82,21 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
         specialAccess
       });
 
-      // 2. Automated notification dispatch (graceful fallback)
+      // 2. Direct email dispatch via emailService
+      sendInstallationBookingEmail({
+        bookingId: generatedRef,
+        clientName,
+        email,
+        phone,
+        address,
+        city,
+        targetDate: targetDate || 'Flexible / Urgent',
+        roofType,
+        phaseConnection,
+        dbLocation
+      }).catch(err => console.log('Installation booking email notice:', err));
+
+      // 3. Automated notification dispatch (serverless endpoint)
       try {
         let res = await fetch('/api/bookings/assessment', {
           method: 'POST',

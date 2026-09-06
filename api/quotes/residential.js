@@ -13,28 +13,25 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed. Use POST.' });
   }
 
-  const {
-    fullName,
-    email,
-    phone,
-    suburb,
-    city,
-    province,
-    monthlyBillZAR,
-    installTarget,
-    recommendedInverterKw,
-    recommendedBatteryKwh,
-    recommendedSolarKwp
-  } = req.body || {};
+  const body = req.body || {};
+  const rawFullName = body.fullName || body.name;
+  const rawEmail = body.email;
+  const rawPhone = body.phone;
+  const rawLocation = body.suburb || body.city || body.province;
+  const rawBill = body.monthlyBillZAR || body.monthlySpendZAR;
+  const rawTarget = body.installTarget || body.preferredInstallationDate;
+  const rawInvKw = body.recommendedInverterKw || body.recommendedInverterKva;
+  const rawBatKwh = body.recommendedBatteryKwh;
+  const rawPvKwp = body.recommendedSolarKwp;
 
   const errors = [];
-  if (!fullName || typeof fullName !== 'string' || fullName.trim().length < 2) {
+  if (!rawFullName || typeof rawFullName !== 'string' || rawFullName.trim().length < 2) {
     errors.push('Full name is required (minimum 2 characters)');
   }
-  if (!email || typeof email !== 'string' || !email.includes('@') || !email.includes('.')) {
+  if (!rawEmail || typeof rawEmail !== 'string' || !rawEmail.includes('@') || !rawEmail.includes('.')) {
     errors.push('A valid email address is required');
   }
-  if (!phone || typeof phone !== 'string' || phone.trim().length < 7) {
+  if (!rawPhone || typeof rawPhone !== 'string' || rawPhone.trim().length < 7) {
     errors.push('A valid contact phone number is required');
   }
 
@@ -46,15 +43,15 @@ export default async function handler(req, res) {
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
   }[m]));
 
-  const safeName = escapeHtml(fullName.trim());
-  const safeEmail = escapeHtml(email.trim());
-  const safePhone = escapeHtml(phone.trim());
-  const safeLocation = escapeHtml((suburb || city || province || 'Gauteng, South Africa').trim());
-  const safeTarget = escapeHtml((installTarget || 'Within 2-4 weeks').trim());
-  const safeBill = Number(monthlyBillZAR) || 4500;
-  const invKw = Number(recommendedInverterKw) || 8;
-  const batKwh = Number(recommendedBatteryKwh) || 10.24;
-  const pvKwp = Number(recommendedSolarKwp) || 5.5;
+  const safeName = escapeHtml(rawFullName.trim());
+  const safeEmail = escapeHtml(rawEmail.trim());
+  const safePhone = escapeHtml(rawPhone.trim());
+  const safeLocation = escapeHtml((rawLocation || 'Gauteng, South Africa').trim());
+  const safeTarget = escapeHtml((rawTarget || 'Within 2-4 weeks').trim());
+  const safeBill = Number(rawBill) || 4500;
+  const invKw = Number(rawInvKw) || 8;
+  const batKwh = Number(rawBatKwh) || 10.24;
+  const pvKwp = Number(rawPvKwp) || 5.5;
 
   const quoteId = `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
   const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];

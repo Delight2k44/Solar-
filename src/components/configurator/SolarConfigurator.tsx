@@ -1,5 +1,6 @@
 import { validateFullName, validateEmail, validatePhone, validateLocation, formatUserFriendlyError } from '../../utils/validation';
 import { useData } from '../../context/DataContext';
+import { sendSolarQuoteEmail } from '../../services/emailService';
 import React, { useState } from 'react';
 import { 
   Home, 
@@ -178,14 +179,28 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
     setIsSubmitting(true);
 
     try {
+      // Infer province from city
+      const cityLower = propertyCity.toLowerCase();
+      let province = 'Gauteng';
+      if (cityLower.includes('cape') || cityLower.includes('stellenbosch')) province = 'Western Cape';
+      else if (cityLower.includes('durban') || cityLower.includes('umhlanga') || cityLower.includes('kzn')) province = 'KwaZulu-Natal';
+      else if (cityLower.includes('bloemfontein')) province = 'Free State';
+      else if (cityLower.includes('gqeberha') || cityLower.includes('port elizabeth')) province = 'Eastern Cape';
+
       const payload = {
+        fullName: contactName,
         name: contactName,
         email: contactEmail,
         phone: contactPhone,
         city: propertyCity,
+        suburb: propertyCity,
+        province,
         propertyType,
+        monthlyBillZAR: results.monthlyBillZAR,
         monthlySpendZAR: results.monthlyBillZAR,
+        installTarget: preferredDate || 'Flexible / Urgent',
         preferredInstallationDate: preferredDate || 'Flexible / Urgent',
+        recommendedInverterKw: results.recommendedInverterKva,
         recommendedInverterKva: results.recommendedInverterKva,
         recommendedBatteryKwh: results.recommendedBatteryKwh,
         recommendedSolarKwp: results.recommendedSolarKwp,
@@ -193,6 +208,22 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
 
       let quoteId = `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
 
+      // 1. Direct email dispatch via emailService
+      sendSolarQuoteEmail({
+        quoteId,
+        fullName: contactName,
+        email: contactEmail,
+        phone: contactPhone,
+        suburb: propertyCity,
+        province,
+        monthlyBillZAR: results.monthlyBillZAR,
+        recommendedInverterKw: results.recommendedInverterKva,
+        recommendedBatteryKwh: results.recommendedBatteryKwh,
+        recommendedSolarKwp: results.recommendedSolarKwp,
+        installTarget: preferredDate || 'Flexible / Urgent'
+      }).catch(err => console.log('Solar quote email notice:', err));
+
+      // 2. Serverless endpoint notification
       try {
         let res = await fetch('/api/quotes/residential', {
           method: 'POST',
@@ -214,20 +245,12 @@ export const SolarConfigurator: React.FC<SolarConfiguratorProps> = ({
           if (data?.quoteId) quoteId = data.quoteId;
         }
       } catch {
-        // Backend API offline fallback - proceeds cleanly with client quote generation
+        // Backend API offline fallback
       }
 
       setQuoteRefId(quoteId);
 
-      // Infer province from city
-      const cityLower = propertyCity.toLowerCase();
-      let province = 'Gauteng';
-      if (cityLower.includes('cape') || cityLower.includes('stellenbosch')) province = 'Western Cape';
-      else if (cityLower.includes('durban') || cityLower.includes('umhlanga') || cityLower.includes('kzn')) province = 'KwaZulu-Natal';
-      else if (cityLower.includes('bloemfontein')) province = 'Free State';
-      else if (cityLower.includes('gqeberha') || cityLower.includes('port elizabeth')) province = 'Eastern Cape';
-
-      // Save into Firebase Firestore
+      // 3. Save into Firebase Firestore
       addLeadQuote({
         fullName: contactName,
         email: contactEmail,

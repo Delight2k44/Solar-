@@ -1,6 +1,7 @@
 import { validateFullName, validateEmail, validatePhone, validateLocation, formatUserFriendlyError } from '../../utils/validation';
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import { sendSolarQuoteEmail } from '../../services/emailService';
 import { 
   Battery, 
   Home, 
@@ -102,7 +103,21 @@ export const SolarQuoteForm: React.FC<SolarQuoteFormProps> = ({
         recommendedSolarKwp
       });
 
-      // 2. Automated notification dispatch (graceful fallback)
+      // 2. Direct email dispatch via emailService
+      sendSolarQuoteEmail({
+        quoteId: generatedId,
+        fullName,
+        email,
+        phone,
+        suburb,
+        province,
+        monthlyBillZAR: monthlyBill,
+        recommendedInverterKw,
+        recommendedBatteryKwh,
+        recommendedSolarKwp
+      }).catch(err => console.log('Solar quote email notice:', err));
+
+      // 3. Automated notification dispatch (serverless endpoint)
       try {
         let res = await fetch('/api/quotes/residential', {
           method: 'POST',
