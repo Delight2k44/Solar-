@@ -8,7 +8,8 @@ import { collection, addDoc } from 'firebase/firestore';
 
 export const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
 export const ADMIN_EMAIL = 'form@kinetixes.com';
-const FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
+// Use sandbox sender until kinetixes.com domain DNS is verified in Resend
+const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
 
 interface SendEmailParams {
   to?: string | string[];
@@ -25,9 +26,9 @@ export async function sendEmail({
   replyTo,
   metadata = {}
 }: SendEmailParams): Promise<{ success: boolean; data?: any; error?: string }> {
-  // Ensure array of unique, clean email addresses
-  const rawList = Array.isArray(to) ? to : [to];
-  const recipients = Array.from(new Set(rawList.map(e => (e || '').trim()).filter(Boolean)));
+  // Sandbox mode: Resend only allows sending to account owner email
+  // Override any recipients to just delightchetter@gmail.com
+  const recipients = ['delightchetter@gmail.com'];
 
   // 1. Always record in Firebase Firestore for guaranteed persistence
   try {

@@ -1,4 +1,5 @@
 // Vercel Serverless Function — Resend Email Proxy
+// Uses sandbox sender (onboarding@resend.dev) until kinetixes.com domain DNS is verified
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -20,8 +21,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
-  const { from, to, reply_to, subject, html } = req.body || {};
+  const { reply_to, subject, html } = req.body || {};
 
   if (!subject || !html) {
     return res.status(400).json({ success: false, error: 'Missing subject or html' });
@@ -35,8 +35,8 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: from || 'Kinetix Energy <form@kinetixes.com>',
-        to: to || ADMIN_EMAILS,
+        from: 'Kinetix Energy <onboarding@resend.dev>',
+        to: ['delightchetter@gmail.com'],
         reply_to: reply_to || undefined,
         subject,
         html,
@@ -47,35 +47,6 @@ export default async function handler(req, res) {
 
     if (response.ok) {
       return res.status(200).json({ success: true, data: result });
-    }
-
-    // If custom domain is pending DNS verification, guarantee delivery to delightchetter@gmail.com
-    if (result.message && (result.message.includes('not verified') || result.message.includes('validation_error'))) {
-      try {
-        const fallbackResp = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${RESEND_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'Kinetix Energy <onboarding@resend.dev>',
-            to: ['delightchetter@gmail.com'],
-            reply_to: reply_to || undefined,
-            subject,
-            html,
-          }),
-        });
-        const fallbackData = await fallbackResp.json();
-        if (fallbackResp.ok) {
-          return res.status(200).json({ 
-            success: true, 
-            data: { ...fallbackData, note: 'Delivered to delightchetter@gmail.com via sandbox fallback while domain DNS is pending' } 
-          });
-        }
-      } catch (fallbackErr) {
-        console.warn('Fallback dispatch error:', fallbackErr);
-      }
     }
 
     return res.status(200).json({ 

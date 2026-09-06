@@ -58,7 +58,7 @@ export default async function handler(req, res) {
 
   const quoteId = `KX-QT-${Math.floor(1000 + Math.random() * 9000)}`;
   const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
-  const FROM_EMAIL = 'Kinetix Energy <form@kinetixes.com>';
+  const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
   const emailHtml = `
@@ -110,40 +110,17 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           from: FROM_EMAIL,
-          to: recipients,
+          to: ['delightchetter@gmail.com'],
           reply_to: safeEmail,
           subject: `⚡ [System Proposal] Solar Quote ${quoteId} — ${safeName} (${invKw}kW / ${batKwh}kWh)`,
           html: emailHtml,
         }),
       });
-
       const resendJson = await resendResp.json();
       if (resendResp.ok) {
         mailerResult = { status: 'delivered', resendId: resendJson.id };
-      } else if (resendJson.message && (resendJson.message.includes('not verified') || resendJson.message.includes('validation_error'))) {
-        try {
-          const fallbackResp = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              from: 'Kinetix Energy <onboarding@resend.dev>',
-              to: ['delightchetter@gmail.com'],
-              reply_to: safeEmail || undefined,
-              subject: `⚡ [System Proposal] Solar Quote ${quoteId} — ${safeName} (${invKw}kW / ${batKwh}kWh)`,
-              html: emailHtml,
-            }),
-          });
-          const fallbackJson = await fallbackResp.json();
-          if (fallbackResp.ok) {
-            mailerResult = { status: 'delivered_fallback', resendId: fallbackJson.id };
-          } else {
-            mailerResult = { status: 'mailer_warning', message: resendJson.message };
-          }
-        } catch (e) {
-          mailerResult = { status: 'mailer_warning', message: resendJson.message };
-        }
       } else {
-        mailerResult = { status: 'mailer_warning', message: resendJson.message };
+        mailerResult = { status: 'mailer_warning', message: resendJson.message || 'Resend error' };
       }
     } catch (err) {
       mailerResult = { status: 'mailer_error', message: err.message };
