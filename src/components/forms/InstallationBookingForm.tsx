@@ -11,11 +11,13 @@ import {
 interface InstallationBookingFormProps {
   onSuccess?: () => void;
   defaultCity?: string;
+  defaultService?: string;
 }
 
 export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = ({ 
   onSuccess,
-  defaultCity = ''
+  defaultCity = '',
+  defaultService = 'Power Distribution & DB Rewiring'
 }) => {
   const { createInstallationBooking } = useData();
   const [submitted, setSubmitted] = useState(false);
@@ -24,6 +26,7 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
   const [errorMessage, setErrorMessage] = useState('');
 
   // Form State
+  const [serviceType, setServiceType] = useState(defaultService);
   const [clientName, setClientName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -34,6 +37,12 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
   const [phaseConnection, setPhaseConnection] = useState('Single Phase (230V, 60A / 80A)');
   const [dbLocation, setDbLocation] = useState('Garage');
   const [specialAccess, setSpecialAccess] = useState('');
+
+  React.useEffect(() => {
+    if (defaultService) {
+      setServiceType(defaultService);
+    }
+  }, [defaultService]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +72,8 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
         roofType,
         phaseConnection,
         dbLocation,
-        specialAccess
+        specialAccess,
+        serviceType
       };
 
       let generatedRef = `KX-BKG-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -79,7 +89,8 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
         roofType,
         phaseConnection,
         dbLocation,
-        specialAccess
+        specialAccess,
+        serviceType
       });
 
       // 2. Direct email dispatch via emailService
@@ -152,6 +163,10 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
 
         <div className="p-4 bg-[#0D1117] border border-[#1E2530] rounded-xl text-left text-xs font-mono text-[#94A3B8] space-y-2">
           <div className="flex justify-between">
+            <span className="text-[#64748B]">Service Requested:</span>
+            <span className="text-[#00D2FF] font-bold">{serviceType}</span>
+          </div>
+          <div className="flex justify-between">
             <span className="text-[#64748B]">Site Address:</span>
             <span className="text-white font-bold">{address}, {city}</span>
           </div>
@@ -198,9 +213,22 @@ export const InstallationBookingForm: React.FC<InstallationBookingFormProps> = (
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
         {/* Step 1: Site Location & Timing */}
         <div className="space-y-4">
-          <h4 className="text-xs font-mono font-bold uppercase text-white tracking-wider border-b border-[#1E2530] pb-2">
-            01. Property Address & Target Scheduling
-          </h4>
+          <div className="p-3.5 bg-black/40 border border-[#00D2FF]/30 rounded-xl space-y-1.5">
+            <label className="block text-[11px] font-mono uppercase text-[#00D2FF] font-bold">
+              Select Required Electrical Service *
+            </label>
+            <select
+              value={serviceType}
+              onChange={e => setServiceType(e.target.value)}
+              className="w-full bg-[#0D1117] border border-[#1E2530] rounded-lg px-3.5 py-2.5 text-xs text-white focus:border-[#00D2FF] font-mono cursor-pointer"
+            >
+              <option value="Power Distribution & DB Rewiring">Power Distribution &amp; DB Rewiring (Single &amp; 3-Phase)</option>
+              <option value="Fault Finding & Emergency Repairs">Fault Finding &amp; Emergency Repairs (Earth Leakage &amp; Inverter)</option>
+              <option value="SANS 10142-1-2 CoC Certification">SANS 10142-1-2 CoC Certification (SSEG &amp; Property Transfer)</option>
+              <option value="Electrical Maintenance & Thermal Scan">Electrical Maintenance &amp; Thermal Scan (Preventative Care)</option>
+              <option value="Turnkey Solar & Battery System Installation">Turnkey Solar &amp; Battery System Installation</option>
+            </select>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

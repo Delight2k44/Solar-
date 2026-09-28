@@ -6,7 +6,7 @@
 import { db } from './firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
-export const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
+export const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com', 'kt@gmail.com'];
 export const ADMIN_EMAIL = 'form@kinetixes.com';
 // Use sandbox sender until kinetixes.com domain DNS is verified in Resend
 const FROM_EMAIL = 'Kinetix Energy <onboarding@resend.dev>';

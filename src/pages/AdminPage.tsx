@@ -239,7 +239,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setCurrentRoute }) => {
   const totalRevenueZAR = orders.reduce((sum, o) => sum + (o.totalCartZAR || 0), 0);
   const pendingOrdersCount = orders.filter(o => !o.adminApproved || o.currentStageIndex === 0).length;
 
-  const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
+  const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com', 'kt@gmail.com'];
   const isAdmin = currentUser?.role === 'admin' && ADMIN_EMAILS.includes(currentUser?.email?.toLowerCase() || '');
 
   if (!isAdmin) {

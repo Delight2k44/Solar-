@@ -24,6 +24,10 @@ import { LoginPage } from './pages/LoginPage';
 import { AdminPage } from './pages/AdminPage';
 import { SolarChatWidget } from './components/chat/SolarChatWidget';
 
+import { ProductPage } from './pages/ProductPage';
+import { NewOrderQuotationPage } from './pages/NewOrderQuotationPage';
+import { TeslaSolarDesignPage } from './pages/TeslaSolarDesignPage';
+import { useData } from './context/DataContext';
 import { Product } from './types';
 import { X } from 'lucide-react';
 
@@ -31,7 +35,9 @@ export function App() {
   const [currentRoute, setCurrentRoute] = useState<string>('home');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isConfiguratorModalOpen, setIsConfiguratorModalOpen] = useState(false);
+  const [selectedShopCategory, setSelectedShopCategory] = useState<string>('all');
   const { isAuthenticated, isAdmin } = useAuth();
+  const { products } = useData();
 
   // Scroll to top on every route change
   useEffect(() => {
@@ -49,11 +55,18 @@ export function App() {
   }, [currentRoute, isAuthenticated, isAdmin]);
 
   const openConfigurator = () => {
-    setIsConfiguratorModalOpen(true);
+    setIsConfiguratorModalOpen(false);
+    setCurrentRoute('configurator');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleQuoteRequested = (data: any) => {
     // Open cart or confirmation
+  };
+
+  const handleSelectProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setCurrentRoute('product');
   };
 
   return (
@@ -63,6 +76,10 @@ export function App() {
         currentRoute={currentRoute}
         setCurrentRoute={setCurrentRoute}
         openConfigurator={openConfigurator}
+        onSelectShopCategory={(cat) => {
+          setSelectedShopCategory(cat);
+          setCurrentRoute('shop');
+        }}
       />
 
       {/* Main Page Router */}
@@ -71,7 +88,7 @@ export function App() {
           <HomePage
             setCurrentRoute={setCurrentRoute}
             openConfigurator={openConfigurator}
-            onSelectProduct={setSelectedProduct}
+            onSelectProduct={handleSelectProduct}
           />
         )}
 
@@ -90,7 +107,40 @@ export function App() {
         )}
 
         {currentRoute === 'shop' && (
-          <ShopPage onSelectProduct={setSelectedProduct} />
+          <ShopPage 
+            onSelectProduct={handleSelectProduct} 
+            initialCategory={selectedShopCategory}
+            onCategoryChange={setSelectedShopCategory}
+            openConfigurator={openConfigurator}
+            setCurrentRoute={setCurrentRoute}
+          />
+        )}
+
+        {currentRoute === 'product' && (
+          <ProductPage
+            product={selectedProduct || products[0]}
+            onSelectProduct={handleSelectProduct}
+            onBackToShop={() => setCurrentRoute('shop')}
+            openConfigurator={openConfigurator}
+          />
+        )}
+
+        {currentRoute === 'new-order' && (
+          <NewOrderQuotationPage
+            setCurrentRoute={setCurrentRoute}
+            onSelectProduct={handleSelectProduct}
+            openConfigurator={openConfigurator}
+            initialMode="setup"
+          />
+        )}
+
+        {currentRoute === 'quotation-report' && (
+          <NewOrderQuotationPage
+            setCurrentRoute={setCurrentRoute}
+            onSelectProduct={handleSelectProduct}
+            openConfigurator={openConfigurator}
+            initialMode="quotation"
+          />
         )}
 
         {currentRoute === 'installation' && (
@@ -107,10 +157,11 @@ export function App() {
           </div>
         )}
 
-        {currentRoute === 'configurator' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-            <SolarConfigurator onQuoteRequested={handleQuoteRequested} />
-          </div>
+        {(currentRoute === 'configurator' || currentRoute === 'design' || currentRoute === 'sizing') && (
+          <TeslaSolarDesignPage 
+            setCurrentRoute={setCurrentRoute}
+            openConfigurator={openConfigurator}
+          />
         )}
 
         {currentRoute === 'tracking' && (
@@ -172,11 +223,13 @@ export function App() {
       {/* Interactive AI & Engineering Chatbot Widget */}
       <SolarChatWidget onOpenConfigurator={openConfigurator} />
 
-      {/* Single Product Modal */}
-      <ProductDetailModal
-        product={selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-      />
+      {/* Single Product Modal (Only for quick inspection on non-product routes) */}
+      {currentRoute !== 'product' && selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
 
       {/* Standalone Configurator Modal Overlay */}
       {isConfiguratorModalOpen && (

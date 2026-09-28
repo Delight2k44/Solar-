@@ -159,7 +159,7 @@ export const ContactPage: React.FC = () => {
                     >
                       <option>General Technical Inquiry</option>
                       <option>Commercial 50kW+ Microgrid Sizing</option>
-                      <option>Hardware Store & Supply Order</option>
+                      <option>Product & Supply Order</option>
                       <option>SANS 10142 CoC Compliance Audit</option>
                       <option>Warranty & Service Ticket</option>
                     </select>

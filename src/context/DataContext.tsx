@@ -18,7 +18,9 @@ import {
   InstallationBooking, 
   CommercialLead, 
   ContactEnquiry, 
-  UserNotification 
+  UserNotification,
+  QuoteItem,
+  ProjectQuote
 } from '../types';
 
 export interface MaintenanceTicket {
@@ -75,6 +77,17 @@ interface DataContextType {
   userNotifications: UserNotification[];
   siteContent: Record<string, SiteContentSection>;
   
+  // Prospective Project Quotes (SegenSolar Builder)
+  quotes: ProjectQuote[];
+  activeQuote: ProjectQuote | null;
+  setActiveQuote: React.Dispatch<React.SetStateAction<ProjectQuote | null>>;
+  startNewQuote: (description: string, type?: string, templateName?: string) => ProjectQuote;
+  addItemToActiveQuote: (product: Product, quantity?: number) => void;
+  updateQuoteItemQty: (itemId: string, quantity: number) => void;
+  removeQuoteItem: (itemId: string) => void;
+  clearActiveQuote: () => void;
+  saveQuoteToFirebase: (quote: ProjectQuote) => Promise<string>;
+
   // Product actions (Full Admin Store Management)
   updateProduct: (id: string, updates: Partial<Product>) => void;
   addProduct: (product: Product) => void;
@@ -289,13 +302,17 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const saved = localStorage.getItem('kinetix_products');
       if (saved) {
         const parsed: Product[] = JSON.parse(saved);
-        return parsed.map(p => {
-          const defaultProd = PRODUCTS_CATALOG.find(dp => dp.id === p.id);
-          if (defaultProd && defaultProd.image) {
-            return { ...p, image: defaultProd.image };
-          }
-          return p;
+        const merged = parsed.map(p => {
+          const defaultProd = PRODUCTS_CATALOG.find(dp => dp.id === p.id || dp.sku === p.sku);
+          return defaultProd ? { ...defaultProd, ...p, image: defaultProd.image } : p;
         });
+        // Add any new products from PRODUCTS_CATALOG not present in saved
+        for (const defaultProd of PRODUCTS_CATALOG) {
+          if (!merged.some(p => p.id === defaultProd.id || p.sku === defaultProd.sku)) {
+            merged.push(defaultProd);
+          }
+        }
+        return merged;
       }
       return PRODUCTS_CATALOG;
     } catch {
@@ -384,6 +401,25 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
+  // Prospective Project Quotes State (Firebase + LocalStorage)
+  const [quotes, setQuotes] = useState<ProjectQuote[]>(() => {
+    try {
+      const saved = localStorage.getItem('kinetix_project_quotes');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [activeQuote, setActiveQuote] = useState<ProjectQuote | null>(() => {
+    try {
+      const saved = localStorage.getItem('kinetix_active_quote');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
   // ─── Real-Time Firebase Firestore Listeners ─────────────────────────────────
   useEffect(() => {
     // 1. Orders listener
@@ -462,11 +498,31 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }, (err) => console.log('Firestore enquiries snapshot notice:', err));
 
+    // 5. Prospective Project Quotes listener (Firebase Firestore 'quotes')
+    const unsubProjectQuotes = onSnapshot(collection(db, 'quotes'), (snapshot) => {
+      if (!snapshot.empty) {
+        const firestoreQuotes: ProjectQuote[] = [];
+        snapshot.forEach((docSnap) => {
+          firestoreQuotes.push(docSnap.data() as ProjectQuote);
+        });
+        if (firestoreQuotes.length > 0) {
+          setQuotes(prev => {
+            const merged = [...firestoreQuotes];
+            prev.forEach(p => {
+              if (!merged.find(m => m.id === p.id)) merged.push(p);
+            });
+            return merged;
+          });
+        }
+      }
+    }, (err) => console.log('Firestore project quotes snapshot notice:', err));
+
     return () => {
       unsubOrders();
       unsubQuotes();
       unsubCommercial();
       unsubEnquiries();
+      unsubProjectQuotes();
     };
   }, []);
 
@@ -510,6 +566,172 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem('kinetix_site_content', JSON.stringify(siteContent));
   }, [siteContent]);
+
+  useEffect(() => {
+    localStorage.setItem('kinetix_project_quotes', JSON.stringify(quotes));
+  }, [quotes]);
+
+  useEffect(() => {
+    if (activeQuote) {
+      localStorage.setItem('kinetix_active_quote', JSON.stringify(activeQuote));
+    } else {
+      localStorage.removeItem('kinetix_active_quote');
+    }
+  }, [activeQuote]);
+
+  // Prospective Project Quotes Actions
+  const startNewQuote = (description: string, type: string = 'PV Equipment Sales', templateName?: string): ProjectQuote => {
+    const quoteNumber = Math.floor(10000 + Math.random() * 90000);
+    const refNo = `KiPV${quoteNumber} - ${description.trim() || 'Group_Project'}`;
+    const today = new Date();
+    const validDate = new Date();
+    validDate.setDate(validDate.getDate() + 14);
+
+    let initialItems: QuoteItem[] = [];
+    if (templateName && templateName.includes('12kW Sunsynk')) {
+      initialItems = [
+        {
+          id: 'item-panel-1',
+          qty: 24,
+          partNo: 'JKM590N-72HL4-BDV-SF-JK03M',
+          description: 'Tiger Neo 590Wp TOPCon N-Type Double Glass Bifacial Modules Silver Frame JK03M Connectors',
+          brand: 'Jinko',
+          netPriceZAR: 1491.48,
+          powerOutputW: 590,
+          link: 'https://portal.segensolar.co.za/Reseller/ProductDetails/ProductDetails?PartNo=JKM590N-72HL4-BDV-SF-JK03M'
+        },
+        {
+          id: 'item-inv-1',
+          qty: 1,
+          partNo: 'SUN-12K-SG04LP3',
+          description: '12kW 3-Phase Low Voltage Hybrid Inverter 48V Dual MPPT',
+          brand: 'Sunsynk',
+          netPriceZAR: 39500.00,
+          link: 'https://portal.segensolar.co.za/Reseller/ProductDetails/ProductDetails?PartNo=SUN-12K-SG04LP3'
+        },
+        {
+          id: 'item-bat-1',
+          qty: 1,
+          partNo: 'FL-HOME-15-HV',
+          description: 'Freedom Won Lite Home 15/12 LiFePO4 Energy Storage 52V 15kWh',
+          brand: 'Freedom Won',
+          netPriceZAR: 48900.00,
+          link: 'https://portal.segensolar.co.za/Reseller/ProductDetails/ProductDetails?PartNo=FL-HOME-15-HV'
+        }
+      ];
+    }
+
+    const newQuote: ProjectQuote = {
+      id: refNo,
+      referenceNo: refNo,
+      type: type || 'PV Equipment Sales',
+      description: description.trim() || 'Group_Project',
+      templateName: templateName || 'Blank Order',
+      accountCode: 'KINESP002',
+      organisation: 'Kinetix Engineering Solutions',
+      address: '2068 W Section, Botshabelo Bloemfontein 9781',
+      contactPerson: 'Technical Estimator',
+      phone: '+27 78 780 8569',
+      email: 'sales@kinetixsolar.co.za',
+      items: initialItems,
+      status: 'draft',
+      createdAt: today.toISOString().split('T')[0],
+      validUntil: validDate.toISOString().split('T')[0]
+    };
+
+    setActiveQuote(newQuote);
+    localStorage.setItem('kinetix_active_quote', JSON.stringify(newQuote));
+    return newQuote;
+  };
+
+  const addItemToActiveQuote = (product: Product, quantity: number = 1) => {
+    setActiveQuote(prev => {
+      const current = prev || startNewQuote('Group_Project', 'PV Equipment Sales');
+      const itemPartNo = product.sku || product.id.toUpperCase();
+      const existing = current.items.find(item => item.partNo === itemPartNo || item.productId === product.id);
+
+      let updatedItems: QuoteItem[];
+      if (existing) {
+        updatedItems = current.items.map(item =>
+          item.id === existing.id ? { ...item, qty: item.qty + quantity } : item
+        );
+      } else {
+        const powerW = product.ratingKw ? product.ratingKw * 1000 : undefined;
+        const newItem: QuoteItem = {
+          id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          productId: product.id,
+          qty: quantity,
+          partNo: itemPartNo,
+          description: `${product.brand} ${product.name}${product.ratingKw ? ` (${product.ratingKw}kW)` : ''}`,
+          brand: product.brand,
+          netPriceZAR: product.priceZAR,
+          powerOutputW: powerW,
+          image: product.image,
+          link: `https://portal.segensolar.co.za/Reseller/ProductDetails/ProductDetails?PartNo=${encodeURIComponent(itemPartNo)}`
+        };
+        updatedItems = [...current.items, newItem];
+      }
+
+      const updatedQuote = { ...current, items: updatedItems };
+      localStorage.setItem('kinetix_active_quote', JSON.stringify(updatedQuote));
+      return updatedQuote;
+    });
+  };
+
+  const updateQuoteItemQty = (itemId: string, quantity: number) => {
+    setActiveQuote(prev => {
+      if (!prev) return null;
+      let updatedItems: QuoteItem[];
+      if (quantity <= 0) {
+        updatedItems = prev.items.filter(item => item.id !== itemId);
+      } else {
+        updatedItems = prev.items.map(item =>
+          item.id === itemId ? { ...item, qty: quantity } : item
+        );
+      }
+      const updatedQuote = { ...prev, items: updatedItems };
+      localStorage.setItem('kinetix_active_quote', JSON.stringify(updatedQuote));
+      return updatedQuote;
+    });
+  };
+
+  const removeQuoteItem = (itemId: string) => {
+    updateQuoteItemQty(itemId, 0);
+  };
+
+  const clearActiveQuote = () => {
+    setActiveQuote(null);
+    localStorage.removeItem('kinetix_active_quote');
+  };
+
+  const saveQuoteToFirebase = async (quote: ProjectQuote): Promise<string> => {
+    const quoteWithDate = {
+      ...quote,
+      status: 'saved' as const,
+      updatedAt: new Date().toISOString()
+    };
+    
+    // Save to Firestore
+    try {
+      await setDoc(doc(db, 'quotes', quote.id), quoteWithDate);
+      console.log('✅ Quote synced to Firebase Firestore:', quote.id);
+    } catch (err) {
+      console.warn('Firebase Firestore quote write note:', err);
+    }
+
+    // Update local state
+    setQuotes(prev => {
+      const idx = prev.findIndex(q => q.id === quote.id);
+      if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = quoteWithDate;
+        return next;
+      }
+      return [quoteWithDate, ...prev];
+    });
+
+    return quote.id;
+  };
 
   // Product Actions
   const updateProduct = (id: string, updates: Partial<Product>) => {
@@ -854,6 +1076,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('kinetix_enquiries');
     localStorage.removeItem('kinetix_notifications');
     localStorage.removeItem('kinetix_site_content');
+    localStorage.removeItem('kinetix_project_quotes');
+    localStorage.removeItem('kinetix_active_quote');
+    setQuotes([]);
+    setActiveQuote(null);
   };
 
   return (
@@ -869,6 +1095,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         contactEnquiries,
         userNotifications,
         siteContent,
+        quotes,
+        activeQuote,
+        setActiveQuote,
+        startNewQuote,
+        addItemToActiveQuote,
+        updateQuoteItemQty,
+        removeQuoteItem,
+        clearActiveQuote,
+        saveQuoteToFirebase,
         updateProduct,
         addProduct,
         deleteProduct,

@@ -139,21 +139,35 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({
         </div>
       )}
 
-      {/* Floating Trigger Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="group flex items-center gap-2.5 px-4 py-3.5 bg-[#25D366] hover:bg-[#1EBE5D] text-black font-bold rounded-full shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 border-2 border-white/20"
-        title="Chat on WhatsApp (078 780 8569)"
-      >
-        <MessageCircle className="w-5 h-5 fill-current" />
-        <span className="text-xs font-semibold uppercase tracking-wider hidden sm:inline">
-          WhatsApp Us
-        </span>
-        <span className="flex h-2.5 w-2.5 relative">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-black"></span>
-        </span>
-      </button>
+      {/* Floating Trigger Button: Standard 56px Circular FAB with 28px Realistic Icon */}
+      <div className="relative group flex items-center justify-end">
+        {/* Tooltip on hover */}
+        <div className="absolute right-full mr-3 px-3 py-1.5 bg-[#0D1117]/95 border border-[#1E2530] text-white text-xs font-mono rounded-xl shadow-2xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none translate-x-2 group-hover:translate-x-0 hidden sm:block z-50">
+          <span className="font-bold text-white block">WhatsApp Support</span>
+          <span className="text-[10px] text-[#25D366] font-mono">078 780 8569 • Online</span>
+        </div>
+
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#1EBE5D] text-white shadow-[0_8px_30px_rgba(37,211,102,0.45)] hover:shadow-[0_8px_35px_rgba(37,211,102,0.65)] flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 border-2 border-white/25 cursor-pointer relative"
+          title="Chat on WhatsApp (078 780 8569)"
+          aria-label="Chat on WhatsApp"
+        >
+          {/* Authentic WhatsApp Vector Icon (28px) */}
+          <svg 
+            viewBox="0 0 24 24" 
+            className="w-7 h-7 fill-current drop-shadow-sm"
+          >
+            <path d="M17.472 14.382c-.301-.15-1.78-.878-2.056-.978-.276-.1-.476-.15-.677.15-.201.301-.778.978-.953 1.179-.175.2-.351.226-.652.075s-1.272-.469-2.423-1.496c-.896-.799-1.501-1.787-1.677-2.088-.176-.301-.019-.464.132-.614.135-.135.301-.351.451-.527.151-.176.201-.301.301-.502.1-.201.05-.376-.025-.527s-.677-1.632-.928-2.234c-.244-.587-.492-.507-.677-.516l-.577-.01c-.201 0-.527.075-.802.376s-1.054 1.029-1.054 2.509 1.079 2.91 1.229 3.111c.15.201 2.122 3.24 5.14 4.544.718.31 1.279.496 1.716.635.722.23 1.379.198 1.899.12.579-.087 1.78-.727 2.03-1.43.251-.703.251-1.305.176-1.43-.075-.125-.276-.201-.577-.351zM12.04 2C6.516 2 2.028 6.488 2.028 12.012c0 1.95.56 3.774 1.528 5.318L2 22l4.81-1.508a9.98 9.98 0 005.23 1.52c5.524 0 10.012-4.488 10.012-10.012C22.052 6.488 17.564 2 12.04 2zm0 18.272a8.26 8.26 0 01-4.218-1.157l-.303-.18-3.136.984.996-3.056-.197-.314a8.26 8.26 0 01-1.276-4.537c0-4.57 3.717-8.288 8.287-8.288 4.57 0 8.288 3.718 8.288 8.288 0 4.57-3.718 8.288-8.288 8.288z" />
+          </svg>
+
+          {/* Pulsing online badge */}
+          <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#25D366] border-2 border-[#0D1117]"></span>
+          </span>
+        </button>
+      </div>
     </div>
   );
 };

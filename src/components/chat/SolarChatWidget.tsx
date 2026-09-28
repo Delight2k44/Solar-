@@ -227,22 +227,32 @@ export const SolarChatWidget: React.FC<{ onOpenConfigurator: () => void }> = ({ 
 
   return (
     <div className="fixed bottom-6 left-4 sm:left-6 z-40 font-sans">
-      {/* Floating Launcher Button */}
+      {/* Floating Launcher Button: Standard 56px Circular FAB with 28px Realistic Icon */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-3.5 sm:px-4 sm:py-3.5 bg-[#0D1117] hover:bg-[#161B22] text-white rounded-full shadow-2xl flex items-center gap-2.5 transition-all duration-300 hover:scale-105 border border-[#00D2FF]/40 ring-4 ring-[#00D2FF]/10 active:scale-95"
-          aria-label="Open Solar Engineering Chat"
-        >
-          <div className="relative flex items-center justify-center">
-            <Bot className="w-5 h-5 text-[#00D2FF]" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#00D2FF] rounded-full animate-ping opacity-75" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#00D2FF] rounded-full" />
+        <div className="relative group flex items-center justify-start">
+          {/* Tooltip on hover */}
+          <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#0D1117]/95 border border-[#1E2530] text-white text-xs font-mono rounded-xl shadow-2xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none -translate-x-2 group-hover:translate-x-0 hidden sm:block z-50">
+            <span className="font-bold text-white block">AI Solar Assistant</span>
+            <span className="text-[10px] text-[#00D2FF] font-mono">Engineering & Sizing • Online</span>
           </div>
-          <span className="text-xs font-semibold uppercase tracking-wider hidden sm:inline text-white">
-            AI Solar Assistant
-          </span>
-        </button>
+
+          <button
+            onClick={() => setIsOpen(true)}
+            className="w-14 h-14 rounded-full bg-[#0D1117] hover:bg-[#161B22] text-white shadow-[0_8px_30px_rgba(0,210,255,0.3)] hover:shadow-[0_8px_35px_rgba(0,210,255,0.5)] flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 border-2 border-[#00D2FF]/50 ring-4 ring-[#00D2FF]/10 cursor-pointer relative"
+            aria-label="Open Solar Engineering Chat"
+            title="AI Solar Assistant"
+          >
+            <div className="relative flex items-center justify-center">
+              <Bot className="w-7 h-7 text-[#00D2FF] drop-shadow-[0_0_8px_rgba(0,210,255,0.6)]" />
+            </div>
+
+            {/* Pulsing online badge */}
+            <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00D2FF] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#00D2FF] border-2 border-[#0D1117]"></span>
+            </span>
+          </button>
+        </div>
       )}
 
       {/* Chat Window Dialog */}

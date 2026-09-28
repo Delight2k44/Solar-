@@ -365,7 +365,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               onClick={() => setCurrentRoute('shop')}
               className="px-8 py-4 bg-black/50 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white font-mono font-semibold text-xs uppercase tracking-wider rounded-xl transition-all w-full sm:w-auto"
             >
-              <span>Explore Hardware Store</span>
+              <span>Browse Products</span>
             </button>
           </div>
         </div>

@@ -38,7 +38,7 @@ interface AuthContextType {
   updateProfile: (data: Partial<User>) => void;
 }
 
-const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com'];
+const ADMIN_EMAILS = ['form@kinetixes.com', 'delightchetter@gmail.com', 'kt@gmail.com'];
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

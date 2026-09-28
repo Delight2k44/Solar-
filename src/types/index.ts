@@ -18,8 +18,13 @@ export interface Product {
   brand: string;
   category: ProductCategory;
   priceZAR: number;
+  pricePerWpZAR?: number;
+  dimensions?: string;
+  cellCount?: number;
+  palletCount?: number;
   inStock: boolean;
   stockCount: number;
+  etaStock?: string;
   sku: string;
   image: string;
   summary: string;
@@ -165,6 +170,7 @@ export interface InstallationBooking {
   phaseConnection: string;
   dbLocation: string;
   specialAccess?: string;
+  serviceType?: string;
   status: 'pending' | 'site_visit_scheduled' | 'quote_prepared' | 'confirmed';
   createdAt: string;
 }
@@ -208,6 +214,39 @@ export interface UserNotification {
   read: boolean;
   sender: string; // 'Admin Desk', etc.
   createdAt: string;
+}
+
+export interface QuoteItem {
+  id: string;
+  productId?: string;
+  qty: number;
+  partNo: string;
+  description: string;
+  brand?: string;
+  netPriceZAR: number;
+  link?: string;
+  powerOutputW?: number;
+  image?: string;
+  isCustom?: boolean;
+}
+
+export interface ProjectQuote {
+  id: string; // e.g. KiPV07912 - Group_Project
+  referenceNo: string;
+  type: string; // "PV Equipment Sales"
+  description: string; // "Group_Project"
+  templateName?: string;
+  accountCode: string; // "KINESP002"
+  organisation: string; // "Kinetix Engineering Solutions"
+  address: string; // "2068 W Section, Botshabelo Bloemfontein 9781"
+  contactPerson: string;
+  phone: string;
+  email: string;
+  items: QuoteItem[];
+  status: 'draft' | 'saved' | 'ordered';
+  createdAt: string;
+  validUntil: string;
+  userId?: string;
 }
 
 
