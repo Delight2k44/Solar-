@@ -32,7 +32,15 @@ import { Product } from './types';
 import { X } from 'lucide-react';
 
 export function App() {
-  const [currentRoute, setCurrentRoute] = useState<string>('home');
+  const [currentRoute, setCurrentRoute] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash === 'shop' || hash === 'hardware-workspace') return 'shop';
+      if (hash === 'commercial' || hash === 'business') return 'business';
+      if (hash === 'install' || hash === 'installation') return 'installation';
+    }
+    return 'home';
+  });
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isConfiguratorModalOpen, setIsConfiguratorModalOpen] = useState(false);
   const [selectedShopCategory, setSelectedShopCategory] = useState<string>('all');
@@ -43,6 +51,17 @@ export function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentRoute]);
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash === 'shop' || hash === 'hardware-workspace') setCurrentRoute('shop');
+      else if (hash === 'commercial' || hash === 'business') setCurrentRoute('business');
+      else if (hash === 'install' || hash === 'installation') setCurrentRoute('installation');
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
 
   // Auth guards: redirect to login if accessing protected routes without being signed in
   useEffect(() => {
@@ -89,6 +108,11 @@ export function App() {
             setCurrentRoute={setCurrentRoute}
             openConfigurator={openConfigurator}
             onSelectProduct={handleSelectProduct}
+            onSelectShopCategory={(cat) => {
+              setSelectedShopCategory(cat);
+              setCurrentRoute('shop');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
 

@@ -304,7 +304,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const parsed: Product[] = JSON.parse(saved);
         const merged = parsed.map(p => {
           const defaultProd = PRODUCTS_CATALOG.find(dp => dp.id === p.id || dp.sku === p.sku);
-          return defaultProd ? { ...defaultProd, ...p, image: defaultProd.image } : p;
+          return defaultProd ? { ...p, ...defaultProd, category: defaultProd.category, phase: defaultProd.phase, image: defaultProd.image } : p;
         });
         // Add any new products from PRODUCTS_CATALOG not present in saved
         for (const defaultProd of PRODUCTS_CATALOG) {

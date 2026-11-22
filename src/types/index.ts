@@ -5,7 +5,8 @@ export type ProductCategory =
   | 'complete-kits'
   | 'mounting-equipment'
   | 'protection-accessories'
-  | 'monitoring-equipment';
+  | 'monitoring-equipment'
+  | 'warranties';
 
 export interface ProductSpec {
   label: string;
@@ -35,6 +36,8 @@ export interface Product {
   compatibility: string[];
   installationAvailable: boolean;
   installationPriceZAR?: number;
+  phase?: 'single' | 'three';
+  voltageType?: 'low-voltage' | 'high-voltage';
   faqs: { question: string; answer: string }[];
 }
 

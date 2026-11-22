@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 78 32" fill="none">
+  <rect width="78" height="32" rx="6" fill="#0A1628" stroke="#00D2FF" stroke-width="1" stroke-opacity="0.35"/>
+  <g transform="translate(10, 3.5)">
+    <text x="29" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-weight="900" font-size="16" fill="#00E5FF" letter-spacing="-0.8" text-anchor="middle">ozow</text>
+    <path d="M 12 21 C 20 25, 38 25, 46 21" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <circle cx="48" cy="12" r="2" fill="#FF6B35"/>
+  </g>
+</svg>

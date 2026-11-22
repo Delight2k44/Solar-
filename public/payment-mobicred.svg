@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 78 32" fill="none">
+  <rect width="78" height="32" rx="6" fill="#180B26" stroke="#A855F7" stroke-width="1" stroke-opacity="0.3"/>
+  <g transform="translate(6, 4.5)">
+    <circle cx="7" cy="12" r="6.5" fill="#9333EA" fill-opacity="0.3" stroke="#C084FC" stroke-width="1.2"/>
+    <text x="7" y="15" font-family="'Inter', sans-serif" font-weight="900" font-size="9" fill="#E9D5FF" text-anchor="middle">m</text>
+    <text x="16" y="16" font-family="'Inter', -apple-system, sans-serif" font-weight="800" font-size="10.5" fill="#E9D5FF" letter-spacing="-0.3">mobicred</text>
+  </g>
+</svg>

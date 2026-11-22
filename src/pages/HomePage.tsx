@@ -3,25 +3,79 @@ import {
   ArrowRight, 
   ShieldCheck, 
   Zap,
-  ChevronRight
+  ChevronRight,
+  Sun,
+  BatteryCharging
 } from 'lucide-react';
-import { ProductCard } from '../components/shop/ProductCard';
 import { useData } from '../context/DataContext';
 import { Product } from '../types';
 
 interface HomePageProps {
   setCurrentRoute: (route: string) => void;
   openConfigurator: () => void;
-  onSelectProduct: (product: Product) => void;
+  onSelectProduct?: (product: Product) => void;
+  onSelectShopCategory?: (category: string) => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ 
   setCurrentRoute, 
   openConfigurator,
-  onSelectProduct
+  onSelectShopCategory
 }) => {
   const { products } = useData();
-  const featuredProducts = products.slice(0, 3);
+
+  const coreCategories = [
+    {
+      id: 'solar-panels',
+      eyebrow: 'PV Generation',
+      title: 'Solar Panels',
+      description: 'Tier-1 N-Type TOPCon & monocrystalline bifacial modules engineered for maximum South African solar yield.',
+      image: '/tesla-solar-panels-menu.jpg',
+      icon: Sun,
+      specs: [
+        { label: 'Output Range', value: '450W – 650W' },
+        { label: 'Performance', value: '25-Yr Warranty' }
+      ],
+      count: products.filter((p) => p.category === 'solar-panels').length,
+      cta: 'Explore Solar Panels'
+    },
+    {
+      id: 'inverters',
+      eyebrow: 'Power Conversion',
+      title: 'Inverters',
+      description: 'SANS-certified single-phase & three-phase hybrid inverters with <20ms seamless UPS switchover.',
+      image: '/tesla-solar-inverter-menu.jpg',
+      icon: Zap,
+      specs: [
+        { label: 'Capacity', value: '5 kW – 150 kW' },
+        { label: 'Compliance', value: 'SANS 10142-1-2' }
+      ],
+      count: products.filter((p) => p.category === 'inverters').length,
+      cta: 'Explore Inverters'
+    },
+    {
+      id: 'batteries',
+      eyebrow: 'Energy Storage',
+      title: 'Batteries',
+      description: 'High-cycle LiFePO4 lithium storage banks built for daily deep-cycling and multi-day backup autonomy.',
+      image: '/tesla-powerwall-menu.jpg',
+      icon: BatteryCharging,
+      specs: [
+        { label: 'Scalability', value: '5 kWh – 100+ kWh' },
+        { label: 'Lifespan', value: '6,000+ Cycles' }
+      ],
+      count: products.filter((p) => p.category === 'batteries').length,
+      cta: 'Explore Batteries'
+    }
+  ];
+
+  const handleCategoryClick = (categoryId: string) => {
+    if (onSelectShopCategory) {
+      onSelectShopCategory(categoryId);
+    } else {
+      setCurrentRoute('shop');
+    }
+  };
 
   return (
     <div className="space-y-0 text-white font-sans selection:bg-[#00D2FF] selection:text-black">
@@ -201,15 +255,80 @@ export const HomePage: React.FC<HomePageProps> = ({
           </button>
         </div>
 
-        {/* Featured Hardware Cards */}
+        {/* Core Hardware Categories: Solar Panels, Inverters, Batteries */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onSelectProduct={onSelectProduct}
-            />
-          ))}
+          {coreCategories.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.id}
+                onClick={() => handleCategoryClick(item.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleCategoryClick(item.id);
+                  }
+                }}
+                className="group relative flex flex-col bg-[#0B0E14] border border-[#1E2530] hover:border-[#00D2FF]/50 rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer shadow-lg hover:shadow-[0_0_30px_rgba(0,210,255,0.08)]"
+              >
+                {/* Visual Header */}
+                <div className="relative h-56 overflow-hidden bg-black">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0E14] via-black/40 to-transparent" />
+
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/70 backdrop-blur-md border border-white/10 font-mono text-[10px] uppercase tracking-wider text-[#00D2FF]">
+                      <Icon className="w-3 h-3" />
+                      {item.eyebrow}
+                    </span>
+                    <span className="px-2.5 py-1 rounded-md bg-black/70 backdrop-blur-md border border-white/10 font-mono text-[10px] text-[#94A3B8]">
+                      {item.count} Models
+                    </span>
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="flex flex-col flex-1 p-6 space-y-5">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-[#00D2FF] transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  {/* Key Specs */}
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10 font-mono mt-auto">
+                    {item.specs.map((spec) => (
+                      <div key={spec.label} className="space-y-0.5">
+                        <span className="text-[10px] uppercase text-[#64748B] block">
+                          {spec.label}
+                        </span>
+                        <span className="text-xs font-bold text-white block">
+                          {spec.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <div className="pt-2">
+                    <span className="w-full py-3 px-4 bg-white/5 group-hover:bg-[#00D2FF] text-white group-hover:text-black border border-white/10 group-hover:border-[#00D2FF] font-mono text-xs font-bold uppercase rounded-xl transition-all flex items-center justify-between">
+                      <span>{item.cta}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -324,6 +443,94 @@ export const HomePage: React.FC<HomePageProps> = ({
               <span>Explore SLA Tiers</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
+          </div>
+        </div>
+
+        {/* Authorized Hardware Brands */}
+        <div className="pt-8 border-t border-[#1E2530] space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[#00D2FF] font-bold">
+              Authorized Hardware Partners
+            </span>
+            <span className="text-xs font-mono text-[#64748B]">
+              Genuine OEM-backed warranties &amp; local South African support
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
+            <div className="group bg-[#0D1117] border border-[#1E2530] hover:border-[#00D2FF]/40 rounded-xl overflow-hidden transition-colors flex flex-col">
+              <div className="relative h-32 bg-[#070A0F] border-b border-[#1E2530] flex items-center justify-center p-5">
+                <img
+                  src="/brand-sunsynk.svg"
+                  alt="Sunsynk Brand Logo"
+                  className="max-h-20 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="p-5 flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-base font-extrabold tracking-wider text-white uppercase">
+                    Sunsynk
+                  </div>
+                  <div className="text-[11px] text-[#94A3B8]">
+                    Hybrid Inverters &amp; Parity Systems
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-[10px] text-[#00D2FF] uppercase shrink-0">
+                  Certified
+                </span>
+              </div>
+            </div>
+
+            <div className="group bg-[#0D1117] border border-[#1E2530] hover:border-[#00D2FF]/40 rounded-xl overflow-hidden transition-colors flex flex-col">
+              <div className="relative h-32 bg-[#070A0F] border-b border-[#1E2530] flex items-center justify-center p-5">
+                <img
+                  src="/brand-tesla.svg"
+                  alt="Tesla Brand Logo"
+                  className="max-h-20 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="p-5 flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-base font-extrabold tracking-wider text-white uppercase">
+                    Tesla
+                  </div>
+                  <div className="text-[11px] text-[#94A3B8]">
+                    Powerwall &amp; Megapack Storage
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-[10px] text-[#00D2FF] uppercase shrink-0">
+                  Certified
+                </span>
+              </div>
+            </div>
+
+            <a
+              href="https://www.segensolar.co.za"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group bg-[#0D1117] border border-[#1E2530] hover:border-[#00D2FF]/40 rounded-xl overflow-hidden transition-colors flex flex-col"
+            >
+              <div className="relative h-32 bg-[#070A0F] border-b border-[#1E2530] flex items-center justify-center p-5">
+                <img
+                  src="/brand-segensolar.svg"
+                  alt="SegenSolar Brand Logo"
+                  className="max-h-20 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="p-5 flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-base font-extrabold tracking-wider text-white group-hover:text-[#00D2FF] transition-colors uppercase">
+                    SegenSolar
+                  </div>
+                  <div className="text-[11px] text-[#94A3B8]">
+                    segensolar.co.za • Tier-1 PV Supply
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-[10px] text-[#00D2FF] uppercase shrink-0">
+                  Partner
+                </span>
+              </div>
+            </a>
           </div>
         </div>
       </section>

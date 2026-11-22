@@ -7,9 +7,10 @@ import { ShoppingBag, Eye, FileText, Check } from 'lucide-react';
 interface ProductListRowProps {
   product: Product;
   onSelectProduct: (product: Product) => void;
+  includeVat?: boolean;
 }
 
-export const ProductListRow: React.FC<ProductListRowProps> = ({ product, onSelectProduct }) => {
+export const ProductListRow: React.FC<ProductListRowProps> = ({ product, onSelectProduct, includeVat = false }) => {
   const { addToCart } = useCart();
   const { activeQuote, addItemToActiveQuote } = useData();
   const [quoteQty, setQuoteQty] = useState<number>(1);
@@ -21,8 +22,8 @@ export const ProductListRow: React.FC<ProductListRowProps> = ({ product, onSelec
     setTimeout(() => setAddedToQuoteToast(false), 2000);
   };
 
-  // Format ZAR currency in South African standard format
-  const formattedPrice = `R ${product.priceZAR.toLocaleString('en-ZA', {
+  const displayPrice = includeVat ? product.priceZAR * 1.15 : product.priceZAR;
+  const formattedPrice = `R ${displayPrice.toLocaleString('en-ZA', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   })}`;
@@ -83,6 +84,11 @@ export const ProductListRow: React.FC<ProductListRowProps> = ({ product, onSelec
             {product.warrantyYears && (
               <span className="text-[11px] font-mono text-[#10B981] hidden sm:inline">
                 • {product.warrantyYears}Y Warranty
+              </span>
+            )}
+            {product.phase && (
+              <span className={`px-2 py-0.5 rounded-md text-[11px] font-mono font-bold uppercase ${product.phase === 'three' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' : 'bg-sky-500/15 text-sky-300 border border-sky-500/30'}`}>
+                {product.phase === 'three' ? '3-Phase 400V' : 'Single Phase 230V'}
               </span>
             )}
           </div>
@@ -163,7 +169,7 @@ export const ProductListRow: React.FC<ProductListRowProps> = ({ product, onSelec
               (R {product.pricePerWpZAR.toFixed(3)}/Wp)
             </div>
           )}
-          <span className="text-[10px] text-[#64748B] block">Excl. 15% VAT</span>
+          <span className="text-[10px] text-[#64748B] block">{includeVat ? 'Incl. 15% VAT' : 'Excl. 15% VAT'}</span>
         </div>
 
         {/* Buttons */}
